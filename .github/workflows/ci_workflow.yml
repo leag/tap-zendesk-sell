@@ -36,7 +36,6 @@ jobs:
     runs-on: ubuntu-latest
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      TAP_ZENDESK_SELL_ACCESS_TOKEN: ${{ secrets.TAP_ZENDESK_SELL_ACCESS_TOKEN }}
     strategy:
       matrix:
         python-version: [3.7, 3.8, 3.9]
@@ -55,5 +54,7 @@ jobs:
       run: |
         poetry install
     - name: Test with pytest
+      env : 
+        TAP_ZENDESK_SELL_ACCESS_TOKEN: ${{ secrets.TAP_ZENDESK_SELL_ACCESS_TOKEN }}
       run: |
         poetry run pytest --capture=no
