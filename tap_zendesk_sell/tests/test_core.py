@@ -2,7 +2,7 @@ from singer_sdk.testing import get_standard_tap_tests
 
 from tap_zendesk_sell.tap import TapZendeskSell
 
-SAMPLE_CONFIG = {"client_device_uuid": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"}
+SAMPLE_CONFIG = {"device_uuid": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"}
 
 
 def test_standard_tap_tests():
