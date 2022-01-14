@@ -5,9 +5,9 @@ from typing import List
 from singer_sdk import Tap, Stream
 from singer_sdk import typing as th  # JSON schema typing helpers
 
-from tap_zendesk_sell.streams import SyncStream
+from tap_zendesk_sell.streams import SyncStream, ContactsStream
 
-STREAM_TYPES = [SyncStream,]
+STREAM_TYPES = [SyncStream, ContactsStream]
 
 
 class TapZendeskSell(Tap):

@@ -1,0 +1,192 @@
+{
+    "type": "object",
+    "properties": {
+        "website": {
+            "type": ["string", "null"],
+            "description": "The contact's website address."
+        },
+        "updated_at": {
+            "type": ["string", "null"],
+            "format": "date-time",
+            "description": "Date and time of the record's last update in UTC ISO8601 format."
+        },
+        "twitter": {
+            "type": ["string", "null"],
+            "description": "The contact's Twitter handle."
+        },
+        "title": {
+            "type": ["string", "null"],
+            "description": "The contact's job title."
+        },
+        "tags": {
+            "type": ["array", "null"],
+            "items": {
+                "type": ["string", "null"]
+            },
+            "description": "An array of tags for the contact."
+        },
+        "skype": {
+            "type": ["string", "null"],
+            "description": "The contact's Skype nickname."
+        },
+        "shipping_address": {
+            "type": ["object", "null"],
+            "properties": {
+                "state": {
+                    "type": ["string", "null"],
+                    "description": "State name."
+                },
+                "postal_code": {
+                    "type": ["string", "null"],
+                    "description": "Zip code or equivalent."
+                },
+                "line1": {
+                    "type": ["string", "null"],
+                    "description": "Line 1 of the address e.g. number, street, suite, apt #, etc."
+                },
+                "country": {
+                    "type": ["string", "null"],
+                    "description": "Country name."
+                },
+                "city": {
+                    "type": ["string", "null"],
+                    "description": "City name."
+                }
+            },
+            "description": "The contact's shipping address."
+        },
+        "prospect_status": {
+            "type": ["string", "null"],
+            "description": "The prospect status of the contact.  Possible values:  none, current, lost"
+        },
+        "phone": {
+            "type": ["string", "null"],
+            "description": "The contact's phone number."
+        },
+        "parent_organization_id": {
+            "type": ["integer", "null"],
+            "description": "The unique identifier of an organization contact that is parent of this organization."
+        },
+        "owner_id": {
+            "type": ["integer", "null"],
+            "description": "The unique identifier of the user the contact is currently assigned to."
+        },
+        "name": {
+            "type": ["string", "null"],
+            "description": "Name of the contact. Required only if the contact is an organization."
+        },
+        "mobile": {
+            "type": ["string", "null"],
+            "description": "The contact's mobile phone number."
+        },
+        "linkedin": {
+            "type": ["string", "null"],
+            "description": "The contact's Linkedin nickname."
+        },
+        "last_name": {
+            "type": ["string", "null"],
+            "description": "Last name of the contact. Required only if the contact is an individual."
+        },
+        "is_organization": {
+            "type": ["boolean", "null"],
+            "description": "Indicator of whether or not this contact refers to an organization or an individual."
+        },
+        "industry": {
+            "type": ["string", "null"],
+            "description": "The contact's industry."
+        },
+        "id": {
+            "type": ["integer", "null"],
+            "description": "The unique identifier of the contact."
+        },
+        "first_name": {
+            "type": ["string", "null"],
+            "description": "First name of the contact."
+        },
+        "fax": {
+            "type": ["string", "null"],
+            "description": "The contact's fax number."
+        },
+        "facebook": {
+            "type": ["string", "null"],
+            "description": "The contact's Facebook nickname."
+        },
+        "email": {
+            "type": ["string", "null"],
+            "description": "The contact's email address."
+        },
+        "description": {
+            "type": ["string", "null"],
+            "description": "The contact's description."
+        },
+        "customer_status": {
+            "type": ["string", "null"],
+            "description": "The customer status of the contact.  Possible values:  none, current, past"
+        },
+        "creator_id": {
+            "type": ["integer", "null"],
+            "description": "The unique identifier of the user the contact was created by."
+        },
+        "created_at": {
+            "type": ["string", "null"],
+            "format": "date-time",
+            "description": "Date and time that the record was created in UTC ISO8601 format."
+        },
+        "contact_id": {
+            "type": ["integer", "null"],
+            "description": "The unique identifier of the organization the contact belongs to."
+        },
+        "billing_address": {
+            "type": ["object", "null"],
+            "properties": {
+                "state": {
+                    "type": ["string", "null"],
+                    "description": "State name."
+                },
+                "postal_code": {
+                    "type": ["string", "null"],
+                    "description": "Zip code or equivalent."
+                },
+                "line1": {
+                    "type": ["string", "null"],
+                    "description": "Line 1 of the address e.g. number, street, suite, apt #, etc."
+                },
+                "country": {
+                    "type": ["string", "null"],
+                    "description": "Country name."
+                },
+                "city": {
+                    "type": ["string", "null"],
+                    "description": "City name."
+                }
+            },
+            "description": "The contact's billing address."
+        },
+        "address": {
+            "type": ["object", "null"],
+            "properties": {
+                "state": {
+                    "type": ["string", "null"],
+                    "description": "State name."
+                },
+                "postal_code": {
+                    "type": ["string", "null"],
+                    "description": "Zip code or equivalent."
+                },
+                "line1": {
+                    "type": ["string", "null"],
+                    "description": "Line 1 of the address e.g. number, street, suite, apt #, etc."
+                },
+                "country": {
+                    "type": ["string", "null"],
+                    "description": "Country name."
+                },
+                "city": {
+                    "type": ["string", "null"],
+                    "description": "City name."
+                }
+            },
+            "description": "The contact's address."
+        }
+    }
+}
