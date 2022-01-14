@@ -1,0 +1,105 @@
+{
+    "type": "object",
+    "properties": {
+        "value": {
+            "type": ["number", "null"],
+            "description": "Value of the deal in a currency specified in the currency field."
+        },
+        "updated_at": {
+            "type": ["string", "null"],
+            "format": "date-time",
+            "description": "Date and time of the last update on the deal in UTC (ISO8601 format)."
+        },
+        "unqualified_reason_id": {
+            "type": ["integer", "null"],
+            "description": "Reason why the deal was unqualified."
+        },
+        "tags": {
+            "type": ["array", "null"],
+            "items": {
+                "type": ["string"]
+            },
+            "description": "An array of tags for a deal."
+        },
+        "stage_id": {
+            "type": ["integer", "null"],
+            "description": "Unique identifier of the deal's current stage in the pipeline."
+        },
+        "source_id": {
+            "type": ["integer", "null"],
+            "description": "Unique identifier of the Source."
+        },
+        "owner_id": {
+            "type": ["integer", "null"],
+            "description": "Unique identifier of the user that the deal is assigned to."
+        },
+        "organization_id": {
+            "type": ["integer", "null"],
+            "description": "Unique identifier of an organization."
+        },
+        "name": {
+            "type": ["string", "null"],
+            "description": "Name of the deal."
+        },
+        "loss_reason_id": {
+            "type": ["integer", "null"],
+            "description": "Reason why the deal was lost."
+        },
+        "last_stage_change_by_id": {
+            "type": ["integer", "null"],
+            "description": "Unique identifier of the user who moved the deal into the current stage."
+        },
+        "last_stage_change_at": {
+            "type": ["string", "null"],
+            "format": "date-time",
+            "description": "Date and time when the deal was moved into the current stage in UTC (ISO8601 format)."
+        },
+        "last_activity_at": {
+            "type": ["string", "null"],
+            "format": "date-time",
+            "description": "Date and time of the last activity on the deal in UTC (ISO8601 format)."
+        },
+        "id": {
+            "type": ["integer", "null"],
+            "description": "Unique identifier of the deal."
+        },
+        "hot": {
+            "type": ["boolean", "null"],
+            "description": "Indicator of whether or not the deal is hot."
+        },
+        "estimated_close_date": {
+            "type": ["string", "null"],
+            "description": "Estimated close date of the deal."
+        },
+        "dropbox_email": {
+            "type": ["string", "null"],
+            "description": "Dropbox email connected with the deal."
+        },
+        "customized_win_likelihood": {
+            "type": ["integer", "null"],
+            "description": "User-provided win likelihood with value range 0-100."
+        },
+        "currency": {
+            "type": ["string", "null"],
+            "description": "Currency of the deal, specified in 3-character currency code (ISO4217) format."
+        },
+        "creator_id": {
+            "type": ["integer", "null"],
+            "description": "Unique identifier of the user who created the deal."
+        },
+        "created_at": {
+            "type": ["string", "null"],
+            "format": "date-time",
+            "description": "Date and time that the deal was created in UTC (ISO8601 format)."
+        },
+        "contact_id": {
+            "type": ["integer", "null"],
+            "description": "Unique identifier of a primary contact."
+        },
+        "added_at": {
+            "type": ["string", "null"],
+            "format": "date-time",
+            "description": "Date and time that the deal was started in UTC (ISO8601 format)."
+        }
+    }
+}

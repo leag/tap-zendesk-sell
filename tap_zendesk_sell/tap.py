@@ -2,12 +2,12 @@
 
 from typing import List
 
-from singer_sdk import Tap, Stream
+from singer_sdk import Stream, Tap
 from singer_sdk import typing as th  # JSON schema typing helpers
 
-from tap_zendesk_sell.streams import SyncStream, ContactsStream
+from tap_zendesk_sell.streams import ContactsStream, DealsStream, SyncStream
 
-STREAM_TYPES = [SyncStream, ContactsStream]
+STREAM_TYPES = [SyncStream, ContactsStream, DealsStream]
 
 
 class TapZendeskSell(Tap):
@@ -27,6 +27,18 @@ class TapZendeskSell(Tap):
             th.StringType,
             required=True,
             description="The device's universally unique identifier (UUID)",
+        ),
+        th.Property(
+            "metrics_log_level",
+            th.StringType,
+            default="info",
+            description="The log level for metrics",
+        ),
+        th.Property(
+            "add_record_metadata",
+            th.BooleanType,
+            default=False,
+            description="Whether to add metadata to each record",
         ),
     ).to_dict()
 
