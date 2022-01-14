@@ -3,8 +3,9 @@
 from pathlib import Path
 from typing import Iterable, Optional
 
-from tap_zendesk_sell.client import ZendeskSellStream
 from singer_sdk.tap_base import Tap
+
+from tap_zendesk_sell.client import ZendeskSellStream
 
 SCHEMAS_DIR = Path(__file__).parent / Path("./schemas")
 
@@ -15,8 +16,13 @@ class SyncStream(ZendeskSellStream):
     def _update_schema(self) -> None:
         """Update the schema for this stream with custom fields."""
 
-        resource_types = ["lead", "contact", "deal", "prospect_and_customer"]
-        field_type = {
+        resource_types = [
+            "lead",
+            "contact",
+            "deal",
+            "prospect_and_customer",
+        ]
+        custom_field_type = {
             "address": "object",
             "bool": "string",
             "date": "string",
@@ -37,52 +43,75 @@ class SyncStream(ZendeskSellStream):
             "state": ["null", "string"],
             "country": ["null", "string"],
         }
-        custom_fields = {}
+        custom_fields_properties = {}
         for resource_type in resource_types:
             _, _, data = self.conn.http_client.get(
                 "/{resource_type}/custom_fields".format(resource_type=resource_type)
             )
-            for field in data:
-                if field["type"] == "address":
-                    if not custom_fields.get(field["name"]):
-                        custom_fields[field["name"]] = {
+            for custom_field in data:
+                if custom_field["type"] == "address":
+                    if not custom_fields_properties.get(custom_field["name"]):
+                        custom_fields_properties[custom_field["name"]] = {
                             "type": ["null", "object"],
                             "properties": address_type,
                         }
                     else:
-                        if "object" not in custom_fields[field["name"]]["type"]:
-                            custom_fields[field["name"]]["type"].append("object")
+                        if (
+                            "object"
+                            not in custom_fields_properties[custom_field["name"]][
+                                "type"
+                            ]
+                        ):
+                            custom_fields_properties[custom_field["name"]][
+                                "type"
+                            ].append("object")
                         for key in address_type:
-                            if key not in custom_fields[field["name"]]["properties"]:
-                                custom_fields[field["name"]]["properties"][key] = address_type[
-                                    key
+                            if (
+                                key
+                                not in custom_fields_properties[custom_field["name"]][
+                                    "properties"
                                 ]
-                elif field["type"] == "multi_select_list":
-                    if not custom_fields.get(field["name"]):
-                        custom_fields[field["name"]] = {
+                            ):
+                                custom_fields_properties[custom_field["name"]][
+                                    "properties"
+                                ][key] = address_type[key]
+                elif custom_field["type"] == "multi_select_list":
+                    if not custom_fields_properties.get(custom_field["name"]):
+                        custom_fields_properties[custom_field["name"]] = {
                             "type": ["null", "array"],
                             "items": {"type": "string"},
                         }
                     else:
-                        if "array" not in custom_fields[field["name"]]["type"]:
-                            custom_fields[field["name"]]["type"].append("array")
-                        custom_fields[field["name"]]["items"] = {"type": "string"}
-                elif field["type"] in field_type:
-                    if not custom_fields.get(field["name"]):
-                        custom_fields[field["name"]] = {
-                            "type": ["null", field_type[field["type"]]],
+                        if (
+                            "array"
+                            not in custom_fields_properties[custom_field["name"]][
+                                "type"
+                            ]
+                        ):
+                            custom_fields_properties[custom_field["name"]][
+                                "type"
+                            ].append("array")
+                        custom_fields_properties[custom_field["name"]]["items"] = {
+                            "type": "string"
+                        }
+                elif custom_field["type"] in custom_field_type:
+                    if not custom_fields_properties.get(custom_field["name"]):
+                        custom_fields_properties[custom_field["name"]] = {
+                            "type": ["null", custom_field_type[custom_field["type"]]],
                         }
                     else:
                         if (
-                            field_type[field["type"]]
-                            not in custom_fields[field["name"]]["type"]
+                            custom_field_type[custom_field["type"]]
+                            not in custom_fields_properties[custom_field["name"]][
+                                "type"
+                            ]
                         ):
-                            custom_fields[field["name"]]["type"].append(
-                                field_type[field["type"]]
-                            )
-        if len(custom_fields) > 0:
+                            custom_fields_properties[custom_field["name"]][
+                                "type"
+                            ].append(custom_field_type[custom_field["type"]])
+        if custom_fields_properties:
             self._schema["properties"]["data"]["properties"]["custom_fields"] = {
-                "properties": custom_fields
+                "properties": custom_fields_properties
             }
 
     def __init__(self, tap: Tap):
