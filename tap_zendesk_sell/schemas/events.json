@@ -29,6 +29,9 @@
         "data": {
             "type": ["null", "object"],
             "properties": {
+                "zendesk_user_id": {
+                    "type": ["null", "string"]
+                },
                 "website": {
                     "type": ["null", "string"]
                 },
@@ -41,16 +44,96 @@
                 "unqualified_reason_id": {
                     "type": ["null", "integer"]
                 },
+                "type": {
+                    "type": ["null", "string"]
+                },
                 "twitter": {
                     "type": ["null", "string"]
                 },
                 "title": {
                     "type": ["null", "string"]
                 },
+                "timezone": {
+                    "type": ["null", "string"]
+                },
+                "time_format": {
+                    "type": ["null", "string"]
+                },
+                "team_name": {
+                    "type": ["null", "string"]
+                },
                 "tags": {
                     "type": ["null", "array"],
                     "items": {
                         "type": ["null", "string"]
+                    }
+                },
+                "subdomain": {
+                    "type": ["null", "string"]
+                },
+                "status": {
+                    "type": ["null", "string"]
+                },
+                "stages": {
+                    "type": ["null", "object"],
+                    "properties": {
+                        "items": {
+                            "type": ["null", "array"],
+                            "items": {
+                                "type": ["null", "object"],
+                                "properties": {
+                                    "meta": {
+                                        "type": ["null", "object"],
+                                        "properties": {
+                                            "type": {
+                                                "type": ["null", "string"]
+                                            }
+                                        }
+                                    },
+                                    "data": {
+                                        "type": ["null", "object"],
+                                        "properties": {
+                                            "updated_at": {
+                                                "type": ["null", "string"]
+                                            },
+                                            "position_hash": {
+                                                "type": ["null", "string"]
+                                            },
+                                            "position": {
+                                                "type": ["null", "integer"]
+                                            },
+                                            "pipeline_id": {
+                                                "type": ["null", "integer"]
+                                            },
+                                            "name": {
+                                                "type": ["null", "string"]
+                                            },
+                                            "locale_key": {
+                                                "type": ["null", "string"]
+                                            },
+                                            "likelihood": {
+                                                "type": ["null", "integer"]
+                                            },
+                                            "id": {
+                                                "type": ["null", "integer"]
+                                            },
+                                            "has_original_name": {
+                                                "type": ["null", "boolean"]
+                                            },
+                                            "created_at": {
+                                                "type": ["null", "string"]
+                                            },
+                                            "category": {
+                                                "type": ["null", "string"]
+                                            },
+                                            "active": {
+                                                "type": ["null", "boolean"]
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
                 },
                 "stage_id": {
@@ -82,16 +165,28 @@
                         }
                     }
                 },
+                "sell_login_disabled": {
+                    "type": ["null", "boolean"]
+                },
+                "role": {
+                    "type": ["null", "string"]
+                },
                 "resource_type": {
                     "type": ["null", "string"]
                 },
                 "resource_id": {
                     "type": ["null", "integer"]
                 },
+                "reports_to": {
+                    "type": ["null", "integer"]
+                },
                 "remind_at": {
                     "type": ["null", "string"]
                 },
                 "prospect_status": {
+                    "type": ["null", "string"]
+                },
+                "phone_number": {
                     "type": ["null", "string"]
                 },
                 "phone": {
@@ -136,7 +231,16 @@
                 "is_organization": {
                     "type": ["null", "boolean"]
                 },
+                "is_important": {
+                    "type": ["null", "boolean"]
+                },
+                "invited": {
+                    "type": ["null", "boolean"]
+                },
                 "industry": {
+                    "type": ["null", "string"]
+                },
+                "identity_type": {
                     "type": ["null", "string"]
                 },
                 "id": {
@@ -144,6 +248,17 @@
                 },
                 "hot": {
                     "type": ["null", "boolean"]
+                },
+                "group": {
+                    "type": ["null", "object"],
+                    "properties": {
+                        "id": {
+                            "type": ["null", "integer"]
+                        },
+                        "name": {
+                            "type": ["null", "string"]
+                        }
+                    }
                 },
                 "first_name": {
                     "type": ["null", "string"]
@@ -166,7 +281,16 @@
                 "dropbox_email": {
                     "type": ["null", "string"]
                 },
+                "disabled": {
+                    "type": ["null", "boolean"]
+                },
+                "detached": {
+                    "type": ["null", "boolean"]
+                },
                 "description": {
+                    "type": ["null", "string"]
+                },
+                "deleted_at": {
                     "type": ["null", "string"]
                 },
                 "customized_win_likelihood": {
@@ -189,6 +313,9 @@
                 },
                 "contact_id": {
                     "type": ["null", "integer"]
+                },
+                "confirmed": {
+                    "type": ["null", "boolean"]
                 },
                 "completed_at": {
                     "type": ["null", "string"]

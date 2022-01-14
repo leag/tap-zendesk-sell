@@ -23,7 +23,7 @@ class SyncStream(ZendeskSellStream):
             "datetime": "string",
             "email": "string",
             "list": "string",
-            "multi_select_list": "string",
+            "multi_select_list": "array",
             "number": "string",
             "phone": "string",
             "string": "string",
@@ -57,6 +57,16 @@ class SyncStream(ZendeskSellStream):
                                 custom_fields[field["name"]]["properties"][key] = address_type[
                                     key
                                 ]
+                elif field["type"] == "multi_select_list":
+                    if not custom_fields.get(field["name"]):
+                        custom_fields[field["name"]] = {
+                            "type": ["null", "array"],
+                            "items": {"type": "string"},
+                        }
+                    else:
+                        if "array" not in custom_fields[field["name"]]["type"]:
+                            custom_fields[field["name"]]["type"].append("array")
+                        custom_fields[field["name"]]["items"] = {"type": "string"}
                 elif field["type"] in field_type:
                     if not custom_fields.get(field["name"]):
                         custom_fields[field["name"]] = {
