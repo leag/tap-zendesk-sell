@@ -1,0 +1,261 @@
+{
+    "type": ["null", "object"],
+    "properties": {
+        "meta": {
+            "type": ["null", "object"],
+            "properties": {
+                "version": {
+                    "type": ["null", "integer"]
+                },
+                "type": {
+                    "type": ["null", "string"]
+                },
+                "sync": {
+                    "type": ["null", "object"],
+                    "properties": {
+                        "revision": {
+                            "type": ["null", "integer"]
+                        },
+                        "event_type": {
+                            "type": ["null", "string"]
+                        },
+                        "ack_key": {
+                            "type": ["null", "string"]
+                        }
+                    }
+                }
+            }
+        },
+        "data": {
+            "type": ["null", "object"],
+            "properties": {
+                "website": {
+                    "type": ["null", "string"]
+                },
+                "value": {
+                    "type": ["null", "integer", "string"]
+                },
+                "updated_at": {
+                    "type": ["null", "string"]
+                },
+                "unqualified_reason_id": {
+                    "type": ["null", "integer"]
+                },
+                "twitter": {
+                    "type": ["null", "string"]
+                },
+                "title": {
+                    "type": ["null", "string"]
+                },
+                "tags": {
+                    "type": ["null", "array"],
+                    "items": {
+                        "type": ["null", "string"]
+                    }
+                },
+                "stage_id": {
+                    "type": ["null", "integer"]
+                },
+                "source_id": {
+                    "type": ["null", "integer"]
+                },
+                "skype": {
+                    "type": ["null", "string"]
+                },
+                "shipping_address": {
+                    "type": ["null", "object"],
+                    "properties": {
+                        "state": {
+                            "type": ["null", "string"]
+                        },
+                        "postal_code": {
+                            "type": ["null", "string"]
+                        },
+                        "line1": {
+                            "type": ["null", "string"]
+                        },
+                        "country": {
+                            "type": ["null", "string"]
+                        },
+                        "city": {
+                            "type": ["null", "string"]
+                        }
+                    }
+                },
+                "resource_type": {
+                    "type": ["null", "string"]
+                },
+                "resource_id": {
+                    "type": ["null", "integer"]
+                },
+                "remind_at": {
+                    "type": ["null", "string"]
+                },
+                "prospect_status": {
+                    "type": ["null", "string"]
+                },
+                "phone": {
+                    "type": ["null", "string"]
+                },
+                "parent_organization_id": {
+                    "type": ["null", "integer"]
+                },
+                "owner_id": {
+                    "type": ["null", "integer"]
+                },
+                "overdue": {
+                    "type": ["null", "boolean"]
+                },
+                "organization_id": {
+                    "type": ["null", "integer"]
+                },
+                "name": {
+                    "type": ["null", "string"]
+                },
+                "mobile": {
+                    "type": ["null", "string"]
+                },
+                "loss_reason_id": {
+                    "type": ["null", "integer"]
+                },
+                "linkedin": {
+                    "type": ["null", "string"]
+                },
+                "last_stage_change_by_id": {
+                    "type": ["null", "integer"]
+                },
+                "last_stage_change_at": {
+                    "type": ["null", "string"]
+                },
+                "last_name": {
+                    "type": ["null", "string"]
+                },
+                "last_activity_at": {
+                    "type": ["null", "string"]
+                },
+                "is_organization": {
+                    "type": ["null", "boolean"]
+                },
+                "industry": {
+                    "type": ["null", "string"]
+                },
+                "id": {
+                    "type": ["null", "integer"]
+                },
+                "hot": {
+                    "type": ["null", "boolean"]
+                },
+                "first_name": {
+                    "type": ["null", "string"]
+                },
+                "fax": {
+                    "type": ["null", "string"]
+                },
+                "facebook": {
+                    "type": ["null", "string"]
+                },
+                "estimated_close_date": {
+                    "type": ["null", "string"]
+                },
+                "email": {
+                    "type": ["null", "string"]
+                },
+                "due_date": {
+                    "type": ["null", "string"]
+                },
+                "dropbox_email": {
+                    "type": ["null", "string"]
+                },
+                "description": {
+                    "type": ["null", "string"]
+                },
+                "customized_win_likelihood": {
+                    "type": ["null", "integer"]
+                },
+                "customer_status": {
+                    "type": ["null", "string"]
+                },
+                "currency": {
+                    "type": ["null", "string"]
+                },
+                "creator_id": {
+                    "type": ["null", "integer"]
+                },
+                "created_at": {
+                    "type": ["null", "string"]
+                },
+                "content": {
+                    "type": ["null", "string"]
+                },
+                "contact_id": {
+                    "type": ["null", "integer"]
+                },
+                "completed_at": {
+                    "type": ["null", "string"]
+                },
+                "completed": {
+                    "type": ["null", "boolean"]
+                },
+                "billing_address": {
+                    "type": ["null", "object"],
+                    "properties": {
+                        "state": {
+                            "type": ["null", "string"]
+                        },
+                        "postal_code": {
+                            "type": ["null", "string"]
+                        },
+                        "line1": {
+                            "type": ["null", "string"]
+                        },
+                        "country": {
+                            "type": ["null", "string"]
+                        },
+                        "city": {
+                            "type": ["null", "string"]
+                        }
+                    }
+                },
+                "associated_contacts": {
+                    "type": ["null", "object"],
+                    "properties": {
+                        "meta": {
+                            "type": ["null", "object"],
+                            "properties": {
+                                "type": {
+                                    "type": ["null", "string"]
+                                },
+                                "count": {
+                                    "type": ["null", "integer"]
+                                }
+                            }
+                        }
+                    }
+                },
+                "address": {
+                    "type": ["null", "object"],
+                    "properties": {
+                        "state": {
+                            "type": ["null", "string"]
+                        },
+                        "postal_code": {
+                            "type": ["null", "string"]
+                        },
+                        "line1": {
+                            "type": ["null", "string"]
+                        },
+                        "country": {
+                            "type": ["null", "string"]
+                        },
+                        "city": {
+                            "type": ["null", "string"]
+                        }
+                    }
+                },
+                "added_at": {
+                    "type": ["null", "string"]
+                }
+            }
+        }
+    }
+}
