@@ -57,4 +57,4 @@ jobs:
       env : 
         TAP_ZENDESK_SELL_ACCESS_TOKEN: ${{ secrets.TAP_ZENDESK_SELL_ACCESS_TOKEN }}
       run: |
-        poetry run pytest --capture=no
+        poetry run pytest -s
