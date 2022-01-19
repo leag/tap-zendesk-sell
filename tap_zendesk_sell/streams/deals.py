@@ -20,7 +20,7 @@ class DealsStream(ZendeskSellStream):
         if custom_fields_properties:
             self._schema["properties"]["custom_fields"] = {
                 "properties": custom_fields_properties,
-                "description": "Custom fields attached to a contact.",
+                "description": "Custom fields attached to a deal.",
             }
 
     def get_records(self, context: Optional[dict]) -> Iterable[dict]:
