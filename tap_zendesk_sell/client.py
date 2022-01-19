@@ -120,7 +120,7 @@ class ZendeskSellStream(Stream):
 
     @staticmethod
     def address_schema(
-        address: str = "address", description: str = "Address object."
+        address: str = "address", description: str = "Address object.", **kwargs
     ) -> th.Property:
         """Return an address object schema."""
         return th.Property(
@@ -139,6 +139,7 @@ class ZendeskSellStream(Stream):
                 th.Property("country", th.StringType, description="Country name."),
             ),
             description=description,
+            **kwargs,
         )
 
     def __init__(self, tap: Tap):

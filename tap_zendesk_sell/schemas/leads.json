@@ -1,0 +1,129 @@
+{
+    "type": ["object", "null"],
+    "required": ["id", "creator_id", "created_at", "updated_at"],
+    "properties": {
+        "website": {
+            "type": ["string", "null"],
+            "description": "Lead's website."
+        },
+        "updated_at": {
+            "type": ["string", "null"],
+            "description": "Date and time of the last update in UTC (ISO8601 format).",
+            "format": "date-time"
+        },
+        "twitter": {
+            "type": ["string", "null"],
+            "description": "Lead's Twitter handle."
+        },
+        "title": {
+            "type": ["string", "null"],
+            "description": "Job title of the lead."
+        },
+        "tags": {
+            "type": "array",
+            "items": {
+                "type": ["string", "null"]
+            },
+            "description": "An array of tags for a lead. See more at Tags."
+        },
+        "status": {
+            "type": ["string", "null"],
+            "description": "Status of the lead."
+        },
+        "source_id": {
+            "type": ["integer", "null"],
+            "description": "Unique identifier of the Source."
+        },
+        "skype": {
+            "type": ["string", "null"],
+            "description": "Lead's Skype nickname."
+        },
+        "phone": {
+            "type": ["string", "null"],
+            "description": "Lead's phone number."
+        },
+        "owner_id": {
+            "type": ["integer", "null"],
+            "description": "Unique identifier of the user who currently owns the lead."
+        },
+        "organization_name": {
+            "type": ["string", "null"],
+            "description": "Organization name of the lead. Required unless last_name field is provided."
+        },
+        "mobile": {
+            "type": ["string", "null"],
+            "description": "Lead's mobile phone number."
+        },
+        "linkedin": {
+            "type": ["string", "null"],
+            "description": "Lead's Linkedin nickname."
+        },
+        "last_name": {
+            "type": ["string", "null"],
+            "description": "Last name of the lead. Required unless organization_name field is provided."
+        },
+        "industry": {
+            "type": ["string", "null"],
+            "description": "Organization's industry."
+        },
+        "id": {
+            "type": ["integer", "null"],
+            "description": "Unique identifier of the lead."
+        },
+        "first_name": {
+            "type": ["string", "null"],
+            "description": "First name of the lead."
+        },
+        "fax": {
+            "type": ["string", "null"],
+            "description": "Lead's fax number."
+        },
+        "facebook": {
+            "type": ["string", "null"],
+            "description": "Lead's Facebook nickname."
+        },
+        "email": {
+            "type": ["string", "null"],
+            "description": "Lead's email."
+        },
+        "description": {
+            "type": ["string", "null"],
+            "description": "Lead description."
+        },
+        "creator_id": {
+            "type": ["integer", "null"],
+            "description": "Unique identifier of the user who created the lead."
+        },
+        "created_at": {
+            "type": ["string", "null"],
+            "description": "Date and time of the creation in UTC (ISO8601 format).",
+            "format": "date-time"
+        },
+        "address": {
+            "type": ["object", "null"],
+            "properties": {
+                "state": {
+                    "type": ["string", "null"],
+                    "description": "State name."
+                },
+                "postal_code": {
+                    "type": ["string", "null"],
+                    "description": "Zip code or equivalent."
+                },
+                "line1": {
+                    "type": ["string", "null"],
+                    "description": "Line 1 of the address e.g. number, street, suite, apt #, etc."
+                },
+                "country": {
+                    "type": ["string", "null"],
+                    "description": "Country name."
+                },
+                "city": {
+                    "type": ["string", "null"],
+                    "description": "City name."
+                }
+            },
+            "description": "The lead's address."
+        }
+    }
+}
