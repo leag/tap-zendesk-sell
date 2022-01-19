@@ -1,0 +1,29 @@
+{
+    "type": ["null", "object"],
+    "properties":
+    {   
+        "deal_id": {
+            "type": ["integer", "null"],
+            "description": "The unique identifier of the deal."
+            
+        },
+        "contact_id": {
+            "type": ["integer", "null"],
+            "description": "The unique identifier for the contact."
+        },
+        "role": {
+            "type": ["string", "null"],
+            "description": "The role of the contact."
+        },
+        "created_at": {
+            "type": ["string", "null"],
+            "format": "date-time",
+            "description": "The date and time the contact was created."
+        },
+        "updated_at": {
+            "type": ["string", "null"],
+            "format": "date-time",
+            "description": "The date and time the contact was last updated."
+        }
+    }
+}
