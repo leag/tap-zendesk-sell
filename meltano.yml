@@ -20,9 +20,10 @@ plugins:
     config:
       metrics_log_level: debug
     select:
-      - "accounts.*"
-    # - deals.*
-    # - associated_contacts.*
+      - "deal_sources.*"
+      # - "accounts.*"
+      # - deals.*
+      # - associated_contacts.*
   loaders:
   - name: target-jsonl
     variant: andyh1203

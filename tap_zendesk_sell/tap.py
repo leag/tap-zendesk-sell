@@ -12,6 +12,7 @@ from tap_zendesk_sell.streams import (
     LeadsStream,
     AssociatedContacts,
     AccountsStream,
+    DealSourcesStream,
 )
 
 STREAM_TYPES = [
@@ -21,6 +22,7 @@ STREAM_TYPES = [
     LeadsStream,
     AssociatedContacts,
     AccountsStream,
+    DealSourcesStream,
 ]
 
 

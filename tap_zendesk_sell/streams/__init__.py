@@ -7,7 +7,7 @@ from .contacts import ContactsStream
 from .deals import DealsStream, AssociatedContacts
 from .sync import SyncStream
 from .leads import LeadsStream
-
+from .deal_sources import DealSourcesStream
 
 __all___ = [
     "AccountsStream",
@@ -16,4 +16,5 @@ __all___ = [
     "AssociatedContacts",
     "SyncStream",
     "LeadsStream",
+    "DealSourcesStream",
 ]
