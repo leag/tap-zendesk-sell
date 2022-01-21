@@ -10,10 +10,18 @@ from tap_zendesk_sell.streams import (
     DealsStream,
     SyncStream,
     LeadsStream,
-    AssociatedContacts
+    AssociatedContacts,
+    AccountsStream,
 )
 
-STREAM_TYPES = [SyncStream, ContactsStream, DealsStream, LeadsStream, AssociatedContacts]
+STREAM_TYPES = [
+    SyncStream,
+    ContactsStream,
+    DealsStream,
+    LeadsStream,
+    AssociatedContacts,
+    AccountsStream,
+]
 
 
 class TapZendeskSell(Tap):
