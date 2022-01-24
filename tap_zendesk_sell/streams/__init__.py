@@ -8,6 +8,8 @@ from .deals import DealsStream, AssociatedContacts
 from .sync import SyncStream
 from .leads import LeadsStream
 from .deal_sources import DealSourcesStream
+from .lead_sources import LeadSourcesStream
+from .lead_unqualified_reasons  import LeadUnqualifiedReasonsStream
 
 __all___ = [
     "AccountsStream",

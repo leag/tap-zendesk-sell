@@ -1,0 +1,26 @@
+{
+    "type": ["null", "object"],
+    "properties": {
+        "id": {
+            "type": "integer",
+            "description": "Unique identifier of the lead unqualified reason."
+        },
+        "name": {
+            "type": ["null", "string"],
+            "description": "Name of the unqualified reason."       },
+        "creator_id": {
+            "type": ["null","integer"],
+            "description": "Unique identifier of the user who created the lead unqualified reason."
+        },
+        "created_at": {
+            "type": ["null","string"],
+            "format": "date-time",
+            "description": "The date and time when the lead unqualified reason was created."
+        },
+        "updated_at": {
+            "type": ["null","string"],
+            "format": "date-time",
+            "description": "The date and time when the lead unqualified reason was last updated."
+        }
+    }
+}

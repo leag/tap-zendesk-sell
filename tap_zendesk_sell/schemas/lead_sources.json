@@ -1,0 +1,31 @@
+{
+    "type": ["object", "null"],
+    "properties": {
+        "id": {
+            "type": ["integer", "null"],
+            "description": "Unique identifier of the lead source."
+        },
+        "creator_id": {
+            "type": ["integer", "null"],
+            "description": "Unique identifier of the user that created the source."
+        },
+        "name": {
+            "type": "string",
+            "description": "Name of the source."
+        },
+        "resource_type": {
+            "type": "string",
+            "description": "Type name of the resource the source is attached to."
+        },
+        "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Date and time of creation in UTC (ISO 8601 format)."
+        },
+        "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Date and time of the last update in UTC (ISO 8601 format)."
+        }
+    }
+}
