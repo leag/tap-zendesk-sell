@@ -1,0 +1,55 @@
+{
+    "type": ["object", "null"],
+    "properties": {
+        "order_id": {
+            "type": ["integer", "null"],
+            "description": "The unique identifier for the order."
+        },
+        "line_item_id": {
+            "type": ["integer", "null"],
+            "description": "Unique identifier of the line item."
+        },
+        "name": {
+            "type": ["string", "null"],
+            "description": "Name of the product. Value is copied from the product."
+        },
+        "sku": {
+            "type": ["string", "null"],
+            "description": "Stock Keeping Unit identification code. Value is copied from the product."
+        },
+        "description": {
+            "type": ["string", "null"],
+            "description": "Description of the product. Value is copied from the product."
+        },
+        "value": {
+            "type": ["number", "null"],
+            "description": "Value of one unit of the product. It is product's price after applying markup."
+        },
+        "variation": {
+            "type": ["number", "null"],
+            "description": "Variation of the product's price for this line item. Value of 5 means that 5% markup is added, -10 means there is a 10% discount."
+        },
+        "price": {
+            "type": ["number", "null"],
+            "description": "Price of one unit of the product. Value is copied from the product."
+        },
+        "currency": {
+            "type": ["string", "null"],
+            "description": "Currency of value and price, specified in 3-character currency code (ISO4217) format."
+        },
+        "quantity": {
+            "type": ["integer", "null"],
+            "description": "Quantity of the product included in this line item. Default value is 1."
+        },
+        "created_at": {
+            "type": ["string", "null"],
+            "format": "date-time",
+            "description": "Date and time that the associated contact was created in UTC (ISO8601 format)."
+        },
+        "updated_at": {
+            "type": ["string", "null"],
+            "format": "date-time",
+            "description": "Date and time of the last update on the associated contact in UTC (ISO8601 format)."
+        }
+    }
+}
