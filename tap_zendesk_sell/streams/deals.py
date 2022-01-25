@@ -1,4 +1,3 @@
-from asyncio.log import logger
 from typing import Iterable, Optional
 
 from singer_sdk.tap_base import Tap
@@ -23,8 +22,9 @@ class DealsStream(ZendeskSellStream):
                 "properties": custom_fields_properties,
                 "description": "Custom fields attached to a deal.",
             }
+
     def get_child_context(self, record: dict, context: Optional[dict]) -> dict:
-        return { "deal_id": record["id"] }
+        return {"deal_id": record["id"]}
 
     def get_records(self, context: Optional[dict]) -> Iterable[dict]:
         """Return a generator of row-type dictionary objects."""
@@ -40,6 +40,7 @@ class DealsStream(ZendeskSellStream):
 
     schema_filepath = SCHEMAS_DIR / "deals.json"
 
+
 class AssociatedContacts(ZendeskSellStream):
     name = "associated_contacts"
     parent_stream_type = DealsStream
@@ -49,7 +50,9 @@ class AssociatedContacts(ZendeskSellStream):
         finished = False
         page = 1
         while not finished:
-            data = self.conn.associated_contacts.list(deal_id=context.get("deal_id"), page=page, per_page=100)
+            data = self.conn.associated_contacts.list(
+                deal_id=context.get("deal_id"), page=page, per_page=100
+            )
             if not data:
                 finished = True
             for row in data:

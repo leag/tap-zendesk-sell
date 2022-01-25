@@ -1,13 +1,9 @@
-#%%
-from array import ArrayType
 from typing import Iterable, Optional
 
 from singer_sdk.tap_base import Tap
 
 from tap_zendesk_sell.client import ZendeskSellStream
 from tap_zendesk_sell.streams import SCHEMAS_DIR
-
-from singer_sdk import typing as th  # JSON Schema typing helpers
 
 
 class LeadsStream(ZendeskSellStream):

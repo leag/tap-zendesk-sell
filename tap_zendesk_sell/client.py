@@ -5,6 +5,7 @@ import basecrm
 from singer_sdk.tap_base import Tap
 from singer_sdk import typing as th
 
+
 class ZendeskSellStream(Stream):
     """Zendesk Sell sync stream class."""
 
@@ -129,7 +130,7 @@ class ZendeskSellStream(Stream):
                 th.Property(
                     "line1",
                     th.StringType,
-                    description="Line 1 of the address e.g. number, street, suite, apt #, etc.",
+                    description="Line 1 of the address e.g. number, street, suite, apt #, etc.",  # noqa
                 ),
                 th.Property("city", th.StringType, description="City name."),
                 th.Property(
