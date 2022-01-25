@@ -1,3 +1,4 @@
+"""Zendesk Sell visit outcomes stream class."""
 from typing import Iterable, Optional
 
 from tap_zendesk_sell.client import ZendeskSellStream
@@ -5,6 +6,8 @@ from tap_zendesk_sell.streams import SCHEMAS_DIR
 
 
 class VisitOutcomesStream(ZendeskSellStream):
+    """Zendesk Sell visit outcomes stream class."""
+
     name = "visit_outcomes"
     primary_keys = ["id"]
 

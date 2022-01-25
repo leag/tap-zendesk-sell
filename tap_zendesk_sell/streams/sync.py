@@ -5,14 +5,16 @@ from typing import Iterable, Optional
 from singer_sdk.tap_base import Tap
 
 from tap_zendesk_sell.client import ZendeskSellStream
-
 from tap_zendesk_sell.streams import SCHEMAS_DIR
 
 
 class SyncStream(ZendeskSellStream):
+    """Zendesk Sell sync stream class."""
+
     name = "events"
 
     def __init__(self, tap: Tap):
+        """Initialize the stream."""
         super().__init__(tap)
         custom_fields_properties = self._update_schema()
         if custom_fields_properties:
@@ -22,7 +24,6 @@ class SyncStream(ZendeskSellStream):
 
     def get_records(self, context: Optional[dict]) -> Iterable[dict]:
         """Return a generator of row-type dictionary objects."""
-
         session = self.conn.sync.start(self.config.get("device_uuid"))
         finished = False
         if session is None or "id" not in session:

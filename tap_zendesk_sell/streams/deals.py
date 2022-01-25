@@ -1,3 +1,4 @@
+"""Zendesk Sell deals stream class."""
 from typing import Iterable, Optional
 
 from singer_sdk.tap_base import Tap
@@ -7,10 +8,13 @@ from tap_zendesk_sell.streams import SCHEMAS_DIR
 
 
 class DealsStream(ZendeskSellStream):
+    """Zendesk Sell deals stream class."""
+
     name = "deals"
     primary_keys = ["id"]
 
     def __init__(self, tap: Tap):
+        """Initialize the stream."""
         super().__init__(tap)
         custom_fields_properties = self._update_schema(
             {
@@ -24,6 +28,7 @@ class DealsStream(ZendeskSellStream):
             }
 
     def get_child_context(self, record: dict, context: Optional[dict]) -> dict:
+        """Return a child context for the stream."""
         return {"deal_id": record["id"]}
 
     def get_records(self, context: Optional[dict]) -> Iterable[dict]:
@@ -42,6 +47,8 @@ class DealsStream(ZendeskSellStream):
 
 
 class AssociatedContacts(ZendeskSellStream):
+    """Zendesk Sell asociated contacts stream class."""
+
     name = "associated_contacts"
     parent_stream_type = DealsStream
 
@@ -51,12 +58,12 @@ class AssociatedContacts(ZendeskSellStream):
         page = 1
         while not finished:
             data = self.conn.associated_contacts.list(
-                deal_id=context.get("deal_id"), page=page, per_page=100
+                deal_id=context.get("deal_id"), page=page, per_page=100  # type: ignore
             )
             if not data:
                 finished = True
             for row in data:
-                row["deal_id"] = context.get("deal_id")
+                row["deal_id"] = context.get("deal_id")  # type: ignore
                 yield row
             page += 1
 

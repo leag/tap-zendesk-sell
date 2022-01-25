@@ -1,3 +1,4 @@
+"""Zendesk Sell leads stream class."""
 from typing import Iterable, Optional
 
 from singer_sdk.tap_base import Tap
@@ -7,10 +8,13 @@ from tap_zendesk_sell.streams import SCHEMAS_DIR
 
 
 class LeadsStream(ZendeskSellStream):
+    """Zendesk Sell leads stream class."""
+
     name = "leads"
     primary_keys = ["id"]
 
     def __init__(self, tap: Tap):
+        """Initialize the stream."""
         super().__init__(tap)
         custom_fields_properties = self._update_schema(
             {
