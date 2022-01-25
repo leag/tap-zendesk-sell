@@ -1,0 +1,38 @@
+{
+    "type": ["object", "null"],
+    "properties": {
+        "id": {
+            "type": ["integer", "null"]
+        },
+        "creator_id": {
+            "type": ["integer", "null"]
+        },
+        "outcome_id": {
+            "type": ["integer", "null"]
+        },
+        "resource_type": {
+            "type": ["string", "null"]
+        },
+        "visited_at": {
+            "type": ["string", "null"],
+            "format": "date-time"
+        },
+        "resource_address": {
+            "type": ["string", "null"]
+        },
+        "rep_location_verification_status": {
+            "type": ["string", "null"]
+        },
+        "summary": {
+            "type": ["string", "null"]
+        },
+        "created_at": {
+            "type": "string",
+            "format": "date-time"
+        },
+        "updated_at": {
+            "type": "string",
+            "format": "date-time"
+        }
+    }
+}

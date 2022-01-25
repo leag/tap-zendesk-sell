@@ -1,0 +1,68 @@
+{
+    "type": ["null", "object"],
+    "properties": {
+        "id": {
+            "type": ["null", "integer"],
+            "description": "Unique identifier of the product."
+        },
+        "name": {
+            "type": ["null", "string"],
+            "description": "Name of the product."
+        },
+        "description": {
+            "type": ["null", "string"],
+            "description": "Description of the product."
+        },
+        "sku": {
+            "type": ["null", "string"],
+            "description": "Stock Keeping Unit identification code."
+        },
+        "active": {
+            "type": ["null", "boolean"],
+            "description": "Indicator of whether the product is active. Line items cannot be created from inactive products."
+        },
+        "max_discount": {
+            "type": ["null", "integer"],
+            "description": "Maximum discount that can be applied to the product in percents."
+        },
+        "max_markup": {
+            "type": ["null", "integer"],
+            "description": "Maximum markup that can be applied to the product in percents."
+        },
+        "cost": {
+            "type": ["null", "number"],
+            "description": "Cost of the product. Visible only to account administrators."
+        },
+        "cost_currency": {
+            "type": ["null", "string"],
+            "description": "Currency of the product cost, specified in 3-character currency code (ISO4217) format. Visible only to account administrators."
+        },
+        "prices": {
+            "type": ["null", "array"],
+            "description": "Array specifying products prices in different currencies.",
+            "items":{
+                "type": ["null", "object"],
+                "properties": {
+                    "ammount": {
+                        "type": ["null", "number"],
+                        "description": "Price of the product in the specified currency."
+                    },
+                    "currency": {
+                        "type": ["null", "string"],
+                        "description": "Currency of the price, specified in 3-character currency code (ISO4217) format."
+                    }
+                }
+            }
+        },
+        "created_at": {
+            "type": ["null", "string"],
+            "format": "date-time",
+            "description": "Date and time that the product was created in UTC (ISO8601 format)."
+        },
+        "updated_at": {
+            "type": ["null", "string"],
+            "format": "date-time",
+            "description": "Date and time of the last update on the product in UTC (ISO8601 format)."
+        }
+    }
+}

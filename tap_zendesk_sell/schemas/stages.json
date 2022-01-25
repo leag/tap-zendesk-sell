@@ -1,0 +1,43 @@
+{
+    "type": ["null", "object"],
+    "properties": {
+        "id": {
+            "type": ["null", "integer"],
+            "description": "The unique identifier of the stage."
+        },
+        "name": {
+            "type": ["null", "string"],
+            "description": "Human-friendly name of the stage."
+        },
+        "category": {
+            "type": ["null", "string"],
+            "description": "The unique category name of the stage."
+        },
+        "active": {
+            "type": ["null", "boolean"],
+            "description": "Indicator whether or not the stage contains finalized deals."
+        },
+        "position": {
+            "type": ["null", "integer"],
+            "description": "The stage’s position in the pipeline."
+        },
+        "likelihood": {
+            "type": ["null", "integer"],
+            "description": "The likelihood that a deal will be won, set for the stage as percentage."
+        },
+        "pipeline_id": {
+            "type": ["null", "integer"],
+            "description": "Unique identifier of the pipeline that contains this stage."
+        },
+        "created_at": {
+            "type": ["null", "string"],
+            "format": "date-time",
+            "description": "Date and time of creation in UTC ISO8601 format."
+        },
+        "updated_at": {
+            "type": ["null", "string"],
+            "format": "date-time",
+            "description": "Date and time of last update in UTC ISO8601 format."
+        }
+    }
+}

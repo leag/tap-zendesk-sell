@@ -1,0 +1,56 @@
+{
+    "type": ["null", "object"],
+    "properties": {
+        "id": {
+            "type": ["null", "integer"],
+            "description": "Unique identifier of the text message."
+        },
+        "user_id": {
+            "type": ["null", "integer"],
+            "description": "Phone number of a user who sent/received a text message."
+        },
+        "user_phone_number": {
+            "type": ["null", "string"],
+            "description": "Phone number of a user who sent/received a text message."
+        },
+        "content": {
+            "type": ["null", "string"],
+            "description": "Content of the text message."
+        },
+        "incoming": {
+            "type": ["null", "boolean"],
+            "description": "Indicator of whether the text message was incoming or not."
+        },
+        "resource_phone_number": {
+            "type": ["null", "string"],
+            "description": "Phone number of a resource the text message was sent to/received by."
+        },
+        "resource_type": {
+            "type": ["null", "string"],
+            "description": "Name of the resource type the text message is attached to.  Possible values:  lead  contact  none"
+        },
+        "resource_id": {
+            "type": ["null", "integer"],
+            "description": "Unique identifier of the resource the text message is attached to."
+        },
+        "associated_deal_ids": {
+            "type": ["null", "array"],
+            "description": "An array of ids of deals associated to the text message.",
+            "items": {
+                "type": ["null", "integer"]
+            }
+        },
+        "sent_at": {
+            "type": ["null", "string"],
+            "description": "Date and time of the message send time in UTC (ISO8601 format)."
+        },
+        "updated_at": {
+            "type": ["null", "string"],
+            "description": "Date and time of the last update in UTC (ISO8601 format)."
+        },
+        "created_at": {
+            "type": ["null", "string"],
+            "description": "Date and time of creation in UTC (ISO8601 format)."
+        }
+    }
+}

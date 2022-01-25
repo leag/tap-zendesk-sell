@@ -1,43 +1,43 @@
 {
     "type": ["object", "null"],
     "properties": {
-        "updated_at": {
-            "type": ["string", "null"],
-            "format": "date-time",
-            "description": "Date and time of the last update in UTC (ISO8601 format)."
-        },
-        "timezone": {
-            "type": ["string", "null"],
-            "description": "Timezone of the account as the offset from Coordinated Universal Time (UTC)."
-        },
-        "time_format": {
-            "type": ["string", "null"],
-            "description": "Time format used for the account. Either 12-hour clock 12H or 24-hour clock 24H."
-        },
-        "subdomain": {
-            "type": ["string", "null"],
-            "description": "Subdomain of the account, null for legacy accounts."
-        },
-        "phone": {
-            "type": ["string", "null"],
-            "description": "Contact phone number of the account."
+        "id": {
+            "type": ["integer", "null"],
+            "description": "Unique identifier of the account."
         },
         "name": {
             "type": ["string", "null"],
             "description": "Full name of the account."
         },
-        "id": {
-            "type": ["integer", "null"],
-            "description": "Unique identifier of the account."
-        },
         "currency": {
             "type": ["string", "null"],
             "description": "Currency of the account as the 3-character currency code in ISO4217 format."
         },
+        "time_format": {
+            "type": ["string", "null"],
+            "description": "Time format used for the account. Either 12-hour clock 12H or 24-hour clock 24H."
+        },
+        "timezone": {
+            "type": ["string", "null"],
+            "description": "Timezone of the account as the offset from Coordinated Universal Time (UTC)."
+        },
+        "phone": {
+            "type": ["string", "null"],
+            "description": "Contact phone number of the account."
+        },
+        "subdomain": {
+            "type": ["string", "null"],
+            "description": "Subdomain of the account, null for legacy accounts."
+        },
         "created_at": {
             "type": ["string", "null"],
             "format": "date-time",
-            "description": "Date and time of the account’s creation in UTC (ISO8601 format)."
+            "description": "Date and time of the account's creation."
+        },
+        "updated_at": {
+            "type": ["string", "null"],
+            "format": "date-time",
+            "description": "Date and time of the last update."
         }
     }
 }

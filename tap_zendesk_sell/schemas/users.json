@@ -1,0 +1,104 @@
+{
+    "type": ["null", "object"],
+    "properties": {
+        "id": {
+            "type": ["null", "integer"],
+            "description": "Unique identifier of the user."
+        },
+        "name": {
+            "type": ["null", "string"],
+            "description": "Full name of the user."
+        },
+        "email": {
+            "type": ["null", "string"],
+            "description": "Email address of the user."
+        },
+        "status": {
+            "type": ["null", "string"],
+            "description": "Status of the user's account. Usually active.  Possible values:  active  inactive"
+        },
+        "invited": {
+            "type": ["null", "boolean"],
+            "description": "Indicates whether an invitation has been sent to the user or not. Usually true."
+        },
+        "confirmed": {
+            "type": ["null", "boolean"],
+            "description": "Indicates whether the user's account has been confirmed or not."
+        },
+        "phone_number": {
+            "type": ["null", "string"],
+            "description": "Contact phone number of the user."
+        },
+        "role": {
+            "type": ["null", "string"],
+            "description": "Role of the user. Notice that this attribute has no connection with role based access control and permissions. It indicates whether the user is an admin or a regular user.  Possible values:  user  admin"
+        },
+        "roles": {
+            "type": ["null", "array"],
+            "description": "An array of roles assigned to the user. Each entry in the array includes a unique identifier of the role and it’s name. You can expect unique values in the array. RBAC API is not yet public.",
+            "items": {
+                "type": ["null", "object"],
+                "properties": {
+                    "id": {
+                        "type": ["null", "integer"],
+                        "description": "Unique identifier of the role."
+                    },
+                    "name": {
+                        "type": ["null", "string"],
+                        "description": "Name of the role."
+                    }
+                }
+            }
+        },
+        "team_name": {
+            "type": ["null", "string"],
+            "description": "Name of the team the user belongs to."
+        },
+        "group": {
+            "type": ["null", "object"],
+            "description": "Group the user belongs to. The group entry includes a unique identifier and a name.",
+            "properties": {
+                "id": {
+                    "type": ["null", "integer"],
+                    "description": "Unique identifier of the group."
+                },
+                "name": {
+                    "type": ["null", "string"],
+                    "description": "Name of the group."
+                }
+            }
+        },
+        "reports_to": {
+            "type": ["null", "integer"],
+            "description": "Unique identifier of the manager of the user."
+        },
+        "timezone": {
+            "type": ["null", "string"],
+            "description": "Timezone of the user as the offset from Coordinated Universal Time (UTC) in the format UTC(+|-)[hh]:[mm]. Fallbacks to the account’s timezone if not set per user."
+        },
+        "created_at": {
+            "type": ["null", "string"],
+            "format": "date-time",
+            "description": "Date and time of creation in UTC (ISO8601 format)."
+        },
+        "updated_at": {
+            "format": "date-time",
+            "type": ["null", "string"],
+            "description": "Date and time of the last update in UTC (ISO8601 format)."
+        },
+        "deleted_at": {
+            "format": "date-time",
+            "type": ["null", "string"],
+            "description": "Date and time of deletion in UTC (ISO8601 format) in case the user has been deleted."
+        },
+        "zendesk_user_id": {
+            "type": ["null", "string"],
+            "description": "If your Sell account is linked to a Zendesk account, the user will have a Zendesk user ID."
+        },
+        "identity_type": {
+            "type": ["null", "string"],
+            "description": "The user can be either a person (an agent) or an integration (an internal system user).  Possible values:  person  integration"
+        }
+    }
+}
+

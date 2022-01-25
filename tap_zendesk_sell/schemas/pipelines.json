@@ -1,0 +1,27 @@
+{
+    "type": ["null", "object"],
+    "properties":{
+        "id": {
+            "type": ["null", "integer"],
+            "description": "The unique identifier of the pipeline."
+        },
+        "name": {
+            "type": ["null", "string"],
+            "description": "Human-friendly name of the pipeline."
+        },
+        "created_at": {
+            "type": ["null", "string"],
+            "format": "date-time",
+            "description": "Date and time of creation in UTC ISO8601 format."
+        },
+        "updated_at": {
+            "type": ["null", "string"],
+            "format": "date-time",
+            "description": "Date and time of last update in UTC ISO8601 format."
+        },
+        "disabled": {
+            "type": ["null", "boolean"],
+            "description": "Indicator whether or not the pipeline is disabled. You cannot add deals to the disabled pipeline."
+        }
+    }
+}

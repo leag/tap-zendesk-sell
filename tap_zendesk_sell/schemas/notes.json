@@ -1,0 +1,48 @@
+{
+    "type": ["null", "object"],
+    "properties":{
+        "id:": {
+            "type": ["null", "integer"],
+            "description": "The unique identifier of the note"
+        },
+        "creator_id": {
+            "type": ["null", "integer"],
+            "description": "The unique identifier of the creator of the note"
+        },
+        "resource_type": {
+            "type": ["null", "string"],
+            "description": "The type of resource the note is attached to"
+        },
+        "resource_id": {
+            "type": ["null", "integer"],
+            "description": "The unique identifier of the resource the note is attached to"
+        },
+        "content": {
+            "type": ["null", "string"],
+            "description": "The content of the note"
+        },
+        "is_important": {
+            "type": ["null", "boolean"],
+            "description": "Whether the note is important or not"
+        },
+        "tags": {
+            "type": ["null", "array"],
+            "description": "The tags of the note",
+            "items": {
+                "type": ["null", "string"]
+            }
+        },
+        "created_at": {
+            "type": ["null", "string"],
+            "description": "The date and time the note was created"
+        },
+        "updated_at": {
+            "type": ["null", "string"],
+            "description": "The date and time the note was last updated"
+        },
+        "type": {
+            "type": ["null", "string"],
+            "description": "The type of permission of the note, e.g. 'regular' or 'restricted'"
+        }
+    }
+}

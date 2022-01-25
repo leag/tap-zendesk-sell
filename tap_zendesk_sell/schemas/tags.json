@@ -1,0 +1,32 @@
+{
+    "type": ["null", "object"],
+    "properties": {
+        "id": {
+            "type": ["null", "integer"],
+            "description": "Unique identifier of the tag."
+        },
+        "creator_id": {
+            "type": ["null", "integer"],
+            "description": "User ID of the tag's creator."
+        },
+        "name": {
+            "type": ["null", "string"],
+            "description": "Name of the tag."
+        },
+        "resource_type": {
+            "type": ["null", "string"],
+            "description": "Type name of the resource the tag is attached to. Possible values:  lead, contact, deal"
+        },
+        "created_at": {
+            "type": ["null", "string"],
+            "format": "date-time",
+            "description": "Date and time of creation."
+        },
+        "updated_at": {
+            "type": ["null", "string"],
+            "format": "date-time",
+            "description": "Date and time of the last update."
+        }
+    }
+}
+        

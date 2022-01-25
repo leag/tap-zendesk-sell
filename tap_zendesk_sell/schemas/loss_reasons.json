@@ -1,0 +1,27 @@
+{
+    "type": ["null", "object"],
+    "properties": {
+        "id": {
+            "type": ["null", "integer"],
+            "description": "Unique identifier of the loss reason"
+        },
+        "creator_id": {
+            "type": ["null", "integer"],
+            "description": "Unique identifier of the user who created the loss reason"
+        },
+        "name": {
+            "type": ["null", "string"],
+            "description": "Explanation of the loss reason"
+        },
+        "created_at": {
+            "type": ["null", "string"],
+            "format": "date-time",
+            "description": "Date and time when the loss reason was created"
+        },
+        "updated_at": {
+            "type": ["null", "string"],
+            "format": "date-time",
+            "description": "Date and time when the loss reason was last updated"
+        }
+    }
+}

@@ -1,0 +1,62 @@
+{
+    "type": ["null", "object"],
+    "properties": {
+        "id": {
+            "type": ["null", "integer"],
+            "description": "Unique identifier of the task."
+        },
+        "creator_id": {
+            "type": ["null", "integer"],
+            "description": "Unique identifier of the user who created the task."
+        },
+        "owner_id": {
+            "type": ["null", "integer"],
+            "description": "Unique identifier of the user the task is assigned to."
+        },
+        "resource_type": {
+            "type": ["null", "string"],
+            "description": "Name of the resource type the task is attached to.  Possible values:  lead  contact  deal"
+        },
+        "resource_id": {
+            "type": ["null", "integer"],
+            "description": "Unique identifier of the resource the task is attached to."
+        },
+        "completed": {
+            "type": ["null", "boolean"],
+            "description": "Indicator of whether the task is completed or not."
+        },
+        "completed_at": {
+            "type": ["null", "string"],
+            "format": "date-time",
+            "description": "Date and time of the task's completion in UTC (ISO8601 format)."
+        },
+        "due_date": {
+            "type": ["null", "string"],
+            "format": "date-time",
+            "description": "Date and time of creation "
+        },
+        "overdue": {
+            "type": ["null", "boolean"],
+            "description": "Indicator for whether the task has passed the due_date or not."
+        },
+        "remind_at": {
+            "type": ["null", "string"],
+            "format": "date-time",
+            "description": "Date and time that we should send you a reminder "
+        },
+        "content": {
+            "type": ["null", "string"],
+            "description": "Content of the task."
+        },
+        "created_at": {
+            "type": ["null", "string"],
+            "format": "date-time",
+            "description": "Date and time of task creation."
+        },
+        "updated_at": {
+            "type": ["null", "string"],
+            "format": "date-time",
+            "description": "Date and time of the last update to the task."
+        }
+    }
+}

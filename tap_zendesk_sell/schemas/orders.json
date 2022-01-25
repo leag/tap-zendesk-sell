@@ -1,0 +1,28 @@
+{
+    "type": ["null", "object"],
+    "properties":{
+        "id": {
+            "type": ["null", "integer"],
+            "description": "Unique identifier of the order."
+        },
+        "deal_id": {
+            "type": ["null", "integer"],
+            "description": "Id of the deal the order is associated to."
+        },
+        "discount": {
+            "type": ["null", "integer"],
+            "description": "Discount on the whole order in percents."
+        },
+        "created_at": {
+            "type": ["null", "string"],
+            "format": "date-time",
+            "description": "Date and time that the order was created in UTC (ISO8601 format)."
+        },
+        "updated_at": {
+            "type": ["null", "string"],
+            "format": "date-time",
+            "description": "Date and time that the order was updated in UTC (ISO8601 format)."
+        }
+
+    }
+}
