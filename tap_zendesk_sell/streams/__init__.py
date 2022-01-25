@@ -1,7 +1,7 @@
 """Stream type classes for tap-zendesk_sell."""
 from pathlib import Path
 
-SCHEMAS_DIR = Path(__file__).parent.parent / Path("./schemas")
+SCHEMAS_DIR: Path = Path(__file__).parent.parent / Path("./schemas")
 
 from .accounts import AccountsStream  # noqa
 from .contacts import ContactsStream  # noqa

@@ -1,3 +1,4 @@
+"""Zendesk Sell loss reasons stream class."""
 from typing import Iterable, Optional
 
 from tap_zendesk_sell.client import ZendeskSellStream
@@ -5,6 +6,8 @@ from tap_zendesk_sell.streams import SCHEMAS_DIR
 
 
 class LossReasonsStream(ZendeskSellStream):
+    """Zendesk Sell loss reasons stream class."""
+
     name = "loss_reasons"
     primary_keys = ["id"]
 

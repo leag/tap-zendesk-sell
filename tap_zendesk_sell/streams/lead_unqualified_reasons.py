@@ -1,3 +1,4 @@
+"""Zendesk Sell lead unqualified reasons stream class."""
 from typing import Iterable, Optional
 
 from tap_zendesk_sell.client import ZendeskSellStream
@@ -5,12 +6,13 @@ from tap_zendesk_sell.streams import SCHEMAS_DIR
 
 
 class LeadUnqualifiedReasonsStream(ZendeskSellStream):
+    """Zendesk Sell lead unqualified reasons stream class."""
+
     name = "lead_unqualified_reasons"
     primary_keys = ["id"]
 
     def get_records(self, context: Optional[dict]) -> Iterable[dict]:
         """Return a generator of row-type dictionary objects."""
-
         finished = False
         page = 1
         while not finished:
