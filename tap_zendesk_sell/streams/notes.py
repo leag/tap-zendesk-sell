@@ -13,7 +13,7 @@ class NotesStream(ZendeskSellStream):
         finished = False
         page = 1
         while not finished:
-            data = self.conn.notes.list(per_page=100, page=page, sort_by="id")
+            data = self.conn.notes.list(per_page=100, page=page, sort_by="updated_at")
             if not data:
                 finished = True
             for row in data:
