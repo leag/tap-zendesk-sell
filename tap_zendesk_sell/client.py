@@ -1,6 +1,6 @@
 """Zendesk Sell Base Stream class."""
 
-from typing import Any, Dict, Iterable, Optional, Tuple, Union
+from typing import Dict, Iterable, Optional, Tuple, Union
 
 import basecrm
 from singer_sdk import typing as th
@@ -25,19 +25,21 @@ class ZendeskSellStream(Stream):
         th.Property("country", th.StringType, description="Country name."),
     )
 
-    custom_field_type: Dict[str, Any] = {
-        "address": address_type,
-        "bool": th.StringType,
-        "date": th.StringType,
-        "datetime": th.DateTimeType,
-        "email": th.StringType,
-        "list": th.StringType,
-        "multi_select_list": th.ArrayType(th.StringType),
-        "number": th.StringType,
-        "phone": th.StringType,
-        "string": th.StringType,
-        "text": th.StringType,
-        "url": th.StringType,
+    custom_field_type: Dict[str, th.Property] = {
+        "address": th.Property("address", address_type),
+        "bool": th.Property("bool", th.StringType),
+        "date": th.Property("date", th.StringType),
+        "datetime": th.Property("datetime", th.DateTimeType),
+        "email": th.Property("email", th.StringType),
+        "list": th.Property("list", th.StringType),
+        "multi_select_list": th.Property(
+            "multi_select_list", th.ArrayType(th.StringType)
+        ),
+        "number": th.Property("number", th.StringType),
+        "phone": th.Property("phone", th.StringType),
+        "string": th.Property("string", th.StringType),
+        "text": th.Property("text", th.StringType),
+        "url": th.Property("url", th.StringType),
     }
     resource_types = {
         "deal",
@@ -56,9 +58,8 @@ class ZendeskSellStream(Stream):
         },
     ) -> dict:
         """Update the schema for this stream with custom fields."""
-        assert resource_type_set.issubset(
-            self.resource_types
-        ), f"{resource_type_set} is not a valid resource type set"
+        if not resource_type_set.issubset(self.resource_types):
+            raise ValueError(f"{resource_type_set} is not a valid resource type set")
 
         custom_fields_properties = {}
         for resource_type in resource_type_set:
@@ -66,15 +67,13 @@ class ZendeskSellStream(Stream):
                 "/{resource_type}/custom_fields".format(resource_type=resource_type)
             )
             for custom_field in data:
+                type_dict = self.custom_field_type[custom_field["type"]].to_dict()[
+                    custom_field["type"]
+                ]
                 if custom_field["name"] not in custom_fields_properties:
-                    custom_fields_properties[
-                        custom_field["name"]
-                    ] = self.custom_field_type[custom_field["type"]].type_dict
+                    custom_fields_properties[custom_field["name"]] = type_dict
                 else:
-                    if (
-                        custom_fields_properties[custom_field["name"]]
-                        != self.custom_field_type[custom_field["type"]].type_dict
-                    ):
+                    if custom_fields_properties[custom_field["name"]] != type_dict:
                         raise ValueError("Custom field name conflict")
         return custom_fields_properties
 
