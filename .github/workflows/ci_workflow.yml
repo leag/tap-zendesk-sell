@@ -23,7 +23,7 @@ jobs:
     - name: Install Poetry
       uses: snok/install-poetry@v1
       with:
-        version: 1.1.8
+        version: 1.1.12
     - name: Install dependencies
       run: |
         poetry install
@@ -37,6 +37,7 @@ jobs:
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     strategy:
+      max-parallel: 1
       matrix:
         python-version: [3.7, 3.8, 3.9]
 
@@ -49,7 +50,7 @@ jobs:
     - name: Install Poetry
       uses: snok/install-poetry@v1
       with:
-        version: 1.1.11
+        version: 1.1.12
     - name: Install dependencies
       run: |
         poetry install
