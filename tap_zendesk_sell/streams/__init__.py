@@ -1,4 +1,4 @@
-"""Stream type classes for tap-zendesk_sell."""
+"""Stream type classes for tap-zendesk-sell."""
 from pathlib import Path
 
 SCHEMAS_DIR: Path = Path(__file__).parent.parent / Path("./schemas")

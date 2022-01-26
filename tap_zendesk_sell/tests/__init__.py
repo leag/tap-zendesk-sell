@@ -1,1 +1,1 @@
-"""Test suite for tap-zendesk_sell."""
+"""Test suite for tap-zendesk-sell."""

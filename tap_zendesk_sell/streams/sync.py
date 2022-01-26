@@ -1,4 +1,4 @@
-"""Stream type classes for tap-zendesk_sell."""
+"""Stream type classes for tap-zendesk-sell."""
 
 from typing import Iterable, Optional
 

@@ -1,7 +1,7 @@
 [tool.poetry]
-name = "tap-zendesk_sell"
+name = "tap-zendesk-sell"
 version = "0.0.3"
-description = "`tap-zendesk_sell` is a Singer tap for Zendesk Sell, built with the Meltano SDK for Singer Taps."
+description = "`tap-zendesk-sell` is a Singer tap for Zendesk Sell, built with the Meltano SDK for Singer Taps."
 authors = ["Luis Atala"]
 keywords = [
     "ELT",
@@ -45,4 +45,4 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.scripts]
 # CLI declaration
-tap-zendesk_sell = 'tap_zendesk_sell.tap:TapZendeskSell.cli'
+tap-zendesk-sell = 'tap_zendesk_sell.tap:TapZendeskSell.cli'

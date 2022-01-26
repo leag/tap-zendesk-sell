@@ -59,7 +59,7 @@ STREAM_TYPES = [
 class TapZendeskSell(Tap):
     """Zendesk Sell tap class."""
 
-    name = "tap-zendesk_sell"
+    name = "tap-zendesk-sell"
 
     config_jsonschema = th.PropertiesList(
         th.Property(

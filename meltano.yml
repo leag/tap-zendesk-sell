@@ -3,7 +3,7 @@ send_anonymous_usage_stats: true
 project_id: cd76ce8a-3010-47eb-b62e-0233bdb70610
 plugins:
   extractors:
-  - name: tap-zendesk_sell
+  - name: tap-zendesk-sell
     namespace: tap_zendesk_sell
     pip_url: -e .
     capabilities:
