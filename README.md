@@ -1,4 +1,4 @@
-# Zendesk Sell CRM singer tap
+# Zendesk Sell CRM Singer tap
 
 Built with the [Meltano SDK](https://sdk.meltano.com) for Singer Taps and Targets. using the official [Python API Client](https://github.com/zendesk/basecrm-python)
 
