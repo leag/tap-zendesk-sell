@@ -4,18 +4,18 @@ Built with the [Meltano SDK](https://sdk.meltano.com) for Singer Taps and Target
 
 ## Capabilities
 
-- `catalog`
-- `state`
-- `discover`
-- `about`
-- `stream-maps`
+-   `catalog`
+-   `state`
+-   `discover`
+-   `about`
+-   `stream-maps`
 
 ## Settings
 
 | Setting      | Required | Default | Description                                       |
 | :----------- | :------: | :-----: | :------------------------------------------------ |
 | access_token |   True   |  None   | The token to authenticate against the API service |
-| device_uuid  |   True   |  None   | The device's universally unique identifier (UUID) |
+| device_uuid  |  False   |  None   | The device's universally unique identifier (UUID) |
 
 ## Event Stream
 
@@ -26,4 +26,3 @@ To do a full table sync of events, you need to change the device_uuid to a new o
 
 Copyright 2022 Luis Atala.
 Licensed under the [Apache License, Version 2.0](LICENSE).
-
