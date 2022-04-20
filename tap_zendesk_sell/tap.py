@@ -71,7 +71,7 @@ class TapZendeskSell(Tap):
         th.Property(
             "device_uuid",
             th.StringType,
-            required=True,
+            required=False,
             description="The device's universally unique identifier (UUID)",
         ),
         th.Property(
