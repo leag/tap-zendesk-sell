@@ -19,8 +19,11 @@ Built with the [Meltano SDK](https://sdk.meltano.com) for Singer Taps and Target
 
 ## Event Stream
 
-This tap uses the Zendesk Sell [Sync API](https://developer.zendesk.com/api-reference/sales-crm/sync/introduction/) to create the Event stream. the state is saved in the server, by a device uuid.
-To do a full table sync of events, you need to change the device_uuid to a new one.
+This tap uses the Zendesk Sell [Sync API](https://developer.zendesk.com/api-reference/sales-crm/sync/introduction/) to generate an **Event Stream**.
+
+The state of a the stream is saved in the server, referenced by a **device_uuid**, this device_uuid is also sent as state for the event stream.
+
+To do a full table sync of the events stream, you need to generate a new **device_uuid**, this can be done by not setting a **device_uuid** in the config (it autogenerates a new one) or by setting a new **device_uuid**, and not sending any state for the stream.
 
 ## Copyright and license
 
