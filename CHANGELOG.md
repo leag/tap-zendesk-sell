@@ -1,5 +1,9 @@
 # Changelog
 
+v0.0.5 (2022-06-15)
+
+- Fix bool custom schema definition
+
 v0.0.4 (2022-04-20)
 
 - Fix typo in notes schema

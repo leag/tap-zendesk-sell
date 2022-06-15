@@ -20,7 +20,9 @@ plugins:
     config:
       metrics_log_level: debug
     select:
-      - "deal_sources.*"
+      - "events.*"
+      # - "notes.*"
+      # - "deal_sources.*"
       # - "accounts.*"
       # - deals.*
       # - associated_contacts.*
