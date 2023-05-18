@@ -54,16 +54,15 @@ class ZendeskSellStream(Stream):
         "prospect_and_customer",
     }
 
-    def _update_schema(
-        self,
-        resource_type_set: set = {
-            "deal",
-            "contact",
-            "lead",
-            "prospect_and_customer",
-        },
-    ) -> dict:
+    def _update_schema(self, resource_type_set: set = None) -> dict:
         """Update the schema for this stream with custom fields."""
+        if resource_type_set is None:
+            resource_type_set = {
+                "deal",
+                "contact",
+                "lead",
+                "prospect_and_customer",
+            }
         if not resource_type_set.issubset(self.resource_types):
             raise ValueError(f"{resource_type_set} is not a valid resource type set")
 
@@ -76,17 +75,16 @@ class ZendeskSellStream(Stream):
                 type_dict = self.custom_field_type[custom_field["type"]]
                 if custom_field["name"] not in custom_fields_properties:
                     custom_fields_properties[custom_field["name"]] = type_dict
-                else:
-                    if custom_fields_properties[custom_field["name"]] != type_dict:
-                        raise ValueError(
-                            " ".join(
-                                [
-                                    f"Custom field name conflict: {custom_field.name},",
-                                    f"Type: {custom_field.type},",
-                                    f"Other Type: {type_dict['items']['type'][0]}",
-                                ]
-                            )
+                elif custom_fields_properties[custom_field["name"]] != type_dict:
+                    raise ValueError(
+                        " ".join(
+                            [
+                                f"Custom field name conflict: {custom_field.name},",
+                                f"Type: {custom_field.type},",
+                                f"Other Type: {type_dict['items']['type'][0]}",
+                            ]
                         )
+                    )
         return custom_fields_properties
 
     def __init__(self, tap: Tap):
