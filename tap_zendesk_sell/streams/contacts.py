@@ -36,8 +36,7 @@ class ContactsStream(ZendeskSellStream):
             data = self.conn.contacts.list(per_page=100, page=page, sort_by="id")
             if not data:
                 finished = True
-            for row in data:
-                yield row
+            yield from data
             page += 1
 
     schema_filepath = SCHEMAS_DIR / "contacts.json"

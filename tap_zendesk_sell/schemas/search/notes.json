@@ -1,0 +1,114 @@
+{
+    "attributes": {
+        "owner": {
+            "type": "permissions_owner",
+            "attributes": {
+                "id": {
+                    "type": "long"
+                },
+                "name": {
+                    "type": "keyword"
+                }
+            },
+            "sort_field": "owner.name",
+            "filter_field": "owner.id"
+        },
+        "is_important": {
+            "type": "boolean"
+        },
+        "creator": {
+            "type": "object",
+            "attributes": {
+                "name": {
+                    "type": "keyword"
+                },
+                "id": {
+                    "type": "long"
+                }
+            },
+            "sort_field": "creator.name",
+            "filter_field": "creator.id"
+        },
+        "tag_ids": {
+            "type": "array",
+            "items": {
+                "type": "long"
+            }
+        },
+        "resource": {
+            "type": "object",
+            "attributes": {
+                "id": {
+                    "type": "long"
+                },
+                "type": {
+                    "type": "keyword"
+                }
+            },
+            "filter_field": "resource.id"
+        },
+        "associated_deal_ids": {
+            "type": "array",
+            "items": {
+                "type": "long"
+            }
+        },
+        "created_at": {
+            "type": "date_time"
+        },
+        "permission_group": {
+            "type": "permissions_group",
+            "attributes": {
+                "id": {
+                    "type": "long"
+                },
+                "name": {
+                    "type": "keyword"
+                }
+            },
+            "filter_field": "permission_group.id"
+        },
+        "type": {
+            "type": "string"
+        },
+        "associated_contact_ids": {
+            "type": "array",
+            "items": {
+                "type": "long"
+            }
+        },
+        "version": {
+            "type": "version"
+        },
+        "content": {
+            "type": "string"
+        },
+        "tags": {
+            "type": "array",
+            "items": {
+                "type": "keyword"
+            }
+        },
+        "uid": {
+            "type": "id"
+        },
+        "permission_team": {
+            "type": "permissions_team",
+            "attributes": {
+                "id": {
+                    "type": "long"
+                },
+                "name": {
+                    "type": "keyword"
+                }
+            },
+            "filter_field": "permission_team.id"
+        },
+        "updated_at": {
+            "type": "date_time"
+        },
+        "id": {
+            "type": "id"
+        }
+    }
+}

@@ -1,0 +1,128 @@
+{
+    "attributes": {
+        "owner": {
+            "type": "permissions_owner",
+            "attributes": {
+                "id": {
+                    "type": "long"
+                },
+                "name": {
+                    "type": "keyword"
+                }
+            },
+            "sort_field": "owner.name",
+            "filter_field": "owner.id"
+        },
+        "creator": {
+            "type": "object",
+            "attributes": {
+                "name": {
+                    "type": "keyword"
+                },
+                "id": {
+                    "type": "long"
+                }
+            },
+            "sort_field": "creator.name",
+            "filter_field": "creator.id"
+        },
+        "done_by": {
+            "type": "object",
+            "attributes": {
+                "name": {
+                    "type": "keyword"
+                },
+                "id": {
+                    "type": "long"
+                }
+            },
+            "sort_field": "done_by.name",
+            "filter_field": "done_by.id"
+        },
+        "resource": {
+            "type": "object",
+            "attributes": {
+                "id": {
+                    "type": "long"
+                },
+                "type": {
+                    "type": "keyword"
+                }
+            },
+            "filter_field": "resource.id"
+        },
+        "due_date": {
+            "type": "date_time"
+        },
+        "created_at": {
+            "type": "date_time"
+        },
+        "permission_group": {
+            "type": "permissions_group",
+            "attributes": {
+                "id": {
+                    "type": "long"
+                },
+                "name": {
+                    "type": "keyword"
+                }
+            },
+            "filter_field": "permission_group.id"
+        },
+        "completed": {
+            "type": "boolean"
+        },
+        "remind_at": {
+            "type": "date_time"
+        },
+        "version": {
+            "type": "version"
+        },
+        "content": {
+            "type": "string"
+        },
+        "completed_at": {
+            "type": "date_time"
+        },
+        "uid": {
+            "type": "id"
+        },
+        "permission_team": {
+            "type": "permissions_team",
+            "attributes": {
+                "id": {
+                    "type": "long"
+                },
+                "name": {
+                    "type": "keyword"
+                }
+            },
+            "filter_field": "permission_team.id"
+        },
+        "updated_at": {
+            "type": "date_time"
+        },
+        "overdue": {
+            "type": "boolean"
+        },
+        "assignee": {
+            "type": "object",
+            "attributes": {
+                "name": {
+                    "type": "keyword"
+                },
+                "id": {
+                    "type": "long"
+                }
+            },
+            "sort_field": "assignee.name",
+            "filter_field": "assignee.id"
+        },
+        "id": {
+            "type": "id"
+        },
+        "reminder_offset": {
+            "type": "integer"
+        }
+    }
+}

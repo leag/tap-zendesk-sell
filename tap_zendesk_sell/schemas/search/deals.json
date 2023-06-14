@@ -1,0 +1,553 @@
+{
+    "attributes": {
+        "country": {
+            "type": "keyword"
+        },
+        "close_date": {
+            "type": "date"
+        },
+        "unqualified_reason": {
+            "type": "object",
+            "attributes": {
+                "name": {
+                    "type": "keyword"
+                },
+                "id": {
+                    "type": "long"
+                }
+            },
+            "sort_field": "unqualified_reason.name",
+            "filter_field": "unqualified_reason.id"
+        },
+        "source": {
+            "type": "object",
+            "attributes": {
+                "name": {
+                    "type": "keyword"
+                },
+                "id": {
+                    "type": "long"
+                }
+            },
+            "sort_field": "source.name",
+            "filter_field": "source.id"
+        },
+        "estimated_close_date": {
+            "type": "date"
+        },
+        "deal_consumption_rate": {
+            "type": "short"
+        },
+        "loss_reason": {
+            "type": "object",
+            "attributes": {
+                "name": {
+                    "type": "keyword"
+                },
+                "id": {
+                    "type": "long"
+                }
+            },
+            "sort_field": "loss_reason.name",
+            "filter_field": "loss_reason.id"
+        },
+        "decimal_value_proxy": {
+            "type": "double"
+        },
+        "estimated_win_likelihood": {
+            "type": "short"
+        },
+        "permission_team": {
+            "type": "permissions_team",
+            "attributes": {
+                "id": {
+                    "type": "long"
+                },
+                "name": {
+                    "type": "keyword"
+                }
+            },
+            "filter_field": "permission_team.id"
+        },
+        "contact": {
+            "type": "object",
+            "attributes": {
+                "id": {
+                    "type": "long"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "last_name": {
+                    "type": "string"
+                }
+            },
+            "sort_field": "contact.name",
+            "filter_field": "contact.id"
+        },
+        "previous_pipeline_stage_id": {
+            "type": "long"
+        },
+        "last_stage_change_at": {
+            "type": "date_time"
+        },
+        "collaborators": {
+            "type": "array",
+            "items": {
+                "type": "long"
+            }
+        },
+        "id": {
+            "type": "id"
+        },
+        "communication": {
+            "type": "object",
+            "attributes": {
+                "last_touch": {
+                    "type": "object",
+                    "attributes": {
+                        "at": {
+                            "type": "date_time"
+                        },
+                        "medium": {
+                            "type": "keyword"
+                        },
+                        "participating_user_ids": {
+                            "type": "array",
+                            "items": {
+                                "type": "long"
+                            }
+                        },
+                        "direction": {
+                            "type": "keyword"
+                        }
+                    },
+                    "filter_field": "communication.last_touch.at"
+                }
+            }
+        },
+        "is_closed": {
+            "type": "boolean"
+        },
+        "normalized_decimal_value": {
+            "type": "double"
+        },
+        "zip": {
+            "type": "keyword"
+        },
+        "imports": {
+            "type": "object",
+            "attributes": {
+                "user_id": {
+                    "type": "long"
+                },
+                "created_at": {
+                    "type": "date_time"
+                },
+                "id": {
+                    "type": "long"
+                }
+            },
+            "filter_field": "imports.id"
+        },
+        "exchange_rate": {
+            "type": "object",
+            "attributes": {
+                "rate": {
+                    "type": "double"
+                },
+                "value": {
+                    "type": "double"
+                }
+            }
+        },
+        "custom_fields": {
+            "type": "custom_fields_root"
+        },
+        "forecasted_value_proxy": {
+            "type": "double"
+        },
+        "last_activity_date": {
+            "type": "date_time"
+        },
+        "permission_group": {
+            "type": "permissions_group",
+            "attributes": {
+                "id": {
+                    "type": "long"
+                },
+                "name": {
+                    "type": "keyword"
+                }
+            },
+            "filter_field": "permission_group.id"
+        },
+        "version": {
+            "type": "version"
+        },
+        "booking_period": {
+            "type": "object",
+            "attributes": {
+                "end_at": {
+                    "type": "date_time"
+                },
+                "start_at": {
+                    "type": "date_time"
+                }
+            }
+        },
+        "is_won": {
+            "type": "boolean"
+        },
+        "tags": {
+            "type": "array",
+            "items": {
+                "type": "keyword"
+            }
+        },
+        "decimal_value": {
+            "type": "double"
+        },
+        "name": {
+            "type": "string"
+        },
+        "region": {
+            "type": "keyword"
+        },
+        "city": {
+            "type": "keyword"
+        },
+        "created_at": {
+            "type": "date_time"
+        },
+        "hot": {
+            "type": "boolean"
+        },
+        "products": {
+            "type": "object",
+            "attributes": {
+                "selling_price": {
+                    "type": "array",
+                    "items": {
+                        "type": "double"
+                    }
+                },
+                "quantity": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "total_price": {
+                    "type": "array",
+                    "items": {
+                        "type": "double"
+                    }
+                },
+                "product_template_id": {
+                    "type": "array",
+                    "items": {
+                        "type": "keyword"
+                    }
+                },
+                "name": {
+                    "type": "array",
+                    "items": {
+                        "type": "keyword"
+                    }
+                },
+                "currency": {
+                    "type": "array",
+                    "items": {
+                        "type": "keyword"
+                    }
+                },
+                "id": {
+                    "type": "array",
+                    "items": {
+                        "type": "keyword"
+                    }
+                },
+                "product_template_version": {
+                    "type": "array",
+                    "items": {
+                        "type": "keyword"
+                    }
+                },
+                "sku": {
+                    "type": "array",
+                    "items": {
+                        "type": "keyword"
+                    }
+                },
+                "unit_price": {
+                    "type": "array",
+                    "items": {
+                        "type": "double"
+                    }
+                },
+                "variation": {
+                    "type": "array",
+                    "items": {
+                        "type": "double"
+                    }
+                }
+            },
+            "filter_field": "products.product_template_id"
+        },
+        "uid": {
+            "type": "id"
+        },
+        "updated_at": {
+            "type": "date_time"
+        },
+        "close_date_with_time": {
+            "type": "date_time"
+        },
+        "street": {
+            "type": "keyword"
+        },
+        "scope": {
+            "type": "double"
+        },
+        "pipeline_id": {
+            "type": "long"
+        },
+        "company": {
+            "type": "object",
+            "attributes": {
+                "id": {
+                    "type": "long"
+                },
+                "name": {
+                    "type": "string"
+                }
+            },
+            "sort_field": "company.name",
+            "filter_field": "company.id"
+        },
+        "currency": {
+            "type": "keyword"
+        },
+        "next_task": {
+            "type": "object",
+            "attributes": {
+                "updated_at": {
+                    "type": "date_time"
+                },
+                "owner_id": {
+                    "type": "long"
+                },
+                "due_date": {
+                    "type": "date_time"
+                },
+                "creator_id": {
+                    "type": "long"
+                },
+                "created_at": {
+                    "type": "date_time"
+                },
+                "id": {
+                    "type": "long"
+                },
+                "remind_at": {
+                    "type": "date_time"
+                },
+                "content": {
+                    "type": "string"
+                }
+            },
+            "filter_field": "next_task.id"
+        },
+        "owner": {
+            "type": "permissions_owner",
+            "attributes": {
+                "id": {
+                    "type": "long"
+                },
+                "name": {
+                    "type": "keyword"
+                }
+            },
+            "sort_field": "owner.name",
+            "filter_field": "owner.id"
+        },
+        "creator": {
+            "type": "object",
+            "attributes": {
+                "name": {
+                    "type": "keyword"
+                },
+                "id": {
+                    "type": "long"
+                }
+            },
+            "sort_field": "creator.name",
+            "filter_field": "creator.id"
+        },
+        "booking_period_start_at": {
+            "type": "date_time"
+        },
+        "address": {
+            "type": "object",
+            "attributes": {
+                "country": {
+                    "type": "keyword"
+                },
+                "city": {
+                    "type": "keyword"
+                },
+                "street": {
+                    "type": "keyword"
+                },
+                "region": {
+                    "type": "keyword"
+                },
+                "zip_code": {
+                    "type": "keyword"
+                }
+            }
+        },
+        "booking_period_end_at": {
+            "type": "date_time"
+        },
+        "consumption": {
+            "type": "object",
+            "attributes": {
+                "rate": {
+                    "type": "short"
+                },
+                "value": {
+                    "type": "double"
+                }
+            }
+        },
+        "forecasted_value": {
+            "type": "double"
+        },
+        "smart_attributes": {
+            "type": "object",
+            "attributes": {
+                "number_of_outgoing_calls_after_last_incoming_touch": {
+                    "type": "integer"
+                },
+                "number_of_link_clicks_of_last_outgoing_email": {
+                    "type": "integer"
+                },
+                "days_awaiting_my_response_helper_sorting_value": {
+                    "type": "integer"
+                },
+                "number_of_outgoing_texts_after_last_incoming_touch": {
+                    "type": "integer"
+                },
+                "number_of_outgoing_emails_after_last_incoming_touch": {
+                    "type": "integer"
+                },
+                "last_incoming_email_at": {
+                    "type": "date_time"
+                },
+                "last_outgoing_email_at": {
+                    "type": "date_time"
+                },
+                "days_awaiting_my_response": {
+                    "type": "integer"
+                },
+                "last_outgoing_text_at": {
+                    "type": "date_time"
+                },
+                "last_incoming_call_at": {
+                    "type": "date_time"
+                },
+                "first_incoming_touch_after_last_outgoing_touch_at": {
+                    "type": "date_time"
+                },
+                "first_outgoing_touch_after_last_incoming_touch_at": {
+                    "type": "date_time"
+                },
+                "days_since_last_communication": {
+                    "type": "integer"
+                },
+                "days_with_no_reply": {
+                    "type": "integer"
+                },
+                "is_last_touch_outgoing": {
+                    "type": "boolean"
+                },
+                "last_touch_helper_sorting_value": {
+                    "type": "integer"
+                },
+                "days_with_no_reply_helper_sorting_value": {
+                    "type": "integer"
+                },
+                "is_last_touch_incoming": {
+                    "type": "boolean"
+                },
+                "last_incoming_text_at": {
+                    "type": "date_time"
+                },
+                "last_outgoing_call_at": {
+                    "type": "date_time"
+                },
+                "last_touch_at": {
+                    "type": "date_time"
+                },
+                "number_of_views_of_last_outgoing_email": {
+                    "type": "integer"
+                }
+            }
+        },
+        "pipeline": {
+            "type": "keyword"
+        },
+        "added_at": {
+            "type": "date"
+        },
+        "deal_consumption": {
+            "type": "double"
+        },
+        "stage": {
+            "type": "object",
+            "attributes": {
+                "is_active": {
+                    "type": "boolean"
+                },
+                "id": {
+                    "type": "long"
+                },
+                "position": {
+                    "type": "keyword"
+                }
+            },
+            "sort_field": "stage.position",
+            "filter_field": "stage.id"
+        },
+        "actionable": {
+            "type": "object",
+            "attributes": {
+                "unread_emails": {
+                    "type": "integer"
+                },
+                "actionable_count": {
+                    "type": "integer"
+                },
+                "overdue_tasks": {
+                    "type": "integer"
+                },
+                "missed_calls": {
+                    "type": "integer"
+                },
+                "unread_texts": {
+                    "type": "integer"
+                }
+            },
+            "sort_field": "actionable.actionable_count",
+            "filter_field": "actionable.actionable_count"
+        },
+        "location": {
+            "type": "geo_point"
+        },
+        "added_at_with_time": {
+            "type": "date_time"
+        }
+    }
+}

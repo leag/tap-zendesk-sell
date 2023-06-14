@@ -19,8 +19,7 @@ class LeadSourcesStream(ZendeskSellStream):
             data = self.conn.lead_sources.list(per_page=100, page=page)
             if not data:
                 finished = True
-            for row in data:
-                yield row
+            yield from data
             page += 1
 
     schema_filepath = SCHEMAS_DIR / "lead_sources.json"

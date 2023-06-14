@@ -42,9 +42,7 @@ class SyncStream(ZendeskSellStream):
     def get_records(self, context: Optional[dict]) -> Iterable[dict]:
         """Return a generator of row-type dictionary objects."""
         session = self.conn.sync.start(self.get_device_uuid())
-        finished = False
-        if session is None or "id" not in session:
-            finished = True
+        finished = session is None or "id" not in session
         while not finished:
             queue_items = self.conn.sync.fetch(self.get_device_uuid(), session["id"])
             if not queue_items:

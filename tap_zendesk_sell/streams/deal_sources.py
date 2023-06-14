@@ -19,8 +19,7 @@ class DealSourcesStream(ZendeskSellStream):
             data = self.conn.deal_sources.list(per_page=100, page=page, sort_by="id")
             if not data:
                 finished = True
-            for row in data:
-                yield row
+            yield from data
             page += 1
 
     schema_filepath = SCHEMAS_DIR / "deal_sources.json"

@@ -1,0 +1,627 @@
+{
+    "attributes": {
+        "country": {
+            "type": "keyword"
+        },
+        "last_visit_resource_address": {
+            "type": "keyword"
+        },
+        "billing_address": {
+            "type": "object",
+            "attributes": {
+                "country": {
+                    "type": "keyword"
+                },
+                "city": {
+                    "type": "keyword"
+                },
+                "street": {
+                    "type": "keyword"
+                },
+                "region": {
+                    "type": "keyword"
+                },
+                "zip_code": {
+                    "type": "keyword"
+                }
+            }
+        },
+        "zip_code": {
+            "type": "keyword"
+        },
+        "last_visit_outcome": {
+            "type": "object",
+            "attributes": {
+                "name": {
+                    "type": "keyword"
+                },
+                "id": {
+                    "type": "long"
+                },
+                "position": {
+                    "type": "long"
+                }
+            },
+            "sort_field": "last_visit_outcome.position",
+            "filter_field": "last_visit_outcome.id"
+        },
+        "twitter": {
+            "type": "keyword"
+        },
+        "last_visit_rep_location_verified": {
+            "type": "boolean"
+        },
+        "permission_team": {
+            "type": "permissions_team",
+            "attributes": {
+                "id": {
+                    "type": "long"
+                },
+                "name": {
+                    "type": "keyword"
+                }
+            },
+            "filter_field": "permission_team.id"
+        },
+        "collaborators": {
+            "type": "array",
+            "items": {
+                "type": "long"
+            }
+        },
+        "id": {
+            "type": "id"
+        },
+        "fax": {
+            "type": "keyword"
+        },
+        "communication": {
+            "type": "object",
+            "attributes": {
+                "last_touch": {
+                    "type": "object",
+                    "attributes": {
+                        "at": {
+                            "type": "date_time"
+                        },
+                        "medium": {
+                            "type": "keyword"
+                        },
+                        "participating_user_ids": {
+                            "type": "array",
+                            "items": {
+                                "type": "long"
+                            }
+                        },
+                        "direction": {
+                            "type": "keyword"
+                        }
+                    },
+                    "filter_field": "communication.last_touch.at"
+                }
+            }
+        },
+        "next_email": {
+            "type": "object",
+            "attributes": {
+                "scheduled_for": {
+                    "type": "date_time"
+                },
+                "blocked_at": {
+                    "type": "date_time"
+                },
+                "template_id": {
+                    "type": "long"
+                },
+                "sender_user_id": {
+                    "type": "long"
+                },
+                "status": {
+                    "type": "keyword"
+                }
+            },
+            "sort_field": "next_email.scheduled_for",
+            "filter_field": "next_email.scheduled_for"
+        },
+        "zip": {
+            "type": "keyword"
+        },
+        "parent_company_name": {
+            "type": "string"
+        },
+        "prospect_status": {
+            "type": "keyword"
+        },
+        "tag_ids": {
+            "type": "array",
+            "items": {
+                "type": "long"
+            }
+        },
+        "parent_company": {
+            "type": "object",
+            "attributes": {
+                "id": {
+                    "type": "long"
+                },
+                "name": {
+                    "type": "string"
+                }
+            },
+            "sort_field": "parent_company.name",
+            "filter_field": "parent_company.id"
+        },
+        "imports": {
+            "type": "object",
+            "attributes": {
+                "user_id": {
+                    "type": "long"
+                },
+                "created_at": {
+                    "type": "date_time"
+                },
+                "id": {
+                    "type": "long"
+                }
+            },
+            "filter_field": "imports.id"
+        },
+        "custom_fields": {
+            "type": "custom_fields_root"
+        },
+        "last_activity_date": {
+            "type": "date_time"
+        },
+        "permission_group": {
+            "type": "permissions_group",
+            "attributes": {
+                "id": {
+                    "type": "long"
+                },
+                "name": {
+                    "type": "keyword"
+                }
+            },
+            "filter_field": "permission_group.id"
+        },
+        "display_name": {
+            "type": "string"
+        },
+        "version": {
+            "type": "version"
+        },
+        "tags": {
+            "type": "array",
+            "items": {
+                "type": "keyword"
+            }
+        },
+        "company_name": {
+            "type": "string"
+        },
+        "name": {
+            "type": "string"
+        },
+        "region": {
+            "type": "keyword"
+        },
+        "parent_company_id": {
+            "type": "long"
+        },
+        "import": {
+            "type": "object",
+            "attributes": {
+                "user_id": {
+                    "type": "long"
+                },
+                "created_at": {
+                    "type": "date_time"
+                },
+                "id": {
+                    "type": "long"
+                }
+            },
+            "filter_field": "import.id"
+        },
+        "city": {
+            "type": "keyword"
+        },
+        "created_at": {
+            "type": "date_time"
+        },
+        "description": {
+            "type": "string"
+        },
+        "industry": {
+            "type": "keyword"
+        },
+        "linkedin": {
+            "type": "keyword"
+        },
+        "subscription": {
+            "type": "object",
+            "attributes": {
+                "end_date": {
+                    "type": "object",
+                    "attributes": {
+                        "date": {
+                            "type": "date"
+                        },
+                        "is_infinite": {
+                            "type": "boolean"
+                        }
+                    }
+                },
+                "upcoming_periods_count": {
+                    "type": "integer"
+                },
+                "current_monthly_recurring_revenue": {
+                    "type": "object",
+                    "attributes": {
+                        "currency": {
+                            "type": "keyword"
+                        },
+                        "normalized_value": {
+                            "type": "double"
+                        },
+                        "value": {
+                            "type": "double"
+                        }
+                    },
+                    "sort_field": "subscription.current_monthly_recurring_revenue.normalized_value",
+                    "filter_field": "subscription.current_monthly_recurring_revenue.normalized_value"
+                },
+                "upcoming_monthly_recurring_revenue": {
+                    "type": "object",
+                    "attributes": {
+                        "currency": {
+                            "type": "keyword"
+                        },
+                        "normalized_value": {
+                            "type": "double"
+                        },
+                        "value": {
+                            "type": "double"
+                        }
+                    },
+                    "sort_field": "subscription.upcoming_monthly_recurring_revenue.normalized_value",
+                    "filter_field": "subscription.upcoming_monthly_recurring_revenue.normalized_value"
+                }
+            }
+        },
+        "title": {
+            "type": "keyword"
+        },
+        "first_or_company_name": {
+            "type": "string"
+        },
+        "is_sales_account": {
+            "type": "boolean"
+        },
+        "skype": {
+            "type": "keyword"
+        },
+        "uid": {
+            "type": "id"
+        },
+        "updated_at": {
+            "type": "date_time"
+        },
+        "last_visit_summary": {
+            "type": "keyword"
+        },
+        "street": {
+            "type": "keyword"
+        },
+        "company": {
+            "type": "object",
+            "attributes": {
+                "id": {
+                    "type": "long"
+                },
+                "name": {
+                    "type": "string"
+                }
+            },
+            "sort_field": "company.name",
+            "filter_field": "company.id"
+        },
+        "last_visit_date": {
+            "type": "date_time"
+        },
+        "shipping_address": {
+            "type": "object",
+            "attributes": {
+                "country": {
+                    "type": "keyword"
+                },
+                "city": {
+                    "type": "keyword"
+                },
+                "street": {
+                    "type": "keyword"
+                },
+                "region": {
+                    "type": "keyword"
+                },
+                "zip_code": {
+                    "type": "keyword"
+                }
+            }
+        },
+        "next_task": {
+            "type": "object",
+            "attributes": {
+                "updated_at": {
+                    "type": "date_time"
+                },
+                "owner_id": {
+                    "type": "long"
+                },
+                "due_date": {
+                    "type": "date_time"
+                },
+                "creator_id": {
+                    "type": "long"
+                },
+                "created_at": {
+                    "type": "date_time"
+                },
+                "id": {
+                    "type": "long"
+                },
+                "remind_at": {
+                    "type": "date_time"
+                },
+                "content": {
+                    "type": "string"
+                }
+            },
+            "filter_field": "next_task.id"
+        },
+        "first_name": {
+            "type": "string"
+        },
+        "is_organisation": {
+            "type": "boolean"
+        },
+        "email": {
+            "type": "keyword"
+        },
+        "normalized_phone_numbers": {
+            "type": "object",
+            "attributes": {
+                "national_number": {
+                    "type": "array",
+                    "items": {
+                        "type": "keyword"
+                    }
+                }
+            },
+            "filter_field": "normalized_phone_numbers.national_number"
+        },
+        "owner": {
+            "type": "permissions_owner",
+            "attributes": {
+                "id": {
+                    "type": "long"
+                },
+                "name": {
+                    "type": "keyword"
+                }
+            },
+            "sort_field": "owner.name",
+            "filter_field": "owner.id"
+        },
+        "creator": {
+            "type": "object",
+            "attributes": {
+                "name": {
+                    "type": "keyword"
+                },
+                "id": {
+                    "type": "long"
+                }
+            },
+            "sort_field": "creator.name",
+            "filter_field": "creator.id"
+        },
+        "website": {
+            "type": "keyword"
+        },
+        "address": {
+            "type": "object",
+            "attributes": {
+                "country": {
+                    "type": "keyword"
+                },
+                "city": {
+                    "type": "keyword"
+                },
+                "street": {
+                    "type": "keyword"
+                },
+                "region": {
+                    "type": "keyword"
+                },
+                "zip_code": {
+                    "type": "keyword"
+                }
+            }
+        },
+        "company_id": {
+            "type": "long"
+        },
+        "created_via": {
+            "type": "keyword"
+        },
+        "facebook": {
+            "type": "keyword"
+        },
+        "last_visit_creator": {
+            "type": "object",
+            "attributes": {
+                "name": {
+                    "type": "keyword"
+                },
+                "id": {
+                    "type": "long"
+                }
+            },
+            "sort_field": "last_visit_creator.name",
+            "filter_field": "last_visit_creator.id"
+        },
+        "last_name": {
+            "type": "string"
+        },
+        "smart_attributes": {
+            "type": "object",
+            "attributes": {
+                "number_of_outgoing_calls_after_last_incoming_touch": {
+                    "type": "integer"
+                },
+                "number_of_link_clicks_of_last_outgoing_email": {
+                    "type": "integer"
+                },
+                "days_awaiting_my_response_helper_sorting_value": {
+                    "type": "integer"
+                },
+                "number_of_outgoing_texts_after_last_incoming_touch": {
+                    "type": "integer"
+                },
+                "number_of_outgoing_emails_after_last_incoming_touch": {
+                    "type": "integer"
+                },
+                "last_incoming_email_at": {
+                    "type": "date_time"
+                },
+                "last_outgoing_email_at": {
+                    "type": "date_time"
+                },
+                "days_awaiting_my_response": {
+                    "type": "integer"
+                },
+                "last_outgoing_text_at": {
+                    "type": "date_time"
+                },
+                "last_incoming_call_at": {
+                    "type": "date_time"
+                },
+                "first_incoming_touch_after_last_outgoing_touch_at": {
+                    "type": "date_time"
+                },
+                "first_outgoing_touch_after_last_incoming_touch_at": {
+                    "type": "date_time"
+                },
+                "days_since_last_communication": {
+                    "type": "integer"
+                },
+                "days_with_no_reply": {
+                    "type": "integer"
+                },
+                "is_last_touch_outgoing": {
+                    "type": "boolean"
+                },
+                "last_touch_helper_sorting_value": {
+                    "type": "integer"
+                },
+                "days_with_no_reply_helper_sorting_value": {
+                    "type": "integer"
+                },
+                "is_last_touch_incoming": {
+                    "type": "boolean"
+                },
+                "last_incoming_text_at": {
+                    "type": "date_time"
+                },
+                "last_outgoing_call_at": {
+                    "type": "date_time"
+                },
+                "last_touch_at": {
+                    "type": "date_time"
+                },
+                "number_of_views_of_last_outgoing_email": {
+                    "type": "integer"
+                }
+            }
+        },
+        "enrollments": {
+            "type": "object",
+            "attributes": {
+                "active_sequence_ids": {
+                    "type": "array",
+                    "items": {
+                        "type": "long"
+                    }
+                },
+                "finished_at": {
+                    "type": "date_time"
+                },
+                "sequence_id": {
+                    "type": "long"
+                },
+                "started_at": {
+                    "type": "date_time"
+                },
+                "id": {
+                    "type": "long"
+                },
+                "finished_sequence_ids": {
+                    "type": "array",
+                    "items": {
+                        "type": "long"
+                    }
+                },
+                "current_step": {
+                    "type": "integer"
+                }
+            }
+        },
+        "phone_numbers": {
+            "type": "object",
+            "attributes": {
+                "phone": {
+                    "type": "keyword"
+                },
+                "mobile": {
+                    "type": "keyword"
+                }
+            },
+            "filter_field": "phone_numbers.phone"
+        },
+        "customer_status": {
+            "type": "keyword"
+        },
+        "last_visit_rep_location_verification_status": {
+            "type": "keyword"
+        },
+        "actionable": {
+            "type": "object",
+            "attributes": {
+                "unread_emails": {
+                    "type": "integer"
+                },
+                "actionable_count": {
+                    "type": "integer"
+                },
+                "overdue_tasks": {
+                    "type": "integer"
+                },
+                "missed_calls": {
+                    "type": "integer"
+                },
+                "unread_texts": {
+                    "type": "integer"
+                }
+            },
+            "sort_field": "actionable.actionable_count",
+            "filter_field": "actionable.actionable_count"
+        },
+        "last_or_company_name": {
+            "type": "string"
+        },
+        "location": {
+            "type": "geo_point"
+        }
+    }
+}
