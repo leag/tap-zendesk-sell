@@ -33,6 +33,7 @@ class ZendeskSellStream(Stream):
             "properties": address_properties,
         },
         "bool": {"type": ["boolean", "null"]},
+        "boolean": {"type": ["boolean", "null"]},
         "date": {"type": ["string", "null"]},
         "datetime": {"type": ["string", "null"], "format": "date-time"},
         "email": {"type": ["string", "null"]},

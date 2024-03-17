@@ -1,5 +1,9 @@
 # Changelog
 
+v0.0.6 (2024-03-16)
+
+- Fix bool custom schema definition (again)
+
 v0.0.5 (2022-06-15)
 
 - Fix bool custom schema definition
