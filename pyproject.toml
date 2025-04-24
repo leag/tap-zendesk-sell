@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "tap-zendesk-sell"
-version = "0.0.6"
+version = "0.0.7"
 description = "`tap-zendesk-sell` is a Singer tap for Zendesk Sell, built with the Meltano SDK for Singer Taps."
 authors = ["Luis Atala"]
 keywords = [
@@ -15,10 +15,11 @@ keywords = [
 license = "Apache 2.0"
 
 [tool.poetry.dependencies]
-python = "<3.11,>=3.6.2"
+python = "*"
 requests = "^2.25.1"
-singer-sdk = "^0.3.17"
+singer-sdk = "^0.45.10"
 basecrm = "^1.2.9"
+tenacity = "*"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.5"
