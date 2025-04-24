@@ -36,7 +36,7 @@ class DealsStream(ZendeskSellStream):
         finished = False
         page = 1
         while not finished:
-            data = self.conn.deals.list(per_page=100, page=page, sort_by="id")
+            data = self.conn.deals.list(per_page=100, page=page, sort_by="id", includes='associated_contacts')
             if not data:
                 finished = True
             for row in data:

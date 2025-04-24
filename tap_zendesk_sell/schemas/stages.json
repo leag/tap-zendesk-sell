@@ -38,6 +38,15 @@
             "type": ["null", "string"],
             "format": "date-time",
             "description": "Date and time of last update in UTC ISO8601 format."
+        },
+        "position_hash": {
+            "type": ["null", "string"]
+        },
+        "has_original_name": {
+            "type": ["null", "boolean"]
+        },
+        "locale_key": {
+            "type": ["null", "string"]
         }
     }
 }

@@ -124,6 +124,10 @@
                 }
             },
             "description": "The lead's address."
+        },
+        "unqualified_reason_id": {
+            "type": ["integer", "null"],
+            "description": "Reason why the lead was unqualified."
         }
     }
 }

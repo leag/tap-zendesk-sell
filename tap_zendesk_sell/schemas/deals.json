@@ -100,6 +100,10 @@
             "type": ["string", "null"],
             "format": "date-time",
             "description": "Date and time that the deal was started in UTC (ISO8601 format)."
+        },
+        "associated_contacts": {
+            "type": ["object", "null"],
+            "description": "associated contacts."
         }
     }
 }

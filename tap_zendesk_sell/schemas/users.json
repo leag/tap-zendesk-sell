@@ -98,6 +98,18 @@
         "identity_type": {
             "type": ["null", "string"],
             "description": "The user can be either a person (an agent) or an integration (an internal system user).  Possible values:  person  integration"
+        },
+        "system_tags": {
+            "type": ["null", "array"],
+            "items": {
+                "type": ["null", "string"]
+            }
+        },
+        "detached": {
+            "type": ["null", "boolean"]
+        },
+        "sell_login_disabled": {
+            "type": ["null", "boolean"]
         }
     }
 }

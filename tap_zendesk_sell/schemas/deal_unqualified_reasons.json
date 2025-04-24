@@ -1,0 +1,27 @@
+{
+    "type": ["object", "null"],
+    "properties": {
+        "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Date and time of the last update in UTC (ISO 8601 format)."
+        },
+        "name": {
+            "type": "string",
+            "description": "Name of the source."
+        },
+        "id": {
+            "type": ["integer", "null"],
+            "description": "Unique identifier of the deal source."
+        },
+        "creator_id": {
+            "type": ["integer", "null"],
+            "description": "Unique identifier of the user that created the source."
+        },
+        "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Date and time of creation in UTC (ISO 8601 format)."
+        }
+    }
+}
