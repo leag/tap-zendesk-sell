@@ -23,6 +23,7 @@ from .text_messages import TextMessagesStream  # noqa
 from .users import UsersStream  # noqa
 from .visit_outcomes import VisitOutcomesStream  # noqa
 from .visits import VisitsStream  # noqa
+from .deal_unqualified_reasons import DealUnqualifiedReasonsStream
 
 __all___ = [
     "AccountsStream",
@@ -47,4 +48,5 @@ __all___ = [
     "UsersStream",
     "VisitOutcomesStream",
     "VisitsStream",
+    "DealUnqualifiedReasonsStream"
 ]
