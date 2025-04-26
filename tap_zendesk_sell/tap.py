@@ -1,8 +1,7 @@
 """Zendesk Sell tap class."""
+from __future__ import annotations
 
-from typing import List
-
-from singer_sdk import Stream, Tap
+from singer_sdk import Tap
 from singer_sdk import typing as th  # JSON schema typing helpers
 
 from tap_zendesk_sell.streams import (
@@ -57,6 +56,7 @@ STREAM_TYPES = [
     VisitsStream,
 ]
 
+from tap_zendesk_sell import streams
 
 class TapZendeskSell(Tap):
     """Zendesk Sell tap class."""
@@ -66,30 +66,25 @@ class TapZendeskSell(Tap):
     config_jsonschema = th.PropertiesList(
         th.Property(
             "access_token",
-            th.StringType,
+            th.StringType(nullable=False),
             required=True,
+            secret=True,
+            title="Access Token",
             description="The token to authenticate against the API service",
         ),
         th.Property(
             "device_uuid",
             th.StringType,
             required=False,
+            title="Device UUID",
             description="The device's universally unique identifier (UUID)",
         ),
-        th.Property(
-            "metrics_log_level",
-            th.StringType,
-            default="info",
-            description="The log level for metrics",
-        ),
-        th.Property(
-            "add_record_metadata",
-            th.BooleanType,
-            default=False,
-            description="Whether to add metadata to each record",
-        ),
+
     ).to_dict()
 
-    def discover_streams(self) -> List[Stream]:
+    def discover_streams(self) -> list[streams.ZendeskSellStream]:
         """Return a list of discovered streams."""
         return [stream_class(tap=self) for stream_class in STREAM_TYPES]
+
+if __name__ == "__main__":
+    TapZendeskSell.cli()

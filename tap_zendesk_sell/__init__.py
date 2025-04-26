@@ -1,1 +1,1 @@
-"""Tap Zendesk Sell Base Stream class."""
++"""Tap for ZendeskSell."""
