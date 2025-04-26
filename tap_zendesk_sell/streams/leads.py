@@ -1,11 +1,12 @@
 """Zendesk Sell leads stream class."""
+import backoff
+import requests
 from typing import Iterable, Optional
 
 from singer_sdk.tap_base import Tap
 
 from tap_zendesk_sell.client import ZendeskSellStream
 from tap_zendesk_sell.streams import SCHEMAS_DIR
-from tenacity import retry, stop_after_attempt, wait_exponential
 
 
 class LeadsStream(ZendeskSellStream):
@@ -28,10 +29,11 @@ class LeadsStream(ZendeskSellStream):
                 "description": "Custom fields attached to a lead.",
             }
 
-    @retry(
-        stop=stop_after_attempt(3),
-        wait=wait_exponential(multiplier=1, min=4, max=10),
-        reraise=True,
+    @backoff.on_exception(
+        backoff.expo,
+        requests.exceptions.RequestException,
+        max_tries=3,
+        max_value=10,
     )
     def list_data(self, per_page: int, page: int) -> list:
         """List data from the API."""

@@ -1,8 +1,10 @@
-[tool.poetry]
+[project]
 name = "tap-zendesk-sell"
 version = "0.0.7"
 description = "`tap-zendesk-sell` is a Singer tap for Zendesk Sell, built with the Meltano SDK for Singer Taps."
-authors = ["Luis Atala"]
+authors = [{ name = "Luis Atala" }]
+requires-python = ">=3.9"
+license = "Apache-2.0"
 keywords = [
     "ELT",
     "Zendesk",
@@ -10,36 +12,34 @@ keywords = [
     "CRM",
     "Singer",
     "Singer Tap",
-    "Meltano"
+    "Meltano",
 ]
-license = "Apache 2.0"
+dependencies = [
+    "requests>=2.25.1,<3",
+    "singer-sdk>=0.45.10,<0.46",
+    "basecrm>=1.2.9,<2",
+]
 
-[tool.poetry.dependencies]
-python = "*"
-requests = "^2.25.1"
-singer-sdk = "^0.45.10"
-basecrm = "^1.2.9"
-tenacity = "*"
+[project.scripts]
+tap-zendesk-sell = "tap_zendesk_sell.tap:TapZendeskSell.cli"
 
-[tool.poetry.dev-dependencies]
-pytest = "^6.2.5"
-tox = "^3.24.4"
-flake8 = "^3.9.2"
-black = "^21.9b0"
-pydocstyle = "^6.1.1"
-mypy = "^0.910"
-types-requests = "^2.26.1"
-isort = "^5.10.1"
+[dependency-groups]
+dev = [
+    "pytest>=6.2.5,<7",
+    "tox>=3.24.4,<4",
+    "flake8>=3.9.2,<4",
+    "black~=21.9b0",
+    "pydocstyle>=6.1.1,<7",
+    "mypy>=0.910,<0.911",
+    "types-requests>=2.26.1,<3",
+    "isort>=5.10.1,<6",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
 [tool.isort]
 profile = "black"
 multi_line_output = 3 # Vertical Hanging Indent
 src_paths = "tap_zendesk_sell"
-
-[build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
-
-[tool.poetry.scripts]
-# CLI declaration
-tap-zendesk-sell = 'tap_zendesk_sell.tap:TapZendeskSell.cli'
