@@ -1,6 +1,6 @@
 {
   "template": "https://github.com/meltano/sdk",
-  "commit": "5273f325bd518842290e16673fc33f26c245f1b0",
+  "commit": "7381b4fc8c134301d5f87899e82e0fc5ece1a3dd",
   "checkout": null,
   "context": {
     "cookiecutter": {
@@ -17,7 +17,7 @@
       "license": "Apache-2.0",
       "ide": "None",
       "_template": "https://github.com/meltano/sdk",
-      "_commit": "5273f325bd518842290e16673fc33f26c245f1b0"
+      "_commit": "7381b4fc8c134301d5f87899e82e0fc5ece1a3dd"
     }
   },
   "directory": "cookiecutter/tap-template"
