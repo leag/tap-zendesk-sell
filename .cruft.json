@@ -1,0 +1,24 @@
+{
+  "template": "https://github.com/meltano/sdk",
+  "commit": "5273f325bd518842290e16673fc33f26c245f1b0",
+  "checkout": null,
+  "context": {
+    "cookiecutter": {
+      "source_name": "ZendeskSell",
+      "admin_name": "Luis Atala",
+      "admin_email": "luis.atala@gmail.com",
+      "tap_id": "tap-zendesk-sell",
+      "library_name": "tap_zendesk_sell",
+      "variant": "None (Skip)",
+      "stream_type": "Other",
+      "auth_method": "Custom or N/A",
+      "faker_extra": false,
+      "include_ci_files": "GitHub",
+      "license": "Apache-2.0",
+      "ide": "None",
+      "_template": "https://github.com/meltano/sdk",
+      "_commit": "5273f325bd518842290e16673fc33f26c245f1b0"
+    }
+  },
+  "directory": "cookiecutter/tap-template"
+}
