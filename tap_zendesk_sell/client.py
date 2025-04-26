@@ -1,10 +1,15 @@
 """Zendesk Sell Base Stream class."""
 
-from typing import Dict, Iterable, Optional, Tuple, Union
+from __future__ import annotations
+
+import typing as t
 
 import basecrm
 from singer_sdk.streams import Stream
 from singer_sdk.tap_base import Tap
+
+if t.TYPE_CHECKING:
+    from singer_sdk.helpers.types import Context
 
 
 class ZendeskSellStream(Stream):
@@ -27,7 +32,7 @@ class ZendeskSellStream(Stream):
         },
     }
 
-    custom_field_type: Dict[str, Dict] = {
+    custom_field_type: dict[str, dict] = {
         "address": {
             "type": ["object", "null"],
             "properties": address_properties,
@@ -94,7 +99,24 @@ class ZendeskSellStream(Stream):
         self.conn = basecrm.Client(access_token=self.config.get("access_token"))
 
     def get_records(
-        self, context: Optional[dict]
-    ) -> Iterable[Union[dict, Tuple[dict, dict]]]:
-        """Return a generator of row-type dictionary objects."""
-        pass
+        self,
+        context: Context | None,
+    ) -> t.Iterable[dict]:
+        """Return a generator of record-type dictionary objects.
+
+        The optional `context` argument is used to identify a specific slice of the
+        stream if partitioning is required for the stream. Most implementations do not
+        require partitioning and should ignore the `context` argument.
+
+        Args:
+            context: Stream partition or context dictionary.
+
+        Raises:
+            NotImplementedError: If the implementation is TODO
+        """
+        # TODO: Write logic to extract data from the upstream source.
+        # records = mysource.getall()  # noqa: ERA001
+        # for record in records:
+        #     yield record.to_dict()  # noqa: ERA001
+        errmsg = "The method is not yet implemented (TODO)"
+        raise NotImplementedError(errmsg)
