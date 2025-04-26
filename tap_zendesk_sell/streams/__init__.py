@@ -25,7 +25,7 @@ from .visit_outcomes import VisitOutcomesStream  # noqa
 from .visits import VisitsStream  # noqa
 from .deal_unqualified_reasons import DealUnqualifiedReasonsStream
 
-__all___ = [
+__all__ = [
     "AccountsStream",
     "ContactsStream",
     "DealSourcesStream",
