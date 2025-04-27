@@ -1,1 +1,1 @@
-+"""Tap for ZendeskSell."""
+"""Tap for ZendeskSell."""
