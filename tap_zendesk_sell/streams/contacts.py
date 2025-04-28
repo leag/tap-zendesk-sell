@@ -8,8 +8,8 @@ if TYPE_CHECKING:
     from collections.abc import Iterable
 
 
+from tap_zendesk_sell import SCHEMAS_DIR
 from tap_zendesk_sell.client import ZendeskSellStream
-from tap_zendesk_sell.streams import SCHEMAS_DIR
 
 
 class ContactsStream(ZendeskSellStream):

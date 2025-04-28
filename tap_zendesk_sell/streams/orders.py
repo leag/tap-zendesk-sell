@@ -3,8 +3,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, ClassVar
 
+from tap_zendesk_sell import SCHEMAS_DIR
 from tap_zendesk_sell.client import ZendeskSellStream
-from tap_zendesk_sell.streams import SCHEMAS_DIR
 
 if TYPE_CHECKING:
     from collections.abc import Iterable

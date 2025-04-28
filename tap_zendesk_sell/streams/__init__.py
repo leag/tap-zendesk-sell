@@ -1,7 +1,5 @@
 """Stream type classes for tap-zendesk-sell."""
 
-from pathlib import Path
-
 from tap_zendesk_sell.streams.accounts import AccountsStream
 from tap_zendesk_sell.streams.contacts import ContactsStream
 from tap_zendesk_sell.streams.deal_sources import DealSourcesStream
@@ -27,8 +25,6 @@ from tap_zendesk_sell.streams.text_messages import TextMessagesStream
 from tap_zendesk_sell.streams.users import UsersStream
 from tap_zendesk_sell.streams.visit_outcomes import VisitOutcomesStream
 from tap_zendesk_sell.streams.visits import VisitsStream
-
-SCHEMAS_DIR: Path = Path(__file__).parent.parent / Path("./schemas")
 
 __all__ = [
     "AccountsStream",
