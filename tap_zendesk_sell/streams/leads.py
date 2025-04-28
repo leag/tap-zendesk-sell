@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, ClassVar
 
-# Sort imports and add necessary ones
 import backoff
 import requests
 
@@ -19,7 +18,6 @@ class LeadsStream(ZendeskSellStream):
     """Zendesk Sell leads stream class."""
 
     name = "leads"
-    # Annotate primary_keys
     primary_keys: ClassVar[list[str]] = ["id"]
     schema_filepath = SCHEMAS_DIR / "leads.json"
 
@@ -27,7 +25,6 @@ class LeadsStream(ZendeskSellStream):
     def schema(self) -> dict:
         """Dynamically discover and apply schema properties for leads."""
         base_schema = super().schema
-        # self.conn is now guaranteed to be initialized by the base property
         custom_fields_properties = self._update_schema({"lead"})
         if custom_fields_properties:
             if "properties" not in base_schema:
@@ -47,10 +44,8 @@ class LeadsStream(ZendeskSellStream):
     )
     def list_data(self, per_page: int, page: int) -> list:
         """List data from the API."""
-        # Connection is guaranteed to be initialized by now
         return self.conn.leads.list(per_page=per_page, page=page, sort_by="id")
 
-    # Use | for Optional type hint, mark context unused
     def get_records(self, _context: dict | None) -> Iterable[dict]:
         """Return a generator of row-type dictionary objects."""
         finished = False

@@ -6,16 +6,16 @@ import typing as t
 
 import basecrm
 from singer_sdk.streams import Stream
-from singer_sdk.tap_base import Tap
 
 if t.TYPE_CHECKING:
     from singer_sdk.helpers.types import Context
+    from singer_sdk.tap_base import Tap
 
 
 class ZendeskSellStream(Stream):
     """Zendesk Sell sync stream class."""
 
-    address_properties = {
+    address_properties: t.ClassVar[dict[str, dict]] = {
         "line1": {
             "type": ["string", "null"],
             "description": "Line 1 of the address.",
@@ -32,7 +32,7 @@ class ZendeskSellStream(Stream):
         },
     }
 
-    custom_field_type: dict[str, dict] = {
+    custom_field_type: t.ClassVar[dict[str, dict]] = {
         "address": {
             "type": ["object", "null"],
             "properties": address_properties,
@@ -53,7 +53,7 @@ class ZendeskSellStream(Stream):
         "text": {"type": ["string", "null"]},
         "url": {"type": ["string", "null"]},
     }
-    resource_types = {
+    resource_types: t.ClassVar[set[str]] = {
         "deal",
         "contact",
         "lead",
@@ -68,7 +68,8 @@ class ZendeskSellStream(Stream):
         if self._conn is None:
             access_token = self.config.get("access_token")
             if not access_token:
-                # Tap-level validation should catch this, but raise if accessed before config
+                # Tap-level validation should catch this, but raise if accessed before
+                # config
                 msg = "Access token is required but not found in config."
                 raise ValueError(msg)
             self._conn = basecrm.Client(access_token=access_token)
@@ -84,8 +85,8 @@ class ZendeskSellStream(Stream):
                 "prospect_and_customer",
             }
         if not resource_type_set.issubset(self.resource_types):
-            # Use f-string correctly
-            raise ValueError(f"{resource_type_set} is not a valid resource type set")
+            msg = f"{resource_type_set} is not a valid resource type set"
+            raise ValueError(msg)
 
         custom_fields_properties = {}
         for resource_type in resource_type_set:
@@ -98,7 +99,8 @@ class ZendeskSellStream(Stream):
                 if field_name not in custom_fields_properties:
                     custom_fields_properties[field_name] = type_dict
                 elif custom_fields_properties[field_name] != type_dict:
-                    # Accessing nested type info might need adjustment if structure varies
+                    # Accessing nested type info might need adjustment if structure
+                    # changes in the future
                     # Assuming multi_select_list is the main conflict source
                     other_type_desc = "unknown"
                     if "items" in type_dict and "type" in type_dict["items"]:
@@ -115,7 +117,7 @@ class ZendeskSellStream(Stream):
                     raise ValueError(msg)
         return custom_fields_properties
 
-    def __init__(self, tap: Tap):
+    def __init__(self, tap: Tap) -> None:
         """Initialize the stream."""
         super().__init__(tap)
 

@@ -1,19 +1,23 @@
 """Zendesk Sell deal sources stream class."""
 
-from collections.abc import Iterable
-from typing import Optional
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, ClassVar
 
 from tap_zendesk_sell.client import ZendeskSellStream
 from tap_zendesk_sell.streams import SCHEMAS_DIR
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable
 
 
 class DealUnqualifiedReasonsStream(ZendeskSellStream):
     """Zendesk Sell deal unqualified reasons stream class."""
 
     name = "deal_unqualified_reasons"
-    primary_keys = ["id"]
+    primary_keys: ClassVar[list[str]] = ["id"]
 
-    def get_records(self, context: Optional[dict]) -> Iterable[dict]:
+    def get_records(self, _context: dict | None) -> Iterable[dict]:
         """Return a generator of row-type dictionary objects."""
         finished = False
         page = 1
@@ -23,8 +27,7 @@ class DealUnqualifiedReasonsStream(ZendeskSellStream):
             )
             if not data:
                 finished = True
-            for row in data:
-                yield row
+            yield from data
             page += 1
 
     schema_filepath = SCHEMAS_DIR / "deal_unqualified_reasons.json"

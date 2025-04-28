@@ -1,19 +1,22 @@
 """Zendesk Sell tasks stream class."""
+from __future__ import annotations
 
-from collections.abc import Iterable
-from typing import Optional
+from typing import TYPE_CHECKING, ClassVar
 
 from tap_zendesk_sell.client import ZendeskSellStream
 from tap_zendesk_sell.streams import SCHEMAS_DIR
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable
 
 
 class TasksStream(ZendeskSellStream):
     """Zendesk Sell tasks stream class."""
 
     name = "tasks"
-    primary_keys = ["id"]
+    primary_keys: ClassVar[list[str]] = ["id"]
 
-    def get_records(self, context: Optional[dict]) -> Iterable[dict]:
+    def get_records(self, _context: dict | None) -> Iterable[dict]:
         """Return a generator of row-type dictionary objects."""
         finished = False
         page = 1
@@ -21,8 +24,7 @@ class TasksStream(ZendeskSellStream):
             data = self.conn.tasks.list(per_page=100, page=page, sort_by="updated_at")
             if not data:
                 finished = True
-            for row in data:
-                yield row
+            yield from data
             page += 1
 
     schema_filepath = SCHEMAS_DIR / "tasks.json"

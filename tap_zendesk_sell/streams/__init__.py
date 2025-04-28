@@ -2,29 +2,33 @@
 
 from pathlib import Path
 
-SCHEMAS_DIR: Path = Path(__file__).parent.parent / Path("./schemas")
+from tap_zendesk_sell.streams.accounts import AccountsStream
+from tap_zendesk_sell.streams.contacts import ContactsStream
+from tap_zendesk_sell.streams.deal_sources import DealSourcesStream
+from tap_zendesk_sell.streams.deal_unqualified_reasons import (
+    DealUnqualifiedReasonsStream,
+)
+from tap_zendesk_sell.streams.deals import AssociatedContacts, DealsStream
+from tap_zendesk_sell.streams.lead_sources import LeadSourcesStream
+from tap_zendesk_sell.streams.lead_unqualified_reasons import (
+    LeadUnqualifiedReasonsStream,
+)
+from tap_zendesk_sell.streams.leads import LeadsStream
+from tap_zendesk_sell.streams.loss_reasons import LossReasonsStream
+from tap_zendesk_sell.streams.notes import NotesStream
+from tap_zendesk_sell.streams.orders import LineItemsStream, OrdersStream
+from tap_zendesk_sell.streams.pipelines import PipelinesStream
+from tap_zendesk_sell.streams.products import ProductsStream
+from tap_zendesk_sell.streams.stages import StagesStream
+from tap_zendesk_sell.streams.sync import SyncStream
+from tap_zendesk_sell.streams.tags import TagsStream
+from tap_zendesk_sell.streams.tasks import TasksStream
+from tap_zendesk_sell.streams.text_messages import TextMessagesStream
+from tap_zendesk_sell.streams.users import UsersStream
+from tap_zendesk_sell.streams.visit_outcomes import VisitOutcomesStream
+from tap_zendesk_sell.streams.visits import VisitsStream
 
-from .accounts import AccountsStream  # noqa
-from .contacts import ContactsStream  # noqa
-from .deal_sources import DealSourcesStream  # noqa
-from .deals import AssociatedContacts, DealsStream  # noqa
-from .lead_sources import LeadSourcesStream  # noqa
-from .lead_unqualified_reasons import LeadUnqualifiedReasonsStream  # noqa
-from .leads import LeadsStream  # noqa
-from .loss_reasons import LossReasonsStream  # noqa
-from .notes import NotesStream  # noqa
-from .orders import LineItemsStream, OrdersStream  # noqa
-from .pipelines import PipelinesStream  # noqa
-from .products import ProductsStream  # noqa
-from .stages import StagesStream  # noqa
-from .sync import SyncStream  # noqa
-from .tags import TagsStream  # noqa
-from .tasks import TasksStream  # noqa
-from .text_messages import TextMessagesStream  # noqa
-from .users import UsersStream  # noqa
-from .visit_outcomes import VisitOutcomesStream  # noqa
-from .visits import VisitsStream  # noqa
-from .deal_unqualified_reasons import DealUnqualifiedReasonsStream
+SCHEMAS_DIR: Path = Path(__file__).parent.parent / Path("./schemas")
 
 __all__ = [
     "AccountsStream",

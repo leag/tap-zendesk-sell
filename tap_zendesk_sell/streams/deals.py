@@ -4,12 +4,9 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, ClassVar
 
-# Sort imports
-
 if TYPE_CHECKING:
     from collections.abc import Iterable
 
-# ... other imports ...
 from tap_zendesk_sell.client import ZendeskSellStream
 from tap_zendesk_sell.streams import SCHEMAS_DIR
 
@@ -21,13 +18,10 @@ class DealsStream(ZendeskSellStream):
     primary_keys: ClassVar[list[str]] = ["id"]
     schema_filepath = SCHEMAS_DIR / "deals.json"
 
-    # __init__ is removed
-
     @property
     def schema(self) -> dict:
         """Dynamically discover and apply schema properties for deals."""
         base_schema = super().schema
-        # self.conn is now guaranteed to be initialized by the base property
         custom_fields_properties = self._update_schema({"deal"})
         if custom_fields_properties:
             if "properties" not in base_schema:
@@ -48,12 +42,11 @@ class DealsStream(ZendeskSellStream):
         finished = False
         page = 1
         while not finished:
-            # Use double quotes for includes, break line
             data = self.conn.deals.list(
                 per_page=100,
                 page=page,
                 sort_by="id",
-                includes="associated_contacts",  # Check if this include is still desired/valid
+                includes="associated_contacts",
             )
             if not data:
                 finished = True
@@ -75,7 +68,6 @@ class AssociatedContacts(ZendeskSellStream):
         page = 1
         deal_id = context.get("deal_id") if context else None
         if deal_id is None:
-            # Break long warning line
             self.logger.warning(
                 "Skipping AssociatedContacts: missing 'deal_id' in context."
             )

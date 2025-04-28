@@ -2,8 +2,10 @@
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from singer_sdk import Tap
-from singer_sdk import typing as th  # JSON schema typing helpers
+from singer_sdk import typing as th
 
 from tap_zendesk_sell.streams import (
     AccountsStream,
@@ -31,6 +33,9 @@ from tap_zendesk_sell.streams import (
     VisitsStream,
 )
 
+if TYPE_CHECKING:
+    from tap_zendesk_sell import streams
+
 STREAM_TYPES = [
     AccountsStream,
     ContactsStream,
@@ -57,7 +62,6 @@ STREAM_TYPES = [
     VisitsStream,
 ]
 
-from tap_zendesk_sell import streams
 
 
 class TapZendeskSell(Tap):
