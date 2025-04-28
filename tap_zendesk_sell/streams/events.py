@@ -11,22 +11,30 @@ from tap_zendesk_sell.client import ZendeskSellStream
 if TYPE_CHECKING:
     from collections.abc import Iterable
 
-    from singer_sdk.tap_base import Tap
-
-
 class EventsStream(ZendeskSellStream):
     """Zendesk Sell sync stream class."""
 
     name = "events"
 
-    def __init__(self, tap: Tap) -> None:
-        """Initialize the stream."""
-        super().__init__(tap)
+    @property
+    def schema(self) -> dict:
+        """Dynamically discover and apply schema properties."""
+        base_schema = super().schema
         custom_fields_properties = self._update_schema()
         if custom_fields_properties:
-            self._schema["properties"]["data"]["properties"]["custom_fields"] = {
-                "properties": custom_fields_properties
+            if "properties" not in base_schema:
+                base_schema["properties"] = {}
+            if "data" not in base_schema["properties"]:
+                 base_schema["properties"]["data"] = {"properties": {}}
+            elif "properties" not in base_schema["properties"]["data"]:
+                 base_schema["properties"]["data"]["properties"] = {}
+
+            base_schema["properties"]["data"]["properties"]["custom_fields"] = {
+                "properties": custom_fields_properties,
+                "description": "Custom fields attached to an event.",
+                "type": ["object", "null"],
             }
+        return base_schema
 
     def get_device_uuid(self) -> str:
         """Return the device UUID.
