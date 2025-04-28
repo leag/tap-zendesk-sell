@@ -27,7 +27,6 @@ class ContactsStream(ZendeskSellStream):
         during catalog generation.
         """
         base_schema = super().schema
-        # self.conn is now guaranteed to be initialized by the base property
         custom_fields_properties = self._update_schema({"contact"})
         if custom_fields_properties:
             if "properties" not in base_schema:
