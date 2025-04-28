@@ -2,66 +2,20 @@
 
 from __future__ import annotations
 
+from importlib import import_module
 from typing import TYPE_CHECKING
 
 from singer_sdk import Tap
 from singer_sdk import typing as th
 
-from tap_zendesk_sell.streams import (
-    AccountsStream,
-    AssociatedContacts,
-    ContactsStream,
-    DealSourcesStream,
-    DealsStream,
-    DealUnqualifiedReasonsStream,
-    LeadSourcesStream,
-    LeadsStream,
-    LeadUnqualifiedReasonsStream,
-    LineItemsStream,
-    LossReasonsStream,
-    NotesStream,
-    OrdersStream,
-    PipelinesStream,
-    ProductsStream,
-    StagesStream,
-    SyncStream,
-    TagsStream,
-    TasksStream,
-    TextMessagesStream,
-    UsersStream,
-    VisitOutcomesStream,
-    VisitsStream,
-)
-
 if TYPE_CHECKING:
     from tap_zendesk_sell import streams
 
-STREAM_TYPES = [
-    AccountsStream,
-    ContactsStream,
-    DealSourcesStream,
-    AssociatedContacts,
-    DealsStream,
-    DealUnqualifiedReasonsStream,
-    LeadSourcesStream,
-    LeadUnqualifiedReasonsStream,
-    LeadsStream,
-    LossReasonsStream,
-    NotesStream,
-    OrdersStream,
-    LineItemsStream,
-    PipelinesStream,
-    ProductsStream,
-    StagesStream,
-    SyncStream,
-    TagsStream,
-    TasksStream,
-    TextMessagesStream,
-    UsersStream,
-    VisitOutcomesStream,
-    VisitsStream,
-]
+from tap_zendesk_sell.streams import __all__ as stream_classes
 
+STREAM_TYPES = [
+    getattr(import_module("tap_zendesk_sell.streams"), cls) for cls in stream_classes
+]
 
 
 class TapZendeskSell(Tap):

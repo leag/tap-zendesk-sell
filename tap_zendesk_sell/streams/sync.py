@@ -1,4 +1,5 @@
 """Stream type classes for tap-zendesk-sell."""
+
 from __future__ import annotations
 
 import uuid

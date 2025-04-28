@@ -1,4 +1,5 @@
 """Zendesk Sell visit outcomes stream class."""
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, ClassVar
