@@ -28,7 +28,6 @@ classifiers = [
 license-files = [ "LICENSE" ]
 readme = "README.md"
 dependencies = [
-    "requests>=2.25.1,<3",
     "singer-sdk~=0.45.10",
     "basecrm>=1.2.9,<2",
 ]
