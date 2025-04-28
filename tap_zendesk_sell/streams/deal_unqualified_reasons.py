@@ -1,5 +1,7 @@
 """Zendesk Sell deal sources stream class."""
-from typing import Iterable, Optional
+
+from collections.abc import Iterable
+from typing import Optional
 
 from tap_zendesk_sell.client import ZendeskSellStream
 from tap_zendesk_sell.streams import SCHEMAS_DIR
@@ -16,7 +18,9 @@ class DealUnqualifiedReasonsStream(ZendeskSellStream):
         finished = False
         page = 1
         while not finished:
-            data = self.conn.deal_unqualified_reasons.list(per_page=100, page=page, sort_by="id")
+            data = self.conn.deal_unqualified_reasons.list(
+                per_page=100, page=page, sort_by="id"
+            )
             if not data:
                 finished = True
             for row in data:

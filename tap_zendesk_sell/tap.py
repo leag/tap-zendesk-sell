@@ -1,4 +1,5 @@
 """Zendesk Sell tap class."""
+
 from __future__ import annotations
 
 from singer_sdk import Tap
@@ -9,8 +10,8 @@ from tap_zendesk_sell.streams import (
     AssociatedContacts,
     ContactsStream,
     DealSourcesStream,
-    DealUnqualifiedReasonsStream,
     DealsStream,
+    DealUnqualifiedReasonsStream,
     LeadSourcesStream,
     LeadsStream,
     LeadUnqualifiedReasonsStream,
@@ -58,6 +59,7 @@ STREAM_TYPES = [
 
 from tap_zendesk_sell import streams
 
+
 class TapZendeskSell(Tap):
     """Zendesk Sell tap class."""
 
@@ -79,12 +81,12 @@ class TapZendeskSell(Tap):
             title="Device UUID",
             description="The device's universally unique identifier (UUID)",
         ),
-
     ).to_dict()
 
     def discover_streams(self) -> list[streams.ZendeskSellStream]:
         """Return a list of discovered streams."""
         return [stream_class(tap=self) for stream_class in STREAM_TYPES]
+
 
 if __name__ == "__main__":
     TapZendeskSell.cli()

@@ -1,7 +1,8 @@
 """Stream type classes for tap-zendesk-sell."""
 
 import uuid
-from typing import Iterable, Optional
+from collections.abc import Iterable
+from typing import Optional
 
 from singer_sdk.tap_base import Tap
 

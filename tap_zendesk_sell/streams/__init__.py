@@ -1,4 +1,5 @@
 """Stream type classes for tap-zendesk-sell."""
+
 from pathlib import Path
 
 SCHEMAS_DIR: Path = Path(__file__).parent.parent / Path("./schemas")
@@ -27,17 +28,18 @@ from .deal_unqualified_reasons import DealUnqualifiedReasonsStream
 
 __all__ = [
     "AccountsStream",
+    "AssociatedContacts",
     "ContactsStream",
     "DealSourcesStream",
-    "AssociatedContacts",
+    "DealUnqualifiedReasonsStream",
     "DealsStream",
     "LeadSourcesStream",
     "LeadUnqualifiedReasonsStream",
     "LeadsStream",
+    "LineItemsStream",
     "LossReasonsStream",
     "NotesStream",
     "OrdersStream",
-    "LineItemsStream",
     "PipelinesStream",
     "ProductsStream",
     "StagesStream",
@@ -48,5 +50,4 @@ __all__ = [
     "UsersStream",
     "VisitOutcomesStream",
     "VisitsStream",
-    "DealUnqualifiedReasonsStream"
 ]

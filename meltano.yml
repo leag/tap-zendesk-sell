@@ -19,11 +19,9 @@ plugins:
     - stream-maps
     settings:
     - name: device_uuid
+      kind: string
     - name: access_token
       kind: password
-    - name: metrics_log_level
-    - name: add_record_metadata
-      kind: boolean
     config:
       metrics_log_level: debug
     select:

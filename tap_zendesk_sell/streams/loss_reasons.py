@@ -1,5 +1,7 @@
 """Zendesk Sell loss reasons stream class."""
-from typing import Iterable, Optional
+
+from collections.abc import Iterable
+from typing import Optional
 
 from tap_zendesk_sell.client import ZendeskSellStream
 from tap_zendesk_sell.streams import SCHEMAS_DIR

@@ -60,7 +60,21 @@ class ZendeskSellStream(Stream):
         "prospect_and_customer",
     }
 
-    def _update_schema(self, resource_type_set: set = None) -> dict:
+    _conn: basecrm.Client | None = None  # Cache for the connection
+
+    @property
+    def conn(self) -> basecrm.Client:
+        """Get or initialize the API client connection."""
+        if self._conn is None:
+            access_token = self.config.get("access_token")
+            if not access_token:
+                # Tap-level validation should catch this, but raise if accessed before config
+                msg = "Access token is required but not found in config."
+                raise ValueError(msg)
+            self._conn = basecrm.Client(access_token=access_token)
+        return self._conn
+
+    def _update_schema(self, resource_type_set: set | None = None) -> dict:
         """Update the schema for this stream with custom fields."""
         if resource_type_set is None:
             resource_type_set = {
@@ -70,33 +84,40 @@ class ZendeskSellStream(Stream):
                 "prospect_and_customer",
             }
         if not resource_type_set.issubset(self.resource_types):
+            # Use f-string correctly
             raise ValueError(f"{resource_type_set} is not a valid resource type set")
 
         custom_fields_properties = {}
         for resource_type in resource_type_set:
-            _, _, data = self.conn.http_client.get(
-                "/{resource_type}/custom_fields".format(resource_type=resource_type)
-            )
+            # Use the conn property here - it handles initialization
+            _, _, data = self.conn.http_client.get(f"/{resource_type}/custom_fields")
             for custom_field in data:
-                type_dict = self.custom_field_type[custom_field["type"]]
-                if custom_field["name"] not in custom_fields_properties:
-                    custom_fields_properties[custom_field["name"]] = type_dict
-                elif custom_fields_properties[custom_field["name"]] != type_dict:
-                    raise ValueError(
-                        " ".join(
-                            [
-                                f"Custom field name conflict: {custom_field.name},",
-                                f"Type: {custom_field.type},",
-                                f"Other Type: {type_dict['items']['type'][0]}",
-                            ]
-                        )
+                field_name = custom_field["name"]
+                field_type = custom_field["type"]
+                type_dict = self.custom_field_type[field_type]
+                if field_name not in custom_fields_properties:
+                    custom_fields_properties[field_name] = type_dict
+                elif custom_fields_properties[field_name] != type_dict:
+                    # Accessing nested type info might need adjustment if structure varies
+                    # Assuming multi_select_list is the main conflict source
+                    other_type_desc = "unknown"
+                    if "items" in type_dict and "type" in type_dict["items"]:
+                        other_type_desc = str(type_dict["items"]["type"])
+                    elif "type" in type_dict:
+                        other_type_desc = str(type_dict["type"])
+
+                    # Use field_name and field_type from variables
+                    msg = (
+                        f"Custom field name conflict: {field_name}, "
+                        f"Type: {field_type}, "
+                        f"Conflicts with existing type: {other_type_desc}"
                     )
+                    raise ValueError(msg)
         return custom_fields_properties
 
     def __init__(self, tap: Tap):
         """Initialize the stream."""
         super().__init__(tap)
-        self.conn = basecrm.Client(access_token=self.config.get("access_token"))
 
     def get_records(
         self,
