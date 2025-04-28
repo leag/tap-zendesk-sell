@@ -7,6 +7,7 @@ from tap_zendesk_sell.streams.deal_unqualified_reasons import (
     DealUnqualifiedReasonsStream,
 )
 from tap_zendesk_sell.streams.deals import AssociatedContacts, DealsStream
+from tap_zendesk_sell.streams.events import EventsStream
 from tap_zendesk_sell.streams.lead_sources import LeadSourcesStream
 from tap_zendesk_sell.streams.lead_unqualified_reasons import (
     LeadUnqualifiedReasonsStream,
@@ -18,7 +19,6 @@ from tap_zendesk_sell.streams.orders import LineItemsStream, OrdersStream
 from tap_zendesk_sell.streams.pipelines import PipelinesStream
 from tap_zendesk_sell.streams.products import ProductsStream
 from tap_zendesk_sell.streams.stages import StagesStream
-from tap_zendesk_sell.streams.sync import SyncStream
 from tap_zendesk_sell.streams.tags import TagsStream
 from tap_zendesk_sell.streams.tasks import TasksStream
 from tap_zendesk_sell.streams.text_messages import TextMessagesStream
@@ -33,6 +33,7 @@ __all__ = [
     "DealSourcesStream",
     "DealUnqualifiedReasonsStream",
     "DealsStream",
+    "EventsStream",
     "LeadSourcesStream",
     "LeadUnqualifiedReasonsStream",
     "LeadsStream",
@@ -43,7 +44,6 @@ __all__ = [
     "PipelinesStream",
     "ProductsStream",
     "StagesStream",
-    "SyncStream",
     "TagsStream",
     "TasksStream",
     "TextMessagesStream",

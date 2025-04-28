@@ -14,7 +14,7 @@ if TYPE_CHECKING:
     from singer_sdk.tap_base import Tap
 
 
-class SyncStream(ZendeskSellStream):
+class EventsStream(ZendeskSellStream):
     """Zendesk Sell sync stream class."""
 
     name = "events"
