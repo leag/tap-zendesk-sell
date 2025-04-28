@@ -39,9 +39,8 @@ class DealsStream(ZendeskSellStream):
 
     def get_records(self, _context: dict | None) -> Iterable[dict]:
         """Return a generator of row-type dictionary objects."""
-        finished = False
         page = 1
-        while not finished:
+        while True:
             data = self.conn.deals.list(
                 per_page=100,
                 page=page,
@@ -49,8 +48,7 @@ class DealsStream(ZendeskSellStream):
                 includes="associated_contacts",
             )
             if not data:
-                finished = True
-                continue
+                break
             yield from data
             page += 1
 
@@ -64,7 +62,6 @@ class AssociatedContacts(ZendeskSellStream):
 
     def get_records(self, context: dict | None) -> Iterable[dict]:
         """Return a generator of row-type dictionary objects."""
-        finished = False
         page = 1
         deal_id = context.get("deal_id") if context else None
         if deal_id is None:
@@ -73,13 +70,12 @@ class AssociatedContacts(ZendeskSellStream):
             )
             return
 
-        while not finished:
+        while True:
             data = self.conn.associated_contacts.list(
                 deal_id=deal_id, page=page, per_page=100
             )
             if not data:
-                finished = True
-                continue
+                break
             for row in data:
                 row["deal_id"] = deal_id
                 yield row
