@@ -22,12 +22,7 @@ class OrdersStream(ZendeskSellStream):
     name = "orders"
     primary_keys: ClassVar[list[str]] = ["id"]
 
-    @backoff.on_exception(
-        backoff.expo,
-        requests.exceptions.RequestException,
-        max_tries=3,
-        max_value=10,
-    )
+
     def list_data(self, page: int) -> list:
         """List data from the API."""
         return self.conn.orders.list(page=page, per_page=100)

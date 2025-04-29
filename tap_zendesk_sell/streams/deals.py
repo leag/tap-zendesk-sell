@@ -38,12 +38,7 @@ class DealsStream(ZendeskSellStream):
             }
         return base_schema
 
-    @backoff.on_exception(
-        backoff.expo,
-        requests.exceptions.RequestException,
-        max_tries=3,
-        max_value=10,
-    )
+
     def list_data(self, page: int) -> list:
         """List data from the API."""
         return self.conn.deals.list(page=page, per_page=100)

@@ -4,7 +4,9 @@ from __future__ import annotations
 
 import typing as t
 
+import backoff
 import basecrm
+import requests
 from singer_sdk.streams import Stream
 
 if t.TYPE_CHECKING:
@@ -111,6 +113,25 @@ class ZendeskSellStream(Stream):
                     raise ValueError(msg)
         return custom_fields_properties
 
+    def backoff_wait_generator(self) -> t.Generator[float, None, None]:
+        """The wait generator used by the backoff decorator on request failure."""
+        # Pass max_value directly to the wait generator
+        return backoff.expo(factor=2, max_value=10)
+
+    def backoff_max_tries(self) -> int:
+        """The number of attempts before giving up when retrying requests."""
+        return 3
+
+    def backoff_handler(self, details: dict) -> None:
+        """Adds additional behaviour prior to retry."""
+        self.logger.warning(
+            "Backing off %s seconds after %s tries calling function %s",
+            f"{details['wait']:0.1f}",
+            details["tries"],
+            details["target"].__name__,
+            extra=details,
+        )
+
     def list_data(self, page: int) -> list:
         """List data from the API.
 
@@ -131,24 +152,36 @@ class ZendeskSellStream(Stream):
         This default implementation handles simple pagination using the list_data method
         Streams with different pagination or fetching logic should override this.
         """
+        # Define the retry logic using the class's backoff methods
+        @backoff.on_exception(
+            self.backoff_wait_generator,
+            requests.exceptions.RequestException,
+            max_tries=self.backoff_max_tries,
+            on_backoff=self.backoff_handler,
+            logger=self.logger,
+            on_giveup=lambda details: self.logger.error(
+                "Gave up calling function %s after %s tries.",
+                details["target"].__name__,
+                details["tries"],
+                extra=details,
+            ),
+        )
+        def _list_data_with_retry(page_num: int) -> list:
+            """Wrapper function to apply retry logic."""
+            return self.list_data(page=page_num)
+
         page = 1
         while True:
             try:
-                data = self.list_data(page=page)
+                data = _list_data_with_retry(page_num=page)
             except NotImplementedError:
                 self.logger.exception(
-                    "Stream '%s' does not implement list_data method required for "
-                    "default get_records pagination.",
-                    self.name,
+                    "Method list_data not implemented for stream %s", self.name
                 )
                 raise
             except Exception:
-                self.logger.exception(
-                    "Error fetching data for stream '%s' on page %s",
-                    self.name,
-                    page,
-                )
-                break
+                self.logger.exception("Error fetching data for stream %s", self.name)
+                raise
 
             if not data:
                 break
