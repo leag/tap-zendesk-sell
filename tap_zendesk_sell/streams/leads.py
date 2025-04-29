@@ -19,7 +19,6 @@ class LeadsStream(ZendeskSellStream):
 
     name = "leads"
     primary_keys: ClassVar[list[str]] = ["id"]
-    schema_filepath = SCHEMAS_DIR / "leads.json"
 
     @property
     def schema(self) -> dict:
@@ -48,12 +47,12 @@ class LeadsStream(ZendeskSellStream):
 
     def get_records(self, _context: dict | None) -> Iterable[dict]:
         """Return a generator of row-type dictionary objects."""
-        finished = False
         page = 1
-        while not finished:
-            data = self.list_data(per_page=100, page=page)
+        while True:
+            data = self.list_data(per_page=100, page=page, sort_by="id")
             if not data:
-                finished = True
-                continue
+                break
             yield from data
             page += 1
+
+    schema_filepath = SCHEMAS_DIR / "leads.json"

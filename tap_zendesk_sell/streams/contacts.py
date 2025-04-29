@@ -17,7 +17,6 @@ class ContactsStream(ZendeskSellStream):
 
     name = "contacts"
     primary_keys: ClassVar[list[str]] = ["id"]
-    schema_filepath = SCHEMAS_DIR / "contacts.json"
 
     @property
     def schema(self) -> dict:
@@ -47,3 +46,5 @@ class ContactsStream(ZendeskSellStream):
                 break
             yield from data
             page += 1
+
+    schema_filepath = SCHEMAS_DIR / "contacts.json"

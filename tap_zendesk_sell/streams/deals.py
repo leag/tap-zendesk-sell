@@ -16,7 +16,6 @@ class DealsStream(ZendeskSellStream):
 
     name = "deals"
     primary_keys: ClassVar[list[str]] = ["id"]
-    schema_filepath = SCHEMAS_DIR / "deals.json"
 
     @property
     def schema(self) -> dict:
@@ -41,16 +40,13 @@ class DealsStream(ZendeskSellStream):
         """Return a generator of row-type dictionary objects."""
         page = 1
         while True:
-            data = self.conn.deals.list(
-                per_page=100,
-                page=page,
-                sort_by="id",
-                includes="associated_contacts",
-            )
+            data = self.conn.deals.list(per_page=100, page=page, sort_by="id")
             if not data:
                 break
             yield from data
             page += 1
+
+    schema_filepath = SCHEMAS_DIR / "deals.json"
 
 
 class AssociatedContacts(ZendeskSellStream):

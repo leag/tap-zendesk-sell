@@ -19,12 +19,11 @@ class TagsStream(ZendeskSellStream):
 
     def get_records(self, _context: dict | None) -> Iterable[dict]:
         """Return a generator of row-type dictionary objects."""
-        finished = False
         page = 1
-        while not finished:
-            data = self.conn.tags.list(per_page=100, page=page, sort_by="updated_at")
+        while True:
+            data = self.conn.tags.list(per_page=100, page=page, sort_by="id")
             if not data:
-                finished = True
+                break
             yield from data
             page += 1
 

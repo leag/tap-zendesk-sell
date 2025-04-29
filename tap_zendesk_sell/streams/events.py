@@ -11,6 +11,7 @@ from tap_zendesk_sell.client import ZendeskSellStream
 if TYPE_CHECKING:
     from collections.abc import Iterable
 
+
 class EventsStream(ZendeskSellStream):
     """Zendesk Sell sync stream class."""
 
@@ -25,9 +26,9 @@ class EventsStream(ZendeskSellStream):
             if "properties" not in base_schema:
                 base_schema["properties"] = {}
             if "data" not in base_schema["properties"]:
-                 base_schema["properties"]["data"] = {"properties": {}}
+                base_schema["properties"]["data"] = {"properties": {}}
             elif "properties" not in base_schema["properties"]["data"]:
-                 base_schema["properties"]["data"]["properties"] = {}
+                base_schema["properties"]["data"]["properties"] = {}
 
             base_schema["properties"]["data"]["properties"]["custom_fields"] = {
                 "properties": custom_fields_properties,
@@ -55,13 +56,13 @@ class EventsStream(ZendeskSellStream):
     def get_records(self, _context: dict | None) -> Iterable[dict]:
         """Return a generator of row-type dictionary objects."""
         session = self.conn.sync.start(self.get_device_uuid())
-        finished = False
         if session is None or "id" not in session:
-            finished = True
-        while not finished:
+            self.logger.error("Failed to start sync session")
+            return
+        while True:
             queue_items = self.conn.sync.fetch(self.get_device_uuid(), session["id"])
             if not queue_items:
-                finished = True
+                break
             ack_keys = []
             for item in queue_items:
                 ack_keys.append(item["meta"]["sync"]["ack_key"])
