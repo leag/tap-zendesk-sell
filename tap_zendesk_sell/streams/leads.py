@@ -2,13 +2,10 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, ClassVar
+from typing import ClassVar
 
 import backoff
 import requests
-
-if TYPE_CHECKING:
-    from collections.abc import Iterable
 
 from tap_zendesk_sell import SCHEMAS_DIR
 from tap_zendesk_sell.client import ZendeskSellStream
@@ -41,18 +38,8 @@ class LeadsStream(ZendeskSellStream):
         max_tries=3,
         max_value=10,
     )
-    def list_data(self, per_page: int, page: int) -> list:
+    def list_data(self, page: int) -> list:
         """List data from the API."""
-        return self.conn.leads.list(per_page=per_page, page=page, sort_by="id")
-
-    def get_records(self, _context: dict | None) -> Iterable[dict]:
-        """Return a generator of row-type dictionary objects."""
-        page = 1
-        while True:
-            data = self.list_data(per_page=100, page=page, sort_by="id")
-            if not data:
-                break
-            yield from data
-            page += 1
+        return self.conn.leads.list(page=page, per_page=100)
 
     schema_filepath = SCHEMAS_DIR / "leads.json"

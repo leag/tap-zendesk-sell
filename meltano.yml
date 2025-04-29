@@ -22,15 +22,16 @@ plugins:
       kind: string
     - name: access_token
       kind: password
-    config:
-      metrics_log_level: debug
     select:
-      - "events.*"
+      # - "accounts.*"
+      - "contacts.*"
+      # - "events.*"
       # - "notes.*"
       # - "deal_sources.*"
-      # - "accounts.*"
       # - deals.*
       # - associated_contacts.*
+      # - orders.*
+      # - line_items.*
   loaders:
   - name: target-jsonl
     variant: andyh1203

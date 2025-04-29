@@ -8,8 +8,9 @@ import basecrm
 from singer_sdk.streams import Stream
 
 if t.TYPE_CHECKING:
+    from collections.abc import Iterable
+
     from singer_sdk.helpers.types import Context
-    from singer_sdk.tap_base import Tap
 
 
 class ZendeskSellStream(Stream):
@@ -60,7 +61,7 @@ class ZendeskSellStream(Stream):
         "prospect_and_customer",
     }
 
-    _conn: basecrm.Client | None = None  # Cache for the connection
+    _conn: basecrm.Client | None = None
 
     @property
     def conn(self) -> basecrm.Client:
@@ -68,8 +69,6 @@ class ZendeskSellStream(Stream):
         if self._conn is None:
             access_token = self.config.get("access_token")
             if not access_token:
-                # Tap-level validation should catch this, but raise if accessed before
-                # config
                 msg = "Access token is required but not found in config."
                 raise ValueError(msg)
             self._conn = basecrm.Client(access_token=access_token)
@@ -90,7 +89,6 @@ class ZendeskSellStream(Stream):
 
         custom_fields_properties = {}
         for resource_type in resource_type_set:
-            # Use the conn property here - it handles initialization
             _, _, data = self.conn.http_client.get(f"/{resource_type}/custom_fields")
             for custom_field in data:
                 field_name = custom_field["name"]
@@ -99,16 +97,12 @@ class ZendeskSellStream(Stream):
                 if field_name not in custom_fields_properties:
                     custom_fields_properties[field_name] = type_dict
                 elif custom_fields_properties[field_name] != type_dict:
-                    # Accessing nested type info might need adjustment if structure
-                    # changes in the future
-                    # Assuming multi_select_list is the main conflict source
                     other_type_desc = "unknown"
                     if "items" in type_dict and "type" in type_dict["items"]:
                         other_type_desc = str(type_dict["items"]["type"])
                     elif "type" in type_dict:
                         other_type_desc = str(type_dict["type"])
 
-                    # Use field_name and field_type from variables
                     msg = (
                         f"Custom field name conflict: {field_name}, "
                         f"Type: {field_type}, "
@@ -117,25 +111,46 @@ class ZendeskSellStream(Stream):
                     raise ValueError(msg)
         return custom_fields_properties
 
-    def __init__(self, tap: Tap) -> None:
-        """Initialize the stream."""
-        super().__init__(tap)
+    def list_data(self, page: int) -> list:
+        """List data from the API.
 
-    def get_records(
-        self,
-        context: Context | None,
-    ) -> t.Iterable[dict]:
-        """Return a generator of record-type dictionary objects.
-
-        The optional `context` argument is used to identify a specific slice of the
-        stream if partitioning is required for the stream. Most implementations do not
-        require partitioning and should ignore the `context` argument.
+        This method should be overridden in subclasses that support simple pagination.
+        It is expected to return a list of dictionaries representing the data.
 
         Args:
-            context: Stream partition or context dictionary.
-
-        Raises:
-            NotImplementedError: If the implementation is TODO
+            page (int): The page number to retrieve.
+            per_page (int): The number of records to return per page.
+            sort_by (str): The field to sort by.
         """
-        errmsg = "The method is not yet implemented (TODO)"
+        errmsg = f"list_data is not implemented for stream '{self.name}'"
         raise NotImplementedError(errmsg)
+
+    def get_records(self, _context: Context | None) -> Iterable[dict]:
+        """Return a generator of row-type dictionary objects.
+
+        This default implementation handles simple pagination using the list_data method
+        Streams with different pagination or fetching logic should override this.
+        """
+        page = 1
+        while True:
+            try:
+                data = self.list_data(page=page)
+            except NotImplementedError:
+                self.logger.exception(
+                    "Stream '%s' does not implement list_data method required for "
+                    "default get_records pagination.",
+                    self.name,
+                )
+                raise
+            except Exception:
+                self.logger.exception(
+                    "Error fetching data for stream '%s' on page %s",
+                    self.name,
+                    page,
+                )
+                break
+
+            if not data:
+                break
+            yield from data
+            page += 1

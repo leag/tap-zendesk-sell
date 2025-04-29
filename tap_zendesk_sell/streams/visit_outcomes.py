@@ -2,13 +2,13 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, ClassVar
+from typing import ClassVar
+
+import backoff
+import requests
 
 from tap_zendesk_sell import SCHEMAS_DIR
 from tap_zendesk_sell.client import ZendeskSellStream
-
-if TYPE_CHECKING:
-    from collections.abc import Iterable
 
 
 class VisitOutcomesStream(ZendeskSellStream):
@@ -17,14 +17,14 @@ class VisitOutcomesStream(ZendeskSellStream):
     name = "visit_outcomes"
     primary_keys: ClassVar[list[str]] = ["id"]
 
-    def get_records(self, _context: dict | None) -> Iterable[dict]:
-        """Return a generator of row-type dictionary objects."""
-        page = 1
-        while True:
-            data = self.conn.visit_outcomes.list(per_page=100, page=page, sort_by="id")
-            if not data:
-                break
-            yield from data
-            page += 1
+    @backoff.on_exception(
+        backoff.expo,
+        requests.exceptions.RequestException,
+        max_tries=3,
+        max_value=10,
+    )
+    def list_data(self, page: int) -> list:
+        """List data from the API."""
+        return self.conn.visit_outcomes.list(page=page, per_page=100)
 
     schema_filepath = SCHEMAS_DIR / "visit_outcomes.json"

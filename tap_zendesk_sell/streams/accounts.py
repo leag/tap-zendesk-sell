@@ -10,6 +10,8 @@ from tap_zendesk_sell.client import ZendeskSellStream
 if TYPE_CHECKING:
     from collections.abc import Iterable
 
+    from singer_sdk.helpers.types import Context
+
 
 class AccountsStream(ZendeskSellStream):
     """Zendesk Sell account stream class."""
@@ -17,10 +19,8 @@ class AccountsStream(ZendeskSellStream):
     name = "accounts"
     primary_keys: ClassVar[list[str]] = ["id"]
 
-    def get_records(self, _context: dict | None) -> Iterable[dict]:
+    def get_records(self, context: Context | None) -> Iterable[dict]:  # noqa: ARG002
         """Return a generator of row-type dictionary objects."""
-        row = self.conn.accounts.self()
-        if row:
-            yield row
+        yield self.conn.accounts.self()
 
     schema_filepath = SCHEMAS_DIR / "accounts.json"
