@@ -2,19 +2,30 @@
 
 from __future__ import annotations
 
-from importlib import import_module
 from typing import TYPE_CHECKING
 
 from singer_sdk import Tap
 from singer_sdk import typing as th
 
 if TYPE_CHECKING:
-    from tap_zendesk_sell import streams
+    from tap_zendesk_sell.streams import ZendeskSellStream
 
-from tap_zendesk_sell.streams import __all__ as stream_classes
+from tap_zendesk_sell.streams import (
+    AccountsStream, AssociatedContacts, ContactsStream, DealSourcesStream, 
+    DealUnqualifiedReasonsStream, DealsStream, EventsStream, LeadSourcesStream,
+    LeadUnqualifiedReasonsStream, LeadsStream, LineItemsStream, LossReasonsStream,
+    NotesStream, OrdersStream, PipelinesStream, ProductsStream, StagesStream,
+    TagsStream, TasksStream, TextMessagesStream, UsersStream, VisitOutcomesStream,
+    VisitsStream
+)
 
 STREAM_TYPES = [
-    getattr(import_module("tap_zendesk_sell.streams"), cls) for cls in stream_classes
+    AccountsStream, AssociatedContacts, ContactsStream, DealSourcesStream,
+    DealUnqualifiedReasonsStream, DealsStream, EventsStream, LeadSourcesStream,
+    LeadUnqualifiedReasonsStream, LeadsStream, LineItemsStream, LossReasonsStream,
+    NotesStream, OrdersStream, PipelinesStream, ProductsStream, StagesStream,
+    TagsStream, TasksStream, TextMessagesStream, UsersStream, VisitOutcomesStream,
+    VisitsStream
 ]
 
 
@@ -41,7 +52,7 @@ class TapZendeskSell(Tap):
         ),
     ).to_dict()
 
-    def discover_streams(self) -> list[streams.ZendeskSellStream]:
+    def discover_streams(self) -> list[ZendeskSellStream]:
         """Return a list of discovered streams."""
         return [stream_class(tap=self) for stream_class in STREAM_TYPES]
 

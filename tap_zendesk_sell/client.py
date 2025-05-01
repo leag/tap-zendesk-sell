@@ -3,18 +3,256 @@
 from __future__ import annotations
 
 import typing as t
+from urllib.parse import parse_qs, urlparse
 
 import basecrm
-from singer_sdk.streams import Stream
+import requests
+import requests.auth
+
+from singer_sdk.streams import RESTStream
+from singer_sdk.pagination import BaseAPIPaginator
 
 if t.TYPE_CHECKING:
     from collections.abc import Iterable
 
     from singer_sdk.helpers.types import Context
 
+from singer_sdk.authenticators import BearerTokenAuthenticator
+from singer_sdk.helpers.jsonpath import extract_jsonpath
 
-class ZendeskSellStream(Stream):
+
+class ZendeskSellPaginator(BaseAPIPaginator):
+    """Zendesk Sell API paginator class."""
+
+    def __init__(
+        self,
+        start_page: int = 1,
+        page_size: int = 100,
+    ) -> None:
+        """Initialize the paginator.
+
+        Args:
+            start_page: The initial page number.
+            page_size: The number of records per page.
+        """
+        self._current_page = start_page
+        self._page_size = page_size
+        self._next_page_url = None
+        self._finished = False
+
+    def has_more(self) -> bool:
+        """Check if there are more pages to process.
+
+        Returns:
+            Boolean flag used to indicate if there are more pages to process.
+        """
+        return not self._finished
+
+    def get_next(self, response: requests.Response) -> int:
+        """Get the next page number.
+
+        Args:
+            response: API response object.
+
+        Returns:
+            The next page number.
+        """
+        if response.status_code != 200:
+            self._finished = True
+            return self._current_page
+
+        json_data = response.json()
+        meta = json_data.get("meta", {})
+        links = meta.get("links", {})
+        
+        # Check if there's a next page link
+        next_page_url = links.get("next_page")
+        
+        if not next_page_url:
+            self._finished = True
+            return self._current_page
+
+        # Store the next page URL for later use
+        self._next_page_url = next_page_url
+        
+        # Increment the current page
+        self._current_page += 1
+        return self._current_page
+
+    @property
+    def next_page_url(self) -> str | None:
+        """Get the next page URL.
+
+        Returns:
+            URL for the next page or None if no more pages.
+        """
+        return self._next_page_url
+
+    @property
+    def page_size(self) -> int | None:
+        """Get the page size.
+
+        Returns:
+            The number of records per page.
+        """
+        return self._page_size
+
+
+class ZendeskSellStream(RESTStream):
     """Zendesk Sell sync stream class."""
+
+    url_base = "https://api.getbase.com/v2"
+    records_jsonpath = "$.items[*].data"  # Default JSON path for most resources
+
+    def __init__(self, *args, **kwargs):
+        """Initialize the stream.
+
+        Args:
+            *args: Variable length argument list.
+            **kwargs: Arbitrary keyword arguments.
+        """
+        self._paginator = None
+        super().__init__(*args, **kwargs)
+
+    @property
+    def authenticator(self) -> BearerTokenAuthenticator:
+        """Return a new authenticator object.
+
+        Returns:
+            An authenticator instance.
+        """
+        return BearerTokenAuthenticator.create_for_stream(
+            self,
+            token=self.config.get("access_token", ""),
+        )
+
+    def get_new_paginator(self) -> ZendeskSellPaginator:
+        """Create a new paginator instance.
+
+        Returns:
+            A paginator instance.
+        """
+        if self._paginator is None:
+            self._paginator = ZendeskSellPaginator(
+                start_page=1,
+                page_size=self.config.get("page_size", 100),  # Default to max page size
+            )
+        return self._paginator
+
+    def get_url_params(
+        self,
+        context: dict | None,
+        next_page_token: int | None,
+    ) -> dict[str, t.Any]:
+        """Return a dictionary of values to be used in URL parameterization.
+
+        Args:
+            context: Stream sync context.
+            next_page_token: The next page index or value.
+
+        Returns:
+            A dictionary of URL parameter values.
+        """
+        params = {}
+        
+        # If we have a specific next_page_url from the paginator, use that instead
+        paginator = self.get_new_paginator()
+        if paginator.next_page_url and next_page_token:
+            # In this case, we'll use the next_page_url directly in the request_records method
+            return params
+            
+        # Add pagination parameters
+        if next_page_token:
+            params["page"] = next_page_token
+        else:
+            params["page"] = 1
+        
+        # Add page size
+        params["per_page"] = self.config.get("page_size", 100)
+
+        # Add any stream-specific parameters
+        if self.replication_key and self.get_starting_replication_key_value(context):
+            start_date = self.get_starting_replication_key_value(context)
+            if start_date:
+                params[f"{self.replication_key}>"] = start_date
+
+        return params
+
+    def parse_response(self, response: requests.Response) -> Iterable[dict]:
+        """Parse the response and return an iterator of records.
+
+        Args:
+            response: The HTTP response object.
+
+        Yields:
+            Each record from the source.
+        """
+        yield from extract_jsonpath(self.records_jsonpath, input=response.json())
+
+    def get_next_page_token(
+        self, response: requests.Response, previous_token: int | None
+    ) -> int | None:
+        """Return a token for identifying next page or None if no more pages.
+
+        Args:
+            response: The HTTP response object.
+            previous_token: The previous page token.
+
+        Returns:
+            The next page token or None if no more pages.
+        """
+        # Use our paginator to determine the next page
+        paginator = self.get_new_paginator()
+        next_page = paginator.get_next(response)
+        
+        if paginator.has_more():
+            return next_page
+        
+        return None
+
+    def request_records(self, context: dict | None) -> Iterable[dict]:
+        """Request records from REST endpoint(s), returning response records.
+
+        If pagination is detected, pages will be recursively queried until
+        no more pages remain.
+
+        Args:
+            context: Stream partition or context dictionary.
+
+        Yields:
+            An item for every record in the response.
+        """
+        paginator = self.get_new_paginator()
+        decorated_request = self.request_decorator(self._request)
+
+        # Initialize next_page_token to None before first request
+        next_page_token = None
+        
+        while True:
+            # If we have a next_page_url from previous response, use that directly
+            if paginator.next_page_url and next_page_token:
+                prepared_request = self.prepare_request(
+                    context,
+                    next_page_token=next_page_token,
+                )
+                # Override the URL with the next_page_url
+                prepared_request.url = paginator.next_page_url
+            else:
+                prepared_request = self.prepare_request(
+                    context,
+                    next_page_token=next_page_token,
+                )
+            
+            resp = decorated_request(prepared_request, context)
+            for record in self.parse_response(resp):
+                yield record
+
+            # Get token for next page
+            next_page_token = self.get_next_page_token(resp, next_page_token)
+
+            # Exit loop if no more pages
+            if not next_page_token:
+                break
 
     address_properties: t.ClassVar[dict[str, dict]] = {
         "line1": {
@@ -111,46 +349,3 @@ class ZendeskSellStream(Stream):
                     raise ValueError(msg)
         return custom_fields_properties
 
-    def list_data(self, page: int) -> list:
-        """List data from the API.
-
-        This method should be overridden in subclasses that support simple pagination.
-        It is expected to return a list of dictionaries representing the data.
-
-        Args:
-            page (int): The page number to retrieve.
-            per_page (int): The number of records to return per page.
-            sort_by (str): The field to sort by.
-        """
-        errmsg = f"list_data is not implemented for stream '{self.name}'"
-        raise NotImplementedError(errmsg)
-
-    def get_records(self, _context: Context | None) -> Iterable[dict]:
-        """Return a generator of row-type dictionary objects.
-
-        This default implementation handles simple pagination using the list_data method
-        Streams with different pagination or fetching logic should override this.
-        """
-        page = 1
-        while True:
-            try:
-                data = self.list_data(page=page)
-            except NotImplementedError:
-                self.logger.exception(
-                    "Stream '%s' does not implement list_data method required for "
-                    "default get_records pagination.",
-                    self.name,
-                )
-                raise
-            except Exception:
-                self.logger.exception(
-                    "Error fetching data for stream '%s' on page %s",
-                    self.name,
-                    page,
-                )
-                break
-
-            if not data:
-                break
-            yield from data
-            page += 1
