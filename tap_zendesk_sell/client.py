@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import typing as t
-from urllib.parse import parse_qs, urlparse
+from http import HTTPStatus
 
 import requests
 import requests.auth
@@ -54,10 +54,11 @@ class ZendeskSellPaginator(BaseAPIPaginator):
         Returns:
             The next page number.
         """
-        if response.status_code != 200:
+        if response.status_code != HTTPStatus.OK:
             self._finished = True
             return self._current_page
 
+        json_data = response.json()
         json_data = response.json()
         meta = json_data.get("meta", {})
         links = meta.get("links", {})
@@ -101,7 +102,7 @@ class ZendeskSellStream(RESTStream):
     url_base = "https://api.getbase.com/v2"
     records_jsonpath = "$.items[*].data"  # Default JSON path for most resources
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args: t.Any, **kwargs: t.Any) -> None:
         """Initialize the stream.
 
         Args:
@@ -155,7 +156,8 @@ class ZendeskSellStream(RESTStream):
         # If we have a specific next_page_url from the paginator, use that instead
         paginator = self.get_new_paginator()
         if paginator.next_page_url and next_page_token:
-            # In this case, we'll use the next_page_url directly in the request_records method
+            # In this case, we'll use the next_page_url directly
+            # in the request_records method
             return params
 
         # Add pagination parameters
@@ -187,7 +189,7 @@ class ZendeskSellStream(RESTStream):
         yield from extract_jsonpath(self.records_jsonpath, input=response.json())
 
     def get_next_page_token(
-        self, response: requests.Response, previous_token: int | None
+        self, response: requests.Response, previous_token: int | None  # noqa: ARG002
     ) -> int | None:
         """Return a token for identifying next page or None if no more pages.
 
@@ -241,8 +243,7 @@ class ZendeskSellStream(RESTStream):
                 )
 
             resp = decorated_request(prepared_request, context)
-            for record in self.parse_response(resp):
-                yield record
+            yield from self.parse_response(resp)
 
             # Get token for next page
             next_page_token = self.get_next_page_token(resp, next_page_token)
@@ -296,6 +297,76 @@ class ZendeskSellStream(RESTStream):
         "prospect_and_customer",
     }
 
+    def _process_single_resource_type_fields(
+        self,
+        resource_type: str,
+        access_token: str,
+        custom_fields_properties: dict,
+    ) -> None:
+        """Fetch and process custom fields for a single resource type."""
+        url = f"{self.url_base}/{resource_type}/custom_fields"
+        headers = {"Authorization": f"Bearer {access_token}"}
+
+        try:
+            # Assuming self.request_timeout exists from RESTStream
+            timeout = getattr(self, "request_timeout", 300)
+            response = requests.get(url, headers=headers, timeout=timeout)
+            response.raise_for_status()
+        except requests.exceptions.RequestException:
+            self.logger.exception(
+                "Error fetching custom fields for %s", resource_type
+            )
+            # Log and continue to avoid breaking the whole sync for one error
+            return
+
+        data = response.json().get("items", [])  # Use .get for safety
+
+        for custom_field in data:
+            field_data = custom_field.get("data", {})  # Use .get
+            field_name = field_data.get("name")
+            field_type = field_data.get("type")
+
+            if not field_name or not field_type:
+                self.logger.warning(
+                    "Skipping custom field with missing name or type: %s", custom_field
+                )
+                continue  # Skip malformed fields
+
+            if field_type in self.custom_field_type:
+                type_dict = self.custom_field_type[field_type]
+                if field_name not in custom_fields_properties:
+                    custom_fields_properties[field_name] = type_dict
+                elif custom_fields_properties[field_name] != type_dict:
+                    # Determine existing type description for logging
+                    existing_type_info = custom_fields_properties[field_name]
+                    existing_type_desc = "unknown"
+                    if ("items" in existing_type_info
+                            and "type" in existing_type_info["items"]):
+                        existing_type_desc = str(existing_type_info["items"]["type"])
+                    elif "type" in existing_type_info:
+                        existing_type_desc = str(existing_type_info["type"])
+
+                    # Log the conflict instead of raising an error
+                    self.logger.warning(
+                        "Custom field name conflict: '%s'. Type '%s' for resource '%s' "
+                        "conflicts with existing type definition '%s'. "
+                        "Keeping the existing type definition.",
+                        field_name,
+                        field_type,
+                        resource_type,
+                        existing_type_desc,
+                    )
+            else:
+                self.logger.warning(
+                    (
+                        "Unsupported custom field type '%s' for field '%s' "
+                        "in resource '%s'"
+                    ),
+                    field_type,
+                    field_name,
+                    resource_type,
+                )
+
     def _update_schema(self, resource_type_set: set | None = None) -> dict:
         """Update the schema for this stream with custom fields.
 
@@ -306,53 +377,26 @@ class ZendeskSellStream(RESTStream):
             Dictionary of custom field properties.
         """
         if resource_type_set is None:
-            resource_type_set = {
-                "deal",
-                "contact",
-                "lead",
-                "prospect_and_customer",
-            }
+            # Use the class variable directly for the default set
+            resource_type_set = self.resource_types
+
         if not resource_type_set.issubset(self.resource_types):
-            msg = f"{resource_type_set} is not a valid resource type set"
+            invalid_types = resource_type_set - self.resource_types
+            msg = (
+                f"Invalid resource type(s) provided: {invalid_types}. "
+                f"Valid types are: {self.resource_types}"
+            )
             raise ValueError(msg)
 
-        custom_fields_properties = {}
+        access_token = self.config.get("access_token")
+        if not access_token:
+            msg = "Access token is required but not found in config."
+            raise ValueError(msg)
+
+        custom_fields_properties: dict[str, dict] = {}
         for resource_type in resource_type_set:
-            # Make a direct API request to get custom fields
-            access_token = self.config.get("access_token")
-            if not access_token:
-                msg = "Access token is required but not found in config."
-                raise ValueError(msg)
-
-            url = f"{self.url_base}/{resource_type}/custom_fields"
-            headers = {"Authorization": f"Bearer {access_token}"}
-
-            response = requests.get(url, headers=headers)
-            response.raise_for_status()
-
-            data = response.json()["items"]
-
-            for custom_field in data:
-                field_name = custom_field["data"]["name"]
-                field_type = custom_field["data"]["type"]
-
-                if field_type in self.custom_field_type:
-                    type_dict = self.custom_field_type[field_type]
-                    if field_name not in custom_fields_properties:
-                        custom_fields_properties[field_name] = type_dict
-                    elif custom_fields_properties[field_name] != type_dict:
-                        other_type_desc = "unknown"
-                        if "items" in type_dict and "type" in type_dict["items"]:
-                            other_type_desc = str(type_dict["items"]["type"])
-                        elif "type" in type_dict:
-                            other_type_desc = str(type_dict["type"])
-
-                        msg = (
-                            f"Custom field name conflict: {field_name}, "
-                            f"Type: {field_type}, "
-                            f"Conflicts with existing type: {other_type_desc}"
-                        )
-                        raise ValueError(msg)
+            self._process_single_resource_type_fields(
+                resource_type, access_token, custom_fields_properties
+            )
 
         return custom_fields_properties
-

@@ -67,6 +67,8 @@ allow-star-arg-any = true
 [tool.ruff.lint.pydocstyle]
 convention = "google"
 
+[tool.black]
+
 [build-system]
 requires = [
     "hatchling>=1,<2",
