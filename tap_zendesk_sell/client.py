@@ -5,17 +5,14 @@ from __future__ import annotations
 import typing as t
 from urllib.parse import parse_qs, urlparse
 
-import basecrm
 import requests
 import requests.auth
-
-from singer_sdk.streams import RESTStream
 from singer_sdk.pagination import BaseAPIPaginator
+from singer_sdk.streams import RESTStream
 
 if t.TYPE_CHECKING:
     from collections.abc import Iterable
 
-    from singer_sdk.helpers.types import Context
 
 from singer_sdk.authenticators import BearerTokenAuthenticator
 from singer_sdk.helpers.jsonpath import extract_jsonpath
@@ -64,17 +61,17 @@ class ZendeskSellPaginator(BaseAPIPaginator):
         json_data = response.json()
         meta = json_data.get("meta", {})
         links = meta.get("links", {})
-        
+
         # Check if there's a next page link
         next_page_url = links.get("next_page")
-        
+
         if not next_page_url:
             self._finished = True
             return self._current_page
 
         # Store the next page URL for later use
         self._next_page_url = next_page_url
-        
+
         # Increment the current page
         self._current_page += 1
         return self._current_page
@@ -154,19 +151,19 @@ class ZendeskSellStream(RESTStream):
             A dictionary of URL parameter values.
         """
         params = {}
-        
+
         # If we have a specific next_page_url from the paginator, use that instead
         paginator = self.get_new_paginator()
         if paginator.next_page_url and next_page_token:
             # In this case, we'll use the next_page_url directly in the request_records method
             return params
-            
+
         # Add pagination parameters
         if next_page_token:
             params["page"] = next_page_token
         else:
             params["page"] = 1
-        
+
         # Add page size
         params["per_page"] = self.config.get("page_size", 100)
 
@@ -204,10 +201,10 @@ class ZendeskSellStream(RESTStream):
         # Use our paginator to determine the next page
         paginator = self.get_new_paginator()
         next_page = paginator.get_next(response)
-        
+
         if paginator.has_more():
             return next_page
-        
+
         return None
 
     def request_records(self, context: dict | None) -> Iterable[dict]:
@@ -227,7 +224,7 @@ class ZendeskSellStream(RESTStream):
 
         # Initialize next_page_token to None before first request
         next_page_token = None
-        
+
         while True:
             # If we have a next_page_url from previous response, use that directly
             if paginator.next_page_url and next_page_token:
@@ -242,7 +239,7 @@ class ZendeskSellStream(RESTStream):
                     context,
                     next_page_token=next_page_token,
                 )
-            
+
             resp = decorated_request(prepared_request, context)
             for record in self.parse_response(resp):
                 yield record
@@ -299,21 +296,15 @@ class ZendeskSellStream(RESTStream):
         "prospect_and_customer",
     }
 
-    _conn: basecrm.Client | None = None
-
-    @property
-    def conn(self) -> basecrm.Client:
-        """Get or initialize the API client connection."""
-        if self._conn is None:
-            access_token = self.config.get("access_token")
-            if not access_token:
-                msg = "Access token is required but not found in config."
-                raise ValueError(msg)
-            self._conn = basecrm.Client(access_token=access_token)
-        return self._conn
-
     def _update_schema(self, resource_type_set: set | None = None) -> dict:
-        """Update the schema for this stream with custom fields."""
+        """Update the schema for this stream with custom fields.
+
+        Args:
+            resource_type_set: Set of resource types to get custom fields for.
+
+        Returns:
+            Dictionary of custom field properties.
+        """
         if resource_type_set is None:
             resource_type_set = {
                 "deal",
@@ -327,25 +318,41 @@ class ZendeskSellStream(RESTStream):
 
         custom_fields_properties = {}
         for resource_type in resource_type_set:
-            _, _, data = self.conn.http_client.get(f"/{resource_type}/custom_fields")
-            for custom_field in data:
-                field_name = custom_field["name"]
-                field_type = custom_field["type"]
-                type_dict = self.custom_field_type[field_type]
-                if field_name not in custom_fields_properties:
-                    custom_fields_properties[field_name] = type_dict
-                elif custom_fields_properties[field_name] != type_dict:
-                    other_type_desc = "unknown"
-                    if "items" in type_dict and "type" in type_dict["items"]:
-                        other_type_desc = str(type_dict["items"]["type"])
-                    elif "type" in type_dict:
-                        other_type_desc = str(type_dict["type"])
+            # Make a direct API request to get custom fields
+            access_token = self.config.get("access_token")
+            if not access_token:
+                msg = "Access token is required but not found in config."
+                raise ValueError(msg)
 
-                    msg = (
-                        f"Custom field name conflict: {field_name}, "
-                        f"Type: {field_type}, "
-                        f"Conflicts with existing type: {other_type_desc}"
-                    )
-                    raise ValueError(msg)
+            url = f"{self.url_base}/{resource_type}/custom_fields"
+            headers = {"Authorization": f"Bearer {access_token}"}
+
+            response = requests.get(url, headers=headers)
+            response.raise_for_status()
+
+            data = response.json()["items"]
+
+            for custom_field in data:
+                field_name = custom_field["data"]["name"]
+                field_type = custom_field["data"]["type"]
+
+                if field_type in self.custom_field_type:
+                    type_dict = self.custom_field_type[field_type]
+                    if field_name not in custom_fields_properties:
+                        custom_fields_properties[field_name] = type_dict
+                    elif custom_fields_properties[field_name] != type_dict:
+                        other_type_desc = "unknown"
+                        if "items" in type_dict and "type" in type_dict["items"]:
+                            other_type_desc = str(type_dict["items"]["type"])
+                        elif "type" in type_dict:
+                            other_type_desc = str(type_dict["type"])
+
+                        msg = (
+                            f"Custom field name conflict: {field_name}, "
+                            f"Type: {field_type}, "
+                            f"Conflicts with existing type: {other_type_desc}"
+                        )
+                        raise ValueError(msg)
+
         return custom_fields_properties
 

@@ -29,7 +29,6 @@ license-files = [ "LICENSE" ]
 readme = "README.md"
 dependencies = [
     "singer-sdk~=0.45.10",
-    "basecrm>=1.2.9,<2",
 ]
 
 [project.scripts]
