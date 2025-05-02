@@ -10,57 +10,7 @@ from singer_sdk import typing as th
 if TYPE_CHECKING:
     from tap_zendesk_sell.streams import ZendeskSellStream
 
-from tap_zendesk_sell.streams import (
-    AccountsStream,
-    AssociatedContacts,
-    ContactsStream,
-    DealSourcesStream,
-    DealsStream,
-    DealUnqualifiedReasonsStream,
-    EventsStream,
-    LeadSourcesStream,
-    LeadsStream,
-    LeadUnqualifiedReasonsStream,
-    LineItemsStream,
-    LossReasonsStream,
-    NotesStream,
-    OrdersStream,
-    PipelinesStream,
-    ProductsStream,
-    StagesStream,
-    TagsStream,
-    TasksStream,
-    TextMessagesStream,
-    UsersStream,
-    VisitOutcomesStream,
-    VisitsStream,
-)
-
-STREAM_TYPES = [
-    AccountsStream,
-    AssociatedContacts,
-    ContactsStream,
-    DealSourcesStream,
-    DealUnqualifiedReasonsStream,
-    DealsStream,
-    EventsStream,
-    LeadSourcesStream,
-    LeadUnqualifiedReasonsStream,
-    LeadsStream,
-    LineItemsStream,
-    LossReasonsStream,
-    NotesStream,
-    OrdersStream,
-    PipelinesStream,
-    ProductsStream,
-    StagesStream,
-    TagsStream,
-    TasksStream,
-    TextMessagesStream,
-    UsersStream,
-    VisitOutcomesStream,
-    VisitsStream,
-]
+from tap_zendesk_sell import streams
 
 
 class TapZendeskSell(Tap):
@@ -88,7 +38,31 @@ class TapZendeskSell(Tap):
 
     def discover_streams(self) -> list[ZendeskSellStream]:
         """Return a list of discovered streams."""
-        return [stream_class(tap=self) for stream_class in STREAM_TYPES]
+        return [
+            streams.AccountsStream(self),
+            streams.AssociatedContacts(self),
+            streams.ContactsStream(self),
+            streams.DealSourcesStream(self),
+            streams.DealUnqualifiedReasonsStream(self),
+            streams.DealsStream(self),
+            streams.EventsStream(self),
+            streams.LeadSourcesStream(self),
+            streams.LeadUnqualifiedReasonsStream(self),
+            streams.LeadsStream(self),
+            streams.LineItemsStream(self),
+            streams.LossReasonsStream(self),
+            streams.NotesStream(self),
+            streams.OrdersStream(self),
+            streams.PipelinesStream(self),
+            streams.ProductsStream(self),
+            streams.StagesStream(self),
+            streams.TagsStream(self),
+            streams.TasksStream(self),
+            streams.TextMessagesStream(self),
+            streams.UsersStream(self),
+            streams.VisitOutcomesStream(self),
+            streams.VisitsStream(self),
+    ]
 
 
 if __name__ == "__main__":
