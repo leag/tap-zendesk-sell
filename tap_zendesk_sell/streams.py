@@ -28,6 +28,16 @@ BooleanType = th.BooleanType
 IntegerType = th.IntegerType
 NumberType = th.NumberType
 
+
+def safe_float(value: str | None) -> float | None:
+    """Safely convert a value to float, returning None on error."""
+    if value is None:
+        return None
+    try:
+        return float(value)
+    except TypeError:
+        return None
+
 AddressType = ObjectType(
     Property("line1", StringType),
     Property("city", StringType),
@@ -41,15 +51,6 @@ class AccountsStream(ZendeskSellStream):
     """Zendesk Sell accounts stream class.
 
     https://developer.zendesk.com/api-reference/sales-crm/resources/account/
-    """
-
-    """
-    name: stream name
-    path: path which will be added to api url in client.py
-    schema: instream schema
-    primary_keys = primary keys for the table
-    replication_key = datetime keys for replication
-    records_jsonpath = json response body
     """
 
     name = "accounts"
@@ -85,8 +86,6 @@ class AccountsStream(ZendeskSellStream):
         Returns:
             A dictionary of URL parameter values.
         """
-        # For the accounts/self endpoint,
-        # return an empty dict as it doesn't support pagination
         return {}
 
 
@@ -108,9 +107,9 @@ class ContactsStream(ZendeskSellStream):
             Property("id", IntegerType),
             Property("creator_id", IntegerType),
             Property("owner_id", IntegerType),
+            Property("is_organization", BooleanType),
             Property("contact_id", IntegerType),
             Property("parent_organization_id", IntegerType),
-            Property("is_organization", BooleanType),
             Property("name", StringType),
             Property("first_name", StringType),
             Property("last_name", StringType),
@@ -221,13 +220,12 @@ class DealsStream(ZendeskSellStream):
             Property("source_id", IntegerType),
             Property("loss_reason_id", IntegerType),
             Property("unqualified_reason_id", IntegerType),
+            Property("dropbox_email", StringType),
             Property("contact_id", IntegerType),
             Property("organization_id", IntegerType),
             Property("estimated_close_date", StringType),
             Property("customized_win_likelihood", IntegerType),
-            Property("dropbox_email", StringType),
-            Property("tags", ArrayType(StringType) ),
-            Property("associated_contacts", ObjectType()),
+            Property("tags", ArrayType(StringType)),
             Property("created_at", DateTimeType),
             Property("updated_at", DateTimeType),
             Property("added_at", DateTimeType),
@@ -253,8 +251,13 @@ class DealsStream(ZendeskSellStream):
         """Return a child context for the stream."""
         return {"deal_id": record["id"]}
 
+    def post_process(self, row: dict, context: Context | None) -> dict:  # noqa: ARG002
+        """Post-process the record before yielding it."""
+        row["value"] = safe_float(row.get("value"))
+        return row
 
-class AssociatedContacts(ContactsStream):
+
+class AssociatedContacts(ZendeskSellStream):
     """Zendesk Sell associated contacts stream class."""
 
     name = "associated_contacts"
@@ -263,38 +266,17 @@ class AssociatedContacts(ContactsStream):
     records_jsonpath = "$.items[*].data"
     primary_keys = ("id",)
 
-    def get_records(self, context: Context | None) -> Iterable[dict]:
-        """Return a generator of row-type dictionary objects."""
-        deal_id = context.get("deal_id") if context else None
-        if deal_id is None:
-            self.logger.warning(
-                "Skipping AssociatedContacts: missing 'deal_id' in context."
-            )
-            return
+    schema = PropertiesList(
+        Property("contact_id", IntegerType),
+        Property("role", StringType),
+        Property("created_at", DateTimeType),
+        Property("updated_at", DateTimeType),
+    ).to_dict()
 
-        # Use the standard request_records method but add deal_id to each record
-        for record in super().request_records(context):
-            record["deal_id"] = deal_id
-            yield record
-
-    def get_url(self, context: dict | None) -> str:
-        """Get URL for API requests.
-
-        Override this method to format the URL with the deal_id from context.
-
-        Args:
-            context: Stream partition or context dictionary.
-
-        Returns:
-            URL with deal_id interpolated.
-        """
-        deal_id = context.get("deal_id") if context else None
-        if deal_id is None:
-            msg = "deal_id is required in context"
-            raise ValueError(msg)
-        return self.url_base + self.path.format(deal_id=deal_id)
-
-
+    def post_process(self, row: dict, context: Context | None) -> dict:
+        """Post-process the record before yielding it."""
+        row["deal_id"] = context["deal_id"]
+        return row
 class EventsStream(ZendeskSellStream):
     """Zendesk Sell events stream class.
 
@@ -566,7 +548,7 @@ class OrdersStream(ZendeskSellStream):
 class LineItemsStream(ZendeskSellStream):
     """Zendesk Sell line items stream class.
 
-    https://developer.zendesk.com/api-reference/sales-crm/resources/line_items/
+    https://developer.zendesk.com/api-reference/sales-crm/resources/line-items/
     """
 
     name = "line_items"
@@ -576,48 +558,29 @@ class LineItemsStream(ZendeskSellStream):
     primary_keys = ("id",)
 
     schema = PropertiesList(
+        Property("id", IntegerType),
         Property("order_id", IntegerType),
-        Property("line_item_id", IntegerType),
+        Property("product_id", IntegerType),
+        Property("value", NumberType),
+        Property("variation", NumberType),
+        Property("currency", StringType),
+        Property("quantity", IntegerType),
+        Property("price", NumberType),
         Property("name", StringType),
         Property("sku", StringType),
         Property("description", StringType),
-        Property("value", NumberType),
-        Property("variation", NumberType),
-        Property("price", NumberType),
-        Property("currency", StringType),
-        Property("quantity", IntegerType),
         Property("created_at", DateTimeType),
         Property("updated_at", DateTimeType),
     ).to_dict()
 
-    def get_records(self, context: dict | None = None) -> Iterable[dict]:
-        """Return a generator of row-type dictionary objects."""
-        order_id = context.get("order_id") if context else None
-        if order_id is None:
-            self.logger.warning("Skipping LineItems: missing 'order_id' in context.")
-            return
-
-        # Use the standard request_records method but add order_id to each record
-        for record in super().request_records(context):
-            record["order_id"] = order_id
-            yield record
-
-    def get_url(self, context: dict | None) -> str:
-        """Get URL for API requests.
-
-        Override this method to format the URL with the order_id from context.
-
-        Args:
-            context: Stream partition or context dictionary.
-
-        Returns:
-            URL with order_id interpolated.
-        """
-        order_id = context.get("order_id") if context else None
-        if order_id is None:
-            msg = "order_id is required in context"
-            raise ValueError(msg)
-        return self.url_base + self.path.format(order_id=order_id)
+    def post_process(self, row: dict, context: dict | None) -> dict:
+        """Post-process the record before yielding it."""
+        row["order_id"] = context["order_id"]
+        row["value"] = safe_float(row.get("value"))
+        row["price"] = safe_float(row.get("price"))
+        row["quantity"] = safe_float(row.get("quantity"))
+        row["variation"] = safe_float(row.get("variation"))
+        return row
 
 
 class PipelinesStream(ZendeskSellStream):
@@ -671,6 +634,20 @@ class ProductsStream(ZendeskSellStream):
         Property("updated_at", DateTimeType),
     ).to_dict()
 
+    def post_process(self, row: dict, context: dict | None) -> dict:  # noqa: ARG002
+        """Post-process the record before yielding it."""
+
+        row["cost"] = safe_float(row.get("cost"))
+        row["max_discount"] = safe_float(row.get("max_discount"))
+        row["max_markup"] = safe_float(row.get("max_markup"))
+
+        prices = row.get("prices", [])
+        if isinstance(prices, list):
+            for price in prices:
+                 if isinstance(price, dict):
+                     price["amount"] = safe_float(price.get("amount"))
+
+        return row
 
 class StagesStream(ZendeskSellStream):
     """Zendesk Sell stages stream class.
