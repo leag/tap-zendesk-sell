@@ -2,7 +2,11 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, ClassVar
+from functools import cached_property
+from http import HTTPStatus
+from typing import Any, ClassVar, TYPE_CHECKING
+
+import requests
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
@@ -55,6 +59,7 @@ class AccountsStream(ZendeskSellStream):
     name = "accounts"
     path = "/accounts/self"
     primary_keys: ClassVar[list[str]] = ["id"]
+    records_jsonpath = "data.[*]"
     schema = PropertiesList(
         Property("id", IntegerType, description="Unique identifier of the account."),
         Property("name", StringType, description="Full name of the account."),
@@ -130,11 +135,10 @@ class ContactsStream(ZendeskSellStream):
 
     name = "contacts"
     path = "/contacts"
-    records_jsonpath = "$.items[*].data"  # API returns items array with data objects
-    primary_keys: ClassVar[list[str]] = ["id"]
-    replication_key = "updated_at"  # Use updated_at for incremental replication
+    records_jsonpath = "$.items[*].data"
+    primary_keys = ("id",)
 
-    @property
+    @cached_property
     def schema(self) -> dict:
         """Dynamically discover and apply schema properties for contacts."""
         base_schema = PropertiesList(
@@ -288,14 +292,6 @@ class ContactsStream(ZendeskSellStream):
             }
         return base_schema
 
-    def get_child_context(
-        self, record: dict[str, Any], context: dict | None = None  # noqa: ARG002
-    ) -> dict[str, Any]:
-        """Return a context dictionary for child streams."""
-        return {
-            "contact_id": record["id"],
-        }
-
 
 class DealSourcesStream(ZendeskSellStream):
     """Zendesk Sell deal sources stream class.
@@ -306,7 +302,7 @@ class DealSourcesStream(ZendeskSellStream):
     name = "deal_sources"
     path = "/deal_sources"
     records_jsonpath = "$.items[*].data"
-    primary_keys: ClassVar[list[str]] = ["id"]
+    primary_keys = ("id",)
 
     schema = PropertiesList(
         Property(
@@ -357,8 +353,7 @@ class DealUnqualifiedReasonsStream(ZendeskSellStream):
             "creator_id",
             IntegerType,
             description=(
-                "Unique identifier of the user that created the unqualified "
-                "reason."
+                "Unique identifier of the user that created the unqualified reason."
             ),
         ),
         Property("name", StringType, description="Name of the unqualified reason."),
@@ -387,7 +382,7 @@ class DealsStream(ZendeskSellStream):
     primary_keys: ClassVar[list[str]] = ["id"]
     replication_key = "updated_at"
 
-    @property
+    @cached_property
     def schema(self) -> dict:
         """Dynamically discover and apply schema properties for deals."""
         base_schema = PropertiesList(
@@ -429,8 +424,7 @@ class DealsStream(ZendeskSellStream):
                 "stage_id",
                 IntegerType,
                 description=(
-                    "Unique identifier of the deal's current stage "
-                    "in the pipeline."
+                    "Unique identifier of the deal's current stage in the pipeline."
                 ),
             ),
             Property(
@@ -548,7 +542,7 @@ class DealsStream(ZendeskSellStream):
         return {"deal_id": record["id"]}
 
 
-class AssociatedContacts(ZendeskSellStream):
+class AssociatedContacts(ContactsStream):
     """Zendesk Sell associated contacts stream class."""
 
     name = "associated_contacts"
@@ -594,10 +588,13 @@ class EventsStream(ZendeskSellStream):
 
     Events are emitted when resources change in the system.
     https://developer.zendesk.com/api-reference/sales-crm/sync/introduction/
+    https://developer.zendesk.com/api-reference/sales-crm/sync/protocol/
+    https://developer.zendesk.com/api-reference/sales-crm/sync/requests/
+    https://developer.zendesk.com/api-reference/sales-crm/sync/reference/
     """
 
     name = "events"
-    path = "/sync/events"
+    path = "/sync"
     records_jsonpath = "$.items[*].data"
     primary_keys: ClassVar[list[str]] = ["id"]
 
@@ -669,28 +666,53 @@ class EventsStream(ZendeskSellStream):
         ),
     ).to_dict()
 
-    def get_url_params(
-        self,
-        context: dict | None,
-        next_page_token: int | None,
-    ) -> dict[str, Any]:
-        """Return a dictionary of values to be used in URL parameterization.
-
-        Args:
-            context: Stream sync context.
-            next_page_token: The next page index or value.
-
-        Returns:
-            A dictionary of URL parameter values.
-        """
-        params = super().get_url_params(context, next_page_token)
-
-        # Add the device_uuid parameter for the sync API
+    def get_records(self, _context: dict | None = None) -> Iterable[dict]:
+        """Implement Zendesk Sell Sync API v2 protocol for events."""
         device_uuid = self.config.get("device_uuid")
-        if device_uuid:
-            params["device_uuid"] = device_uuid
-
-        return params
+        if not device_uuid:
+            self.logger.error("device_uuid is required for sync stream 'events'")
+            return
+        access_token = self.config.get("access_token")
+        headers = {
+            "Authorization": f"Bearer {access_token}",
+            "X-Basecrm-Device-UUID": device_uuid,
+        }
+        # Start a new sync session
+        timeout = getattr(self, "request_timeout", 300)
+        start_url = f"{self.url_base}/sync/start"
+        start_resp = requests.post(start_url, headers=headers, timeout=timeout)
+        if start_resp.status_code == HTTPStatus.NO_CONTENT:
+            return
+        start_resp.raise_for_status()
+        session = start_resp.json()
+        session_id = session.get("id")
+        if not session_id:
+            return
+        # Drain the main queue
+        while True:
+            fetch_url = f"{self.url_base}/sync/{session_id}/queues/main"
+            fetch_resp = requests.get(fetch_url, headers=headers, timeout=timeout)
+            fetch_resp.raise_for_status()
+            items = fetch_resp.json().get("items", [])
+            if not items:
+                break
+            ack_keys: list[str] = []
+            for item in items:
+                yield item.get("data", {})
+                key = item.get("meta", {}).get("sync", {}).get("ack_key")
+                if key:
+                    ack_keys.append(key)
+            # Acknowledge processed events
+            if ack_keys:
+                ack_url = f"{self.url_base}/sync/ack"
+                ack_body = {"ack_keys": ack_keys}
+                ack_resp = requests.post(
+                    ack_url,
+                    json=ack_body,
+                    headers=headers,
+                    timeout=timeout,
+                )
+                ack_resp.raise_for_status()
 
 
 class LeadSourcesStream(ZendeskSellStream):
@@ -754,8 +776,7 @@ class LeadUnqualifiedReasonsStream(ZendeskSellStream):
             "creator_id",
             IntegerType,
             description=(
-                "Unique identifier of the user that created the unqualified "
-                "reason."
+                "Unique identifier of the user that created the unqualified reason."
             ),
         ),
         Property(
@@ -783,7 +804,7 @@ class LeadsStream(ZendeskSellStream):
     primary_keys: ClassVar[list[str]] = ["id"]
     replication_key = "updated_at"
 
-    @property
+    @cached_property
     def schema(self) -> dict:
         """Dynamically discover and apply schema properties for leads."""
         base_schema = PropertiesList(
@@ -797,8 +818,7 @@ class LeadsStream(ZendeskSellStream):
                 "owner_id",
                 IntegerType,
                 description=(
-                    "Unique identifier of the user who currently "
-                    "owns the lead."
+                    "Unique identifier of the user who currently owns the lead."
                 ),
             ),
             Property("first_name", StringType, description="First name of the lead."),
@@ -951,8 +971,7 @@ class NotesStream(ZendeskSellStream):
             "type",
             StringType,
             description=(
-                "The type of permission of the note, e.g. 'regular' or "
-                "'restricted'."
+                "The type of permission of the note, e.g. 'regular' or 'restricted'."
             ),
         ),
     ).to_dict()
@@ -986,21 +1005,21 @@ class OrdersStream(ZendeskSellStream):
             "created_at",
             DateTimeType,
             description=(
-                "Date and time that the order was created in UTC "
-                "(ISO8601 format)."
+                "Date and time that the order was created in UTC (ISO8601 format)."
             ),
         ),
         Property(
             "updated_at",
             DateTimeType,
             description=(
-                "Date and time that the order was updated in UTC "
-                "(ISO8601 format)."
+                "Date and time that the order was updated in UTC (ISO8601 format)."
             ),
         ),
     ).to_dict()
 
-    def get_child_context(self, record: dict, context: dict | None = None) -> dict:  # noqa: ARG002
+    def get_child_context(
+        self, record: dict, context: dict | None = None  # noqa: ARG002
+    ) -> dict:
         """Return a child context for the stream."""
         return {
             "order_id": record["id"],
@@ -1067,8 +1086,7 @@ class LineItemsStream(ZendeskSellStream):
             "price",
             NumberType,
             description=(
-                "Price of one unit of the product. "
-                "Value is copied from the product."
+                "Price of one unit of the product. Value is copied from the product."
             ),
         ),
         Property(
@@ -1226,8 +1244,7 @@ class ProductsStream(ZendeskSellStream):
             "created_at",
             DateTimeType,
             description=(
-                "Date and time that the product was created in UTC "
-                "(ISO8601 format)."
+                "Date and time that the product was created in UTC (ISO8601 format)."
             ),
         ),
         Property(
@@ -1267,8 +1284,7 @@ class StagesStream(ZendeskSellStream):
             "likelihood",
             IntegerType,
             description=(
-                "Probability of deal closing in this stage, "
-                "expressed as percentage."
+                "Probability of deal closing in this stage, expressed as percentage."
             ),
         ),
         Property(
@@ -1361,8 +1377,7 @@ class TasksStream(ZendeskSellStream):
             "resource_id",
             IntegerType,
             description=(
-                "Unique identifier of the resource this task "
-                "is associated with."
+                "Unique identifier of the resource this task is associated with."
             ),
         ),
         Property(
@@ -1563,8 +1578,7 @@ class VisitsStream(ZendeskSellStream):
             "resource_id",
             IntegerType,
             description=(
-                "Unique identifier of the resource this visit "
-                "is associated with."
+                "Unique identifier of the resource this visit is associated with."
             ),
         ),
         Property(
@@ -1583,8 +1597,7 @@ class VisitsStream(ZendeskSellStream):
             "created_at",
             DateTimeType,
             description=(
-                "Date and time when the visit was created in UTC "
-                "(ISO8601 format)."
+                "Date and time when the visit was created in UTC (ISO8601 format)."
             ),
         ),
         Property(
@@ -1592,7 +1605,7 @@ class VisitsStream(ZendeskSellStream):
             DateTimeType,
             description=(
                 "Date and time when the visit was last updated in UTC "
-                "(ISOISO8601 format)."
+                "(ISO8601 format)."
             ),
         ),
     ).to_dict()

@@ -23,8 +23,8 @@ plugins:
     - name: access_token
       kind: password
     select:
-      - "accounts.*"
-      # - "contacts.*"
+      # - "accounts.*"
+      - "contacts.*"
       # - "events.*"
       # - "notes.*"
       # - "deal_sources.*"
