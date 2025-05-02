@@ -62,7 +62,7 @@ class TapZendeskSell(Tap):
             streams.UsersStream(self),
             streams.VisitOutcomesStream(self),
             streams.VisitsStream(self),
-    ]
+        ]
 
 
 if __name__ == "__main__":

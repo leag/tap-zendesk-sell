@@ -12,21 +12,20 @@ if TYPE_CHECKING:
     from collections.abc import Iterable
 
     from singer_sdk.helpers.types import Context
-
-from singer_sdk import typing as th
-
 from tap_zendesk_sell.client import ZendeskSellStream
-
-PropertiesList = th.PropertiesList
-Property = th.Property
-ObjectType = th.ObjectType
-DateTimeType = th.DateTimeType
-DateType = th.DateType
-StringType = th.StringType
-ArrayType = th.ArrayType
-BooleanType = th.BooleanType
-IntegerType = th.IntegerType
-NumberType = th.NumberType
+from tap_zendesk_sell.zendesk_types import (
+    AddressType,
+    ArrayType,
+    BooleanType,
+    DateTimeType,
+    DateType,
+    IntegerType,
+    NumberType,
+    ObjectType,
+    PropertiesList,
+    Property,
+    StringType,
+)
 
 
 def safe_float(value: str | None) -> float | None:
@@ -37,14 +36,6 @@ def safe_float(value: str | None) -> float | None:
         return float(value)
     except TypeError:
         return None
-
-AddressType = ObjectType(
-    Property("line1", StringType),
-    Property("city", StringType),
-    Property("postal_code", StringType),
-    Property("state", StringType),
-    Property("country", StringType),
-)
 
 
 class AccountsStream(ZendeskSellStream):
@@ -131,14 +122,14 @@ class ContactsStream(ZendeskSellStream):
             Property("address", AddressType),
             Property("billing_address", AddressType),
             Property("shipping_address", AddressType),
-            Property("tags", ArrayType(StringType)),
+            Property("tags", ArrayType(StringType, nullable=True)),
             Property("custom_fields", ObjectType()),
             Property("created_at", DateTimeType),
             Property("updated_at", DateTimeType),
         ).to_dict()
 
         # Add custom fields
-        custom_fields_properties = self._update_schema({"contact"})
+        custom_fields_properties = self._fetch_custom_field_schema({"contact"})
         if custom_fields_properties:
             if "properties" not in base_schema:
                 base_schema["properties"] = {}
@@ -163,7 +154,7 @@ class DealSourcesStream(ZendeskSellStream):
 
     schema = PropertiesList(
         Property("id", IntegerType),
-        Property("creator_id",IntegerType),
+        Property("creator_id", IntegerType),
         Property("name", StringType),
         Property("resource_type", StringType),
         Property("created_at", DateTimeType),
@@ -226,14 +217,14 @@ class DealsStream(ZendeskSellStream):
             Property("organization_id", IntegerType),
             Property("estimated_close_date", StringType),
             Property("customized_win_likelihood", IntegerType),
-            Property("tags", ArrayType(StringType)),
+            Property("tags", ArrayType(StringType, nullable=True)),
             Property("created_at", DateTimeType),
             Property("updated_at", DateTimeType),
             Property("added_at", DateTimeType),
         ).to_dict()
 
         # Add custom fields
-        custom_fields_properties = self._update_schema({"deal"})
+        custom_fields_properties = self._fetch_custom_field_schema({"deal"})
         if custom_fields_properties:
             if "properties" not in base_schema:
                 base_schema["properties"] = {}
@@ -278,6 +269,8 @@ class AssociatedContacts(ZendeskSellStream):
         """Post-process the record before yielding it."""
         row["deal_id"] = context["deal_id"]
         return row
+
+
 class EventsStream(ZendeskSellStream):
     """Zendesk Sell events stream class.
 
@@ -312,11 +305,13 @@ class EventsStream(ZendeskSellStream):
     primary_keys = ("id",)
 
     schema = PropertiesList(
-        Property("meta",
+        Property(
+            "meta",
             ObjectType(
                 Property("version", IntegerType),
                 Property("type", StringType),
-                Property("sync",
+                Property(
+                    "sync",
                     ObjectType(
                         Property("revision", IntegerType),
                         Property("event_type", StringType),
@@ -325,7 +320,8 @@ class EventsStream(ZendeskSellStream):
                 ),
             ),
         ),
-        Property("data",
+        Property(
+            "data",
             ObjectType(
                 Property("id", IntegerType),
                 Property("resource_type", StringType),
@@ -340,7 +336,7 @@ class EventsStream(ZendeskSellStream):
                 Property("email", StringType),
                 Property("phone", StringType),
                 Property("address", AddressType),
-                Property("tags", ArrayType(StringType)),
+                Property("tags", ArrayType(StringType, nullable=True)),
                 Property("updated_at", StringType),
             ),
         ),
@@ -473,14 +469,14 @@ class LeadsStream(ZendeskSellStream):
             Property("linkedin", StringType),
             Property("skype", StringType),
             Property("address", AddressType),
-            Property("tags", ArrayType(StringType) ),
+            Property("tags", ArrayType(StringType, nullable=True)),
             Property("unqualified_reason_id", IntegerType),
             Property("created_at", DateTimeType),
             Property("updated_at", DateTimeType),
         ).to_dict()
 
         # Add custom fields
-        custom_fields_properties = self._update_schema({"lead"})
+        custom_fields_properties = self._fetch_custom_field_schema({"lead"})
         if custom_fields_properties:
             if "properties" not in base_schema:
                 base_schema["properties"] = {}
@@ -530,7 +526,7 @@ class NotesStream(ZendeskSellStream):
         Property("resource_id", IntegerType),
         Property("content", StringType),
         Property("is_important", BooleanType),
-        Property("tags", ArrayType(StringType)),
+        Property("tags", ArrayType(StringType, nullable=True)),
         Property("created_at", DateTimeType),
         Property("updated_at", DateTimeType),
         Property("type", StringType),
@@ -647,10 +643,14 @@ class ProductsStream(ZendeskSellStream):
         Property("max_markup", NumberType),
         Property("cost", NumberType),
         Property("cost_currency", StringType),
-        Property("prices", ArrayType( ObjectType(
+        Property(
+            "prices",
+            ArrayType(
+                ObjectType(
                     Property("amount", NumberType),
                     Property("currency", StringType),
-                )
+                ),
+                nullable=True,
             ),
         ),
         Property("created_at", DateTimeType),
@@ -666,10 +666,11 @@ class ProductsStream(ZendeskSellStream):
         prices = row.get("prices", [])
         if isinstance(prices, list):
             for price in prices:
-                 if isinstance(price, dict):
-                     price["amount"] = safe_float(price.get("amount"))
+                if isinstance(price, dict):
+                    price["amount"] = safe_float(price.get("amount"))
 
         return row
+
 
 class StagesStream(ZendeskSellStream):
     """Zendesk Sell stages stream class.
@@ -756,7 +757,7 @@ class TextMessagesStream(ZendeskSellStream):
     primary_keys = ("id",)
 
     schema = PropertiesList(
-        Property("associated_deal_ids", ArrayType(IntegerType)),
+        Property("associated_deal_ids", ArrayType(IntegerType, nullable=True)),
         Property("content", StringType),
         Property("created_at", DateTimeType),
         Property("id", IntegerType),
@@ -791,7 +792,8 @@ class UsersStream(ZendeskSellStream):
         Property("confirmed", BooleanType),
         Property("phone_number", StringType),
         Property("role", StringType),
-        Property("roles",
+        Property(
+            "roles",
             ArrayType(
                 ObjectType(
                     Property("id", IntegerType),
@@ -800,7 +802,8 @@ class UsersStream(ZendeskSellStream):
             ),
         ),
         Property("team_name", StringType),
-        Property("group",
+        Property(
+            "group",
             ObjectType(
                 Property("id", IntegerType),
                 Property("name", StringType),
@@ -861,30 +864,3 @@ class VisitsStream(ZendeskSellStream):
         Property("created_at", DateTimeType),
         Property("updated_at", DateTimeType),
     ).to_dict()
-
-
-__all__ = [
-    "AccountsStream",
-    "AssociatedContacts",
-    "ContactsStream",
-    "DealSourcesStream",
-    "DealUnqualifiedReasonsStream",
-    "DealsStream",
-    "EventsStream",
-    "LeadSourcesStream",
-    "LeadUnqualifiedReasonsStream",
-    "LeadsStream",
-    "LineItemsStream",
-    "LossReasonsStream",
-    "NotesStream",
-    "OrdersStream",
-    "PipelinesStream",
-    "ProductsStream",
-    "StagesStream",
-    "TagsStream",
-    "TasksStream",
-    "TextMessagesStream",
-    "UsersStream",
-    "VisitOutcomesStream",
-    "VisitsStream",
-]

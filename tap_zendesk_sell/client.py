@@ -8,6 +8,39 @@ import requests
 from singer_sdk.authenticators import BearerTokenAuthenticator
 from singer_sdk.streams import RESTStream
 
+from tap_zendesk_sell.zendesk_types import (
+    AddressType,
+    ArrayType,
+    BooleanType,
+    DateTimeType,
+    DateType,
+    StringType,
+)
+
+ResourceTypes = {
+    "deal",
+    "contact",
+    "lead",
+    "prospect_and_customer",
+}
+
+
+CustomFieldTypes = {
+    "address": AddressType,
+    "bool": BooleanType,
+    "boolean": BooleanType,
+    "date": DateType,
+    "datetime": DateTimeType,
+    "email": StringType,
+    "list": StringType,
+    "multi_select_list": ArrayType(StringType),
+    "number": StringType,
+    "phone": StringType,
+    "string": StringType,
+    "text": StringType,
+    "url": StringType,
+}
+
 
 class ZendeskSellStream(RESTStream):
     """Zendesk Sell sync stream class."""
@@ -48,75 +81,32 @@ class ZendeskSellStream(RESTStream):
             return (previous_token or 1) + 1
         return None
 
-    address_properties: t.ClassVar[dict[str, dict]] = {
-        "line1": {
-            "type": ["string", "null"],
-            "description": "Line 1 of the address.",
-        },
-        "city": {"type": ["string", "null"], "description": "City name."},
-        "postal_code": {
-            "type": ["string", "null"],
-            "description": "Zip code or equivalent.",
-        },
-        "state": {"type": ["string", "null"], "description": "State name."},
-        "country": {
-            "type": ["string", "null"],
-            "description": "Country name.",
-        },
-    }
-
-    custom_field_type: t.ClassVar[dict[str, dict]] = {
-        "address": {
-            "type": ["object", "null"],
-            "properties": address_properties,
-        },
-        "bool": {"type": ["boolean", "null"]},
-        "boolean": {"type": ["boolean", "null"]},
-        "date": {"type": ["string", "null"]},
-        "datetime": {"type": ["string", "null"], "format": "date-time"},
-        "email": {"type": ["string", "null"]},
-        "list": {"type": ["string", "null"]},
-        "multi_select_list": {
-            "type": ["array", "null"],
-            "items": {"type": ["string"]},
-        },
-        "number": {"type": ["string", "null"]},
-        "phone": {"type": ["string", "null"]},
-        "string": {"type": ["string", "null"]},
-        "text": {"type": ["string", "null"]},
-        "url": {"type": ["string", "null"]},
-    }
-    resource_types: t.ClassVar[set[str]] = {
-        "deal",
-        "contact",
-        "lead",
-        "prospect_and_customer",
-    }
-
-    def _process_single_resource_type_fields(
+    def _fetch_and_process_custom_fields(
         self,
         resource_type: str,
-        access_token: str,
         custom_fields_properties: dict,
     ) -> None:
-        """Fetch and process custom fields for a single resource type."""
-        url = f"{self.url_base}/{resource_type}/custom_fields"
-        headers = {"Authorization": f"Bearer {access_token}"}
+        """Fetch and process custom fields for a resource type.
+
+        https://developer.zendesk.com/api-reference/sales-crm/resources/custom-fields/
+        """
+        path = "/{resource_type}/custom_fields"
 
         try:
-            # Assuming self.request_timeout exists from RESTStream
-            timeout = getattr(self, "request_timeout", 300)
-            response = requests.get(url, headers=headers, timeout=timeout)
+            request = self.build_prepared_request(
+                method="GET",
+                url=self.url_base + path.format(resource_type=resource_type),
+            )
+            response = self.requests_session.send(request)
             response.raise_for_status()
         except requests.exceptions.RequestException:
             self.logger.exception("Error fetching custom fields for %s", resource_type)
-            # Log and continue to avoid breaking the whole sync for one error
             return
 
-        data = response.json().get("items", [])  # Use .get for safety
+        data = response.json().get("items", [])
 
         for custom_field in data:
-            field_data = custom_field.get("data", {})  # Use .get
+            field_data = custom_field.get("data", {})
             field_name = field_data.get("name")
             field_type = field_data.get("type")
 
@@ -124,10 +114,17 @@ class ZendeskSellStream(RESTStream):
                 self.logger.warning(
                     "Skipping custom field with missing name or type: %s", custom_field
                 )
-                continue  # Skip malformed fields
+                continue
 
-            if field_type in self.custom_field_type:
-                type_dict = self.custom_field_type[field_type]
+            if field_type in CustomFieldTypes:
+                # Convert the type instance to a schema dict to avoid AttributeError
+                type_instance = CustomFieldTypes[field_type]
+                if hasattr(type_instance, "to_dict"):
+                    type_dict = type_instance.to_dict()
+                else:
+                    # For types like ArrayType that might not have to_dict
+                    type_dict = {"type": "string", "nullable": True}
+
                 if field_name not in custom_fields_properties:
                     custom_fields_properties[field_name] = type_dict
                 elif custom_fields_properties[field_name] != type_dict:
@@ -142,7 +139,6 @@ class ZendeskSellStream(RESTStream):
                     elif "type" in existing_type_info:
                         existing_type_desc = str(existing_type_info["type"])
 
-                    # Log the conflict instead of raising an error
                     self.logger.warning(
                         "Custom field name conflict: '%s'. Type '%s' for resource '%s' "
                         "conflicts with existing type definition '%s'. "
@@ -163,36 +159,31 @@ class ZendeskSellStream(RESTStream):
                     resource_type,
                 )
 
-    def _update_schema(self, resource_type_set: set | None = None) -> dict:
+    def _fetch_custom_field_schema(self, resource_type_set: set | None = None) -> dict:
         """Update the schema for this stream with custom fields.
 
         Args:
             resource_type_set: Set of resource types to get custom fields for.
+                               defaults to all resource types.
 
         Returns:
             Dictionary of custom field properties.
         """
         if resource_type_set is None:
-            # Use the class variable directly for the default set
-            resource_type_set = self.resource_types
+            resource_type_set = ResourceTypes  # Default to all resource types
 
-        if not resource_type_set.issubset(self.resource_types):
-            invalid_types = resource_type_set - self.resource_types
+        if not resource_type_set.issubset(ResourceTypes):
+            invalid_types = resource_type_set - ResourceTypes
             msg = (
                 f"Invalid resource type(s) provided: {invalid_types}. "
-                f"Valid types are: {self.resource_types}"
+                f"Valid types are: {ResourceTypes}"
             )
-            raise ValueError(msg)
-
-        access_token = self.config.get("access_token")
-        if not access_token:
-            msg = "Access token is required but not found in config."
             raise ValueError(msg)
 
         custom_fields_properties: dict[str, dict] = {}
         for resource_type in resource_type_set:
-            self._process_single_resource_type_fields(
-                resource_type, access_token, custom_fields_properties
+            self._fetch_and_process_custom_fields(
+                resource_type, custom_fields_properties
             )
 
         return custom_fields_properties
