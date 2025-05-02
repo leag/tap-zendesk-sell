@@ -57,6 +57,7 @@ class AccountsStream(ZendeskSellStream):
     path = "/accounts/self"
     primary_keys = ("id",)
     records_jsonpath = "data.[*]"
+
     schema = PropertiesList(
         Property("id", IntegerType),
         Property("name", StringType),
@@ -285,6 +286,24 @@ class EventsStream(ZendeskSellStream):
     https://developer.zendesk.com/api-reference/sales-crm/sync/protocol/
     https://developer.zendesk.com/api-reference/sales-crm/sync/requests/
     https://developer.zendesk.com/api-reference/sales-crm/sync/reference/
+
+    meta.type:
+    - account
+    - contact
+    - deal
+    - lead
+    - loss_reason
+    - note
+    - pipeline
+    - source
+    - tag
+    - task
+    - user
+
+    meta.sync.event_type:
+    - create
+    - update
+    - delete
     """
 
     name = "events"
@@ -293,22 +312,27 @@ class EventsStream(ZendeskSellStream):
     primary_keys = ("id",)
 
     schema = PropertiesList(
-        Property("meta", ObjectType( Property("version", IntegerType),
+        Property("meta",
+            ObjectType(
+                Property("version", IntegerType),
                 Property("type", StringType),
-                Property("sync", ObjectType( Property("revision", IntegerType),
+                Property("sync",
+                    ObjectType(
+                        Property("revision", IntegerType),
                         Property("event_type", StringType),
                         Property("ack_key", StringType),
                     ),
                 ),
             ),
         ),
-        Property("data", ObjectType( Property("id", IntegerType),
+        Property("data",
+            ObjectType(
+                Property("id", IntegerType),
                 Property("resource_type", StringType),
                 Property("resource_id", IntegerType),
                 Property("type", StringType),
                 Property("creator_id", IntegerType),
                 Property("created_at", StringType),
-                # The following fields depend on the resource_type and may be present
                 Property("name", StringType),
                 Property("value", StringType),
                 Property("currency", StringType),
@@ -318,7 +342,6 @@ class EventsStream(ZendeskSellStream):
                 Property("address", AddressType),
                 Property("tags", ArrayType(StringType)),
                 Property("updated_at", StringType),
-                # Many more fields may be present depending on the event type
             ),
         ),
     ).to_dict()
@@ -636,7 +659,6 @@ class ProductsStream(ZendeskSellStream):
 
     def post_process(self, row: dict, context: dict | None) -> dict:  # noqa: ARG002
         """Post-process the record before yielding it."""
-
         row["cost"] = safe_float(row.get("cost"))
         row["max_discount"] = safe_float(row.get("max_discount"))
         row["max_markup"] = safe_float(row.get("max_markup"))
@@ -709,8 +731,8 @@ class TasksStream(ZendeskSellStream):
         Property("id", IntegerType),
         Property("creator_id", IntegerType),
         Property("owner_id", IntegerType),
-        Property("resource_id", IntegerType),
         Property("resource_type", StringType),
+        Property("resource_id", IntegerType),
         Property("completed", BooleanType),
         Property("completed_at", DateTimeType),
         Property("due_date", DateTimeType),
@@ -725,7 +747,7 @@ class TasksStream(ZendeskSellStream):
 class TextMessagesStream(ZendeskSellStream):
     """Zendesk Sell text messages stream class.
 
-    https://developer.zendesk.com/api-reference/sales-crm/resources/text_messages/
+    https://developer.zendesk.com/api-reference/sales-crm/resources/text-messages/
     """
 
     name = "text_messages"
@@ -734,13 +756,17 @@ class TextMessagesStream(ZendeskSellStream):
     primary_keys = ("id",)
 
     schema = PropertiesList(
-        Property("id", IntegerType),
-        Property("creator_id", IntegerType),
-        Property("resource_id", IntegerType),
-        Property("resource_type", StringType),
-        Property("phone_number", StringType),
+        Property("associated_deal_ids", ArrayType(IntegerType)),
         Property("content", StringType),
         Property("created_at", DateTimeType),
+        Property("id", IntegerType),
+        Property("incoming", BooleanType),
+        Property("resource_id", IntegerType),
+        Property("resource_type", StringType),
+        Property("resource_phone_number", StringType),
+        Property("sent_at", DateTimeType),
+        Property("user_id", IntegerType),
+        Property("user_phone_number", StringType),
         Property("updated_at", DateTimeType),
     ).to_dict()
 
@@ -760,16 +786,36 @@ class UsersStream(ZendeskSellStream):
         Property("id", IntegerType),
         Property("name", StringType),
         Property("email", StringType),
-        Property("role", StringType),
         Property("status", StringType),
-        Property("reports_to", IntegerType),
-        Property("group", ObjectType( Property("id", IntegerType),
-                Property("name", StringType),
+        Property("invited", BooleanType),
+        Property("confirmed", BooleanType),
+        Property("phone_number", StringType),
+        Property("role", StringType),
+        Property("roles",
+            ArrayType(
+                ObjectType(
+                    Property("id", IntegerType),
+                    Property("name", StringType),
+                ),
             ),
         ),
         Property("team_name", StringType),
+        Property("group",
+            ObjectType(
+                Property("id", IntegerType),
+                Property("name", StringType),
+            ),
+        ),
+        Property("reports_to", IntegerType),
+        Property("timezone", StringType),
         Property("created_at", DateTimeType),
         Property("updated_at", DateTimeType),
+        Property("deleted_at", DateTimeType),
+        Property("zendesk_user_id", StringType),
+        Property("identity_type", StringType),
+        Property("system_tags", ArrayType(StringType)),
+        Property("detached", BooleanType),
+        Property("sell_login_disabled", BooleanType),
     ).to_dict()
 
 
