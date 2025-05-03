@@ -7,6 +7,7 @@ from http import HTTPStatus
 from typing import TYPE_CHECKING, Any
 
 import requests
+from singer_sdk import typing as th
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
@@ -221,6 +222,7 @@ class DealsStream(ZendeskSellStream):
             Property("created_at", DateTimeType),
             Property("updated_at", DateTimeType),
             Property("added_at", DateTimeType),
+            Property("custom_fields", ObjectType()),
         ).to_dict()
 
         # Add custom fields
@@ -304,43 +306,182 @@ class EventsStream(ZendeskSellStream):
     records_jsonpath = "$.items[*].data"
     primary_keys = ("id",)
 
-    schema = PropertiesList(
-        Property(
-            "meta",
-            ObjectType(
-                Property("version", IntegerType),
-                Property("type", StringType),
-                Property(
-                    "sync",
-                    ObjectType(
-                        Property("revision", IntegerType),
-                        Property("event_type", StringType),
-                        Property("ack_key", StringType),
+    @cached_property
+    def schema(self) -> dict:
+        """Dynamically discover and apply schema properties for events."""
+        # The schema is a superset of all possible properties from all resource types
+        # and is not specific to any one resource type.
+        base_schema = PropertiesList(
+            Property(
+                "meta",
+                ObjectType(
+                    Property("version", IntegerType),
+                    Property("type", StringType),
+                    Property(
+                        "sync",
+                        ObjectType(
+                            Property("revision", IntegerType),
+                            Property("event_type", StringType),
+                            Property("ack_key", StringType),
+                        ),
                     ),
                 ),
             ),
-        ),
-        Property(
-            "data",
-            ObjectType(
-                Property("id", IntegerType),
-                Property("resource_type", StringType),
-                Property("resource_id", IntegerType),
-                Property("type", StringType),
-                Property("creator_id", IntegerType),
-                Property("created_at", StringType),
-                Property("name", StringType),
-                Property("value", StringType),
-                Property("currency", StringType),
-                Property("owner_id", IntegerType),
-                Property("email", StringType),
-                Property("phone", StringType),
-                Property("address", AddressType),
-                Property("tags", ArrayType(StringType, nullable=True)),
-                Property("updated_at", StringType),
+            Property(
+                "data",
+                ObjectType(
+                    Property("id", IntegerType),
+                    Property("resource_type", StringType),
+                    Property("resource_id", IntegerType),
+                    Property("type", StringType),
+                    Property("creator_id", IntegerType),
+                    Property("created_at", DateTimeType),
+                    Property("updated_at", DateTimeType),
+                    Property("added_at", DateTimeType),
+                    Property("address", AddressType),
+                    Property(
+                        "associated_contacts",
+                        ObjectType(
+                            Property(
+                                "meta",
+                                ObjectType(
+                                    Property("type", StringType),
+                                    Property("count", IntegerType),
+                                ),
+                            ),
+                        ),
+                    ),
+                    Property("billing_address", AddressType),
+                    Property("completed", BooleanType),
+                    Property("completed_at", DateTimeType),
+                    Property("confirmed", BooleanType),
+                    Property("contact_id", IntegerType),
+                    Property("content", StringType),
+                    Property("currency", StringType),
+                    Property("custom_fields", ObjectType()),
+                    Property("customer_status", StringType),
+                    Property("customized_win_likelihood", IntegerType),
+                    Property("deleted_at", DateTimeType),
+                    Property("description", StringType),
+                    Property("detached", BooleanType),
+                    Property("disabled", BooleanType),
+                    Property("dropbox_email", StringType),
+                    Property("due_date", DateTimeType),
+                    Property("email", StringType),
+                    Property("estimated_close_date", StringType),
+                    Property("facebook", StringType),
+                    Property("fax", StringType),
+                    Property("first_name", StringType),
+                    Property(
+                        "group",
+                        ObjectType(
+                            Property("id", IntegerType),
+                            Property("name", StringType),
+                        ),
+                    ),
+                    Property("hot", BooleanType),
+                    Property("identity_type", StringType),
+                    Property("industry", StringType),
+                    Property("invited", BooleanType),
+                    Property("is_important", BooleanType),
+                    Property("is_organization", BooleanType),
+                    Property("last_activity_at", DateTimeType),
+                    Property("last_name", StringType),
+                    Property("last_stage_change_at", DateTimeType),
+                    Property("last_stage_change_by_id", IntegerType),
+                    Property("linkedin", StringType),
+                    Property("loss_reason_id", IntegerType),
+                    Property("mobile", StringType),
+                    Property("name", StringType),
+                    Property("organization_id", IntegerType),
+                    Property("organization_name", StringType),
+                    Property("overdue", BooleanType),
+                    Property("owner_id", IntegerType),
+                    Property("parent_organization_id", IntegerType),
+                    Property("phone", StringType),
+                    Property("phone_number", StringType),
+                    Property("prospect_status", StringType),
+                    Property("remind_at", DateTimeType),
+                    Property("reports_to", IntegerType),
+                    Property("role", StringType),
+                    Property(
+                        "roles",
+                        ArrayType(
+                            ObjectType(
+                                Property("id", IntegerType),
+                                Property("name", StringType),
+                            )
+                        ),
+                    ),
+                    Property("sell_login_disabled", BooleanType),
+                    Property("shipping_address", AddressType),
+                    Property("skype", StringType),
+                    Property("source_id", IntegerType),
+                    Property("stage_id", IntegerType),
+                    Property(
+                        "stages",
+                        ObjectType(
+                            Property(
+                                "items",
+                                ArrayType(
+                                    ObjectType(
+                                        Property(
+                                            "meta",
+                                            ObjectType(
+                                                Property("type", StringType),
+                                            ),
+                                        ),
+                                        Property(
+                                            "data",
+                                            ObjectType(
+                                                Property("updated_at", DateTimeType),
+                                                Property("position_hash", StringType),
+                                                Property("position", IntegerType),
+                                                Property("pipeline_id", IntegerType),
+                                                Property("name", StringType),
+                                                Property("locale_key", StringType),
+                                                Property("likelihood", IntegerType),
+                                                Property("id", IntegerType),
+                                                Property("has_original_name", BooleanType),  # noqa: E501
+                                                Property("created_at", DateTimeType),
+                                                Property("category", StringType),
+                                                Property("active", BooleanType),
+                                            ),
+                                        ),
+                                    )
+                                ),
+                            )
+                        ),
+                    ),
+                    Property("status", StringType),
+                    Property("subdomain", StringType),
+                    Property("system_tags", ArrayType(StringType)),
+                    Property("tags", ArrayType(StringType)),
+                    Property("team_name", StringType),
+                    Property("time_format", StringType),
+                    Property("timezone", StringType),
+                    Property("title", StringType),
+                    Property("twitter", StringType),
+                    Property("unqualified_reason_id", IntegerType),
+                    Property(
+                        "value", th.CustomType({"type": ["null", "integer", "string"]})
+                    ),
+                    Property("website", StringType),
+                    Property("zendesk_user_id", StringType),
+                ),
             ),
-        ),
-    ).to_dict()
+        ).to_dict()
+
+        custom_fields_properties = self._fetch_custom_field_schema()
+        if custom_fields_properties:
+            if "properties" not in base_schema["properties"]["data"]:
+                base_schema["properties"]["data"]["properties"] = {}
+            base_schema["properties"]["data"]["properties"]["custom_fields"] = {
+                "properties": custom_fields_properties,
+                "description": "Custom fields attached to a resource.",
+                "type": ["object", "null"],
+            }
+        return base_schema
 
     def get_records(self, _context: dict | None = None) -> Iterable[dict]:
         """Implement Zendesk Sell Sync API v2 protocol for events."""
@@ -348,40 +489,66 @@ class EventsStream(ZendeskSellStream):
         if not device_uuid:
             self.logger.error("device_uuid is required for sync stream 'events'")
             return
+        self.logger.info("Using device_uuid: %s for events stream", device_uuid)
+
         access_token = self.config.get("access_token")
         headers = {
             "Authorization": f"Bearer {access_token}",
             "X-Basecrm-Device-UUID": device_uuid,
         }
+
         # Start a new sync session
         timeout = getattr(self, "request_timeout", 300)
         start_url = f"{self.url_base}/sync/start"
+        self.logger.info("Starting sync session with URL: %s", start_url)
+
         start_resp = requests.post(start_url, headers=headers, timeout=timeout)
+        self.logger.info("Sync start response status: %s", start_resp.status_code)
+
         if start_resp.status_code == HTTPStatus.NO_CONTENT:
+            self.logger.warning("Sync start returned NO_CONTENT, no events to process")
             return
+
         start_resp.raise_for_status()
         session = start_resp.json()
+        self.logger.debug("Sync start response: %s", session)
+
         session_id = session.get("id")
         if not session_id:
+            self.logger.error("No session ID returned from sync start")
             return
+        self.logger.info("Got sync session ID: %s", session_id)
+
         # Drain the main queue
         while True:
             fetch_url = f"{self.url_base}/sync/{session_id}/queues/main"
+            self.logger.debug("Fetching events from URL: %s", fetch_url)
+
             fetch_resp = requests.get(fetch_url, headers=headers, timeout=timeout)
             fetch_resp.raise_for_status()
-            items = fetch_resp.json().get("items", [])
+
+            response_data = fetch_resp.json()
+            items = response_data.get("items", [])
+            self.logger.info("Fetched %d events", len(items))
+
             if not items:
+                self.logger.info("No more events to process, breaking loop")
                 break
+
             ack_keys: list[str] = []
             for item in items:
+                self.logger.debug("Processing event item: %s", item.get("meta", {}))
                 yield item.get("data", {})
                 key = item.get("meta", {}).get("sync", {}).get("ack_key")
                 if key:
                     ack_keys.append(key)
+
             # Acknowledge processed events
             if ack_keys:
                 ack_url = f"{self.url_base}/sync/ack"
                 ack_body = {"ack_keys": ack_keys}
+                self.logger.debug("Acknowledging %d events", len(ack_keys))
+
                 ack_resp = requests.post(
                     ack_url,
                     json=ack_body,
@@ -389,6 +556,7 @@ class EventsStream(ZendeskSellStream):
                     timeout=timeout,
                 )
                 ack_resp.raise_for_status()
+                self.logger.debug("Events acknowledged successfully")
 
 
 class LeadSourcesStream(ZendeskSellStream):
@@ -471,6 +639,7 @@ class LeadsStream(ZendeskSellStream):
             Property("address", AddressType),
             Property("tags", ArrayType(StringType, nullable=True)),
             Property("unqualified_reason_id", IntegerType),
+            Property("custom_fields", ObjectType()),
             Property("created_at", DateTimeType),
             Property("updated_at", DateTimeType),
         ).to_dict()

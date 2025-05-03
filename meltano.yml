@@ -23,9 +23,9 @@ plugins:
     - name: access_token
       kind: password
     select:
-      - "accounts.*"
+      # - "accounts.*"
       # - "contacts.*"
-      # - "events.*"
+      - "events.*"
       # - "notes.*"
       # - "deal_sources.*"
       # - deals.*
