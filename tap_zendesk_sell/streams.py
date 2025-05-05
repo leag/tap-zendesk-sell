@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import uuid
 from functools import cached_property
 from http import HTTPStatus
 from typing import TYPE_CHECKING, Any
@@ -303,7 +304,7 @@ class EventsStream(ZendeskSellStream):
 
     name = "events"
     path = "/sync"
-    records_jsonpath = "$.items[*].data"
+    records_jsonpath = "$.items[*]"
     primary_keys = ("id",)
 
     @cached_property
@@ -483,12 +484,25 @@ class EventsStream(ZendeskSellStream):
             }
         return base_schema
 
+    def get_device_uuid(self, context: Context | None = None) -> str:
+        """Return the device UUID.
+
+        From the stream state if it has it, otherwise from the config.
+        If neither have it, generate a new UUID and save it to the state.
+        """
+        if self.get_context_state(context).get("device_uuid"):
+            return self.get_context_state(context)["device_uuid"]
+        if self.config.get("device_uuid"):
+            self.get_context_state(context)["device_uuid"] = self.config["device_uuid"]
+            return self.config["device_uuid"]
+        self.logger.info("Generating a device UUID")
+        device_uuid = str(uuid.uuid4())
+        self.get_context_state(context)["device_uuid"] = device_uuid
+        return device_uuid
+
     def get_records(self, _context: dict | None = None) -> Iterable[dict]:
         """Implement Zendesk Sell Sync API v2 protocol for events."""
-        device_uuid = self.config.get("device_uuid")
-        if not device_uuid:
-            self.logger.error("device_uuid is required for sync stream 'events'")
-            return
+        device_uuid = self.get_device_uuid()
         self.logger.info("Using device_uuid: %s for events stream", device_uuid)
 
         access_token = self.config.get("access_token")
@@ -538,7 +552,13 @@ class EventsStream(ZendeskSellStream):
             ack_keys: list[str] = []
             for item in items:
                 self.logger.debug("Processing event item: %s", item.get("meta", {}))
-                yield item.get("data", {})
+
+                # Yield the event with the structure matching the schema
+                yield {
+                    "meta": item.get("meta", {}),
+                    "data": item.get("data", {})
+                }
+
                 key = item.get("meta", {}).get("sync", {}).get("ack_key")
                 if key:
                     ack_keys.append(key)
