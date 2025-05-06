@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from singer_sdk import Stream, Tap
-from singer_sdk import typing as th  # JSON schema typing helpers
+from singer_sdk import typing as th
 
 from tap_zendesk_sell import streams
 
@@ -18,25 +18,16 @@ class TapZendeskSell(Tap):
             "access_token",
             th.StringType,
             required=True,
-            description="The token to authenticate against the API service",
+            secret=True,
+            description="Provides access to Zendesk Sell API",
+            title="Access Token",
         ),
         th.Property(
             "device_uuid",
             th.StringType,
             required=False,
-            description="The device's universally unique identifier (UUID)",
-        ),
-        th.Property(
-            "metrics_log_level",
-            th.StringType,
-            default="info",
-            description="The log level for metrics",
-        ),
-        th.Property(
-            "add_record_metadata",
-            th.BooleanType,
-            default=False,
-            description="Whether to add metadata to each record",
+            description="Identifier used accross sync sessions",
+            title="Device UUID",
         ),
     ).to_dict()
 

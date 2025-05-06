@@ -1,31 +1,28 @@
 version: 1
 send_anonymous_usage_stats: true
-project_id: cd76ce8a-3010-47eb-b62e-0233bdb70610
+project_id: "tap-zendesk-sell"
+default_environment: test
+venv:
+  backend: uv
+environments:
+- name: test
 plugins:
   extractors:
-  - name: tap-zendesk-sell
-    namespace: tap_zendesk_sell
+  - name: "tap-zendesk-sell"
+    namespace: "tap_zendesk_sell"
     pip_url: -e .
     capabilities:
     - state
     - catalog
     - discover
+    - about
+    - stream-maps
     settings:
     - name: device_uuid
+      kind: string
     - name: access_token
-      kind: password
-    - name: metrics_log_level
-    - name: add_record_metadata
-      kind: boolean
-    config:
-      metrics_log_level: debug
-    select:
-      - "events.*"
-      # - "notes.*"
-      # - "deal_sources.*"
-      # - "accounts.*"
-      # - deals.*
-      # - associated_contacts.*
+      kind: string
+      sensitive: true
   loaders:
   - name: target-jsonl
     variant: andyh1203
