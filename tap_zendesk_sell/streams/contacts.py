@@ -40,14 +40,13 @@ class ContactsStream(ZendeskSellStream):
 
     def get_records(self, _context: dict | None) -> Iterable[dict]:
         """Return a generator of row-type dictionary objects."""
-        finished = False
         page = 1
-        while not finished:
+        while True:
             data = self.list_data(
                 self.conn.contacts.list, per_page=100, page=page, sort_by="id"
             )
             if not data:
-                finished = True
+                break
             yield from data
             page += 1
 
