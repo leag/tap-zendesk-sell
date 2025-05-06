@@ -5,57 +5,7 @@ from __future__ import annotations
 from singer_sdk import Stream, Tap
 from singer_sdk import typing as th  # JSON schema typing helpers
 
-from tap_zendesk_sell.streams import (
-    AccountsStream,
-    AssociatedContacts,
-    ContactsStream,
-    DealSourcesStream,
-    DealsStream,
-    DealUnqualifiedReasonsStream,
-    LeadSourcesStream,
-    LeadsStream,
-    LeadUnqualifiedReasonsStream,
-    LineItemsStream,
-    LossReasonsStream,
-    NotesStream,
-    OrdersStream,
-    PipelinesStream,
-    ProductsStream,
-    StagesStream,
-    SyncStream,
-    TagsStream,
-    TasksStream,
-    TextMessagesStream,
-    UsersStream,
-    VisitOutcomesStream,
-    VisitsStream,
-)
-
-STREAM_TYPES = [
-    AccountsStream,
-    ContactsStream,
-    DealSourcesStream,
-    AssociatedContacts,
-    DealsStream,
-    DealUnqualifiedReasonsStream,
-    LeadSourcesStream,
-    LeadUnqualifiedReasonsStream,
-    LeadsStream,
-    LossReasonsStream,
-    NotesStream,
-    OrdersStream,
-    LineItemsStream,
-    PipelinesStream,
-    ProductsStream,
-    StagesStream,
-    SyncStream,
-    TagsStream,
-    TasksStream,
-    TextMessagesStream,
-    UsersStream,
-    VisitOutcomesStream,
-    VisitsStream,
-]
+from tap_zendesk_sell import streams
 
 
 class TapZendeskSell(Tap):
@@ -92,4 +42,28 @@ class TapZendeskSell(Tap):
 
     def discover_streams(self) -> list[Stream]:
         """Return a list of discovered streams."""
-        return [stream_class(tap=self) for stream_class in STREAM_TYPES]
+        return [
+            streams.AccountsStream,
+            streams.AssociatedContacts,
+            streams.ContactsStream,
+            streams.DealSourcesStream,
+            streams.DealUnqualifiedReasonsStream,
+            streams.DealsStream,
+            streams.LeadSourcesStream,
+            streams.LeadsStream,
+            streams.LeadUnqualifiedReasonsStream,
+            streams.LineItemsStream,
+            streams.LossReasonsStream,
+            streams.NotesStream,
+            streams.OrdersStream,
+            streams.PipelinesStream,
+            streams.ProductsStream,
+            streams.StagesStream,
+            streams.SyncStream,
+            streams.TagsStream,
+            streams.TasksStream,
+            streams.TextMessagesStream,
+            streams.UsersStream,
+            streams.VisitOutcomesStream,
+            streams.VisitsStream,
+        ]
