@@ -34,7 +34,7 @@ custom_field_type_map = {
     },
     "bool": {"type": ["boolean", "null"]},
     "boolean": {"type": ["boolean", "null"]},
-    "date": {"type": ["string", "null"], "format": "date"},
+    "date": {"type": ["string", "null"]},
     "datetime": {"type": ["string", "null"], "format": "date-time"},
     "email": {"type": ["string", "null"]},
     "list": {"type": ["string", "null"]},
