@@ -3,59 +3,9 @@
 from __future__ import annotations
 
 from singer_sdk import Stream, Tap
-from singer_sdk import typing as th  # JSON schema typing helpers
+from singer_sdk import typing as th
 
-from tap_zendesk_sell.streams import (
-    AccountsStream,
-    AssociatedContacts,
-    ContactsStream,
-    DealSourcesStream,
-    DealsStream,
-    DealUnqualifiedReasonsStream,
-    LeadSourcesStream,
-    LeadsStream,
-    LeadUnqualifiedReasonsStream,
-    LineItemsStream,
-    LossReasonsStream,
-    NotesStream,
-    OrdersStream,
-    PipelinesStream,
-    ProductsStream,
-    StagesStream,
-    SyncStream,
-    TagsStream,
-    TasksStream,
-    TextMessagesStream,
-    UsersStream,
-    VisitOutcomesStream,
-    VisitsStream,
-)
-
-STREAM_TYPES = [
-    AccountsStream,
-    ContactsStream,
-    DealSourcesStream,
-    AssociatedContacts,
-    DealsStream,
-    DealUnqualifiedReasonsStream,
-    LeadSourcesStream,
-    LeadUnqualifiedReasonsStream,
-    LeadsStream,
-    LossReasonsStream,
-    NotesStream,
-    OrdersStream,
-    LineItemsStream,
-    PipelinesStream,
-    ProductsStream,
-    StagesStream,
-    SyncStream,
-    TagsStream,
-    TasksStream,
-    TextMessagesStream,
-    UsersStream,
-    VisitOutcomesStream,
-    VisitsStream,
-]
+from tap_zendesk_sell import streams
 
 
 class TapZendeskSell(Tap):
@@ -68,28 +18,43 @@ class TapZendeskSell(Tap):
             "access_token",
             th.StringType,
             required=True,
-            description="The token to authenticate against the API service",
+            secret=True,
+            description="Provides access to Zendesk Sell API",
+            title="Access Token",
         ),
         th.Property(
             "device_uuid",
             th.StringType,
             required=False,
-            description="The device's universally unique identifier (UUID)",
-        ),
-        th.Property(
-            "metrics_log_level",
-            th.StringType,
-            default="info",
-            description="The log level for metrics",
-        ),
-        th.Property(
-            "add_record_metadata",
-            th.BooleanType,
-            default=False,
-            description="Whether to add metadata to each record",
+            description="Identifier used accross sync sessions",
+            title="Device UUID",
         ),
     ).to_dict()
 
     def discover_streams(self) -> list[Stream]:
         """Return a list of discovered streams."""
-        return [stream_class(tap=self) for stream_class in STREAM_TYPES]
+        return [
+            streams.AccountsStream(self),
+            streams.AssociatedContacts(self),
+            streams.ContactsStream(self),
+            streams.DealSourcesStream(self),
+            streams.DealUnqualifiedReasonsStream(self),
+            streams.DealsStream(self),
+            streams.LeadSourcesStream(self),
+            streams.LeadsStream(self),
+            streams.LeadUnqualifiedReasonsStream(self),
+            streams.LineItemsStream(self),
+            streams.LossReasonsStream(self),
+            streams.NotesStream(self),
+            streams.OrdersStream(self),
+            streams.PipelinesStream(self),
+            streams.ProductsStream(self),
+            streams.StagesStream(self),
+            streams.SyncStream(self),
+            streams.TagsStream(self),
+            streams.TasksStream(self),
+            streams.TextMessagesStream(self),
+            streams.UsersStream(self),
+            streams.VisitOutcomesStream(self),
+            streams.VisitsStream(self),
+        ]
