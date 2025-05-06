@@ -12,7 +12,6 @@ if TYPE_CHECKING:
     from collections.abc import Iterable
 
 
-
 class DealsStream(ZendeskSellStream):
     """Zendesk Sell deals stream class."""
 
@@ -36,7 +35,9 @@ class DealsStream(ZendeskSellStream):
             }
         return base_schema
 
-    def get_child_context(self, record: dict, context: dict | None) -> dict:  # noqa: ARG002
+    def get_child_context(
+        self, record: dict, context: dict | None  # noqa: ARG002
+    ) -> dict:
         """Return a child context for the stream."""
         return {"deal_id": record["id"]}
 
@@ -45,8 +46,12 @@ class DealsStream(ZendeskSellStream):
         finished = False
         page = 1
         while not finished:
-            data = self.conn.deals.list(
-                per_page=100, page=page, sort_by="id", includes="associated_contacts"
+            data = self.list_data(
+                self.conn.deals.list,
+                per_page=100,
+                page=page,
+                sort_by="id",
+                includes="associated_contacts",
             )
             if not data:
                 finished = True
@@ -67,8 +72,11 @@ class AssociatedContacts(ZendeskSellStream):
         finished = False
         page = 1
         while not finished:
-            data = self.conn.associated_contacts.list(
-                deal_id=context.get("deal_id"), page=page, per_page=100
+            data = self.list_data(
+                self.conn.associated_contacts.list,
+                deal_id=context.get("deal_id"),
+                page=page,
+                per_page=100,
             )
             if not data:
                 finished = True

@@ -17,7 +17,9 @@ class OrdersStream(ZendeskSellStream):
     name = "orders"
     primary_keys = ("id",)
 
-    def get_child_context(self, record: dict, context: dict | None) -> dict:  # noqa: ARG002
+    def get_child_context(
+        self, record: dict, context: dict | None  # noqa: ARG002
+    ) -> dict:
         """Return a child context for the record."""
         return {"order_id": record["id"]}
 
@@ -26,7 +28,9 @@ class OrdersStream(ZendeskSellStream):
         finished = False
         page = 1
         while not finished:
-            data = self.conn.orders.list(per_page=100, page=page, sort_by="id")
+            data = self.list_data(
+                self.conn.orders.list, per_page=100, page=page, sort_by="id"
+            )
             if not data:
                 finished = True
             yield from data
@@ -46,7 +50,8 @@ class LineItemsStream(ZendeskSellStream):
         finished = False
         page = 1
         while not finished:
-            data = self.conn.line_items.list(
+            data = self.list_data(
+                self.conn.line_items.list,
                 order_id=context.get("order_id"),
                 per_page=100,
                 page=page,

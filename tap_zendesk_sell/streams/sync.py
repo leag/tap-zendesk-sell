@@ -12,6 +12,7 @@ from tap_zendesk_sell.client import ZendeskSellStream
 if TYPE_CHECKING:
     from collections.abc import Iterable
 
+
 class SyncStream(ZendeskSellStream):
     """Zendesk Sell sync stream class."""
 
@@ -48,12 +49,16 @@ class SyncStream(ZendeskSellStream):
 
     def get_records(self, _context: dict | None) -> Iterable[dict]:
         """Return a generator of row-type dictionary objects."""
-        session = self.conn.sync.start(self.get_device_uuid())
+        # Use list_data to start the session with retry functionality
+        session = self.list_data(self.conn.sync.start, self.get_device_uuid())
         finished = False
         if session is None or "id" not in session:
             finished = True
         while not finished:
-            queue_items = self.conn.sync.fetch(self.get_device_uuid(), session["id"])
+            # Use list_data for API calls with retry functionality
+            queue_items = self.list_data(
+                self.conn.sync.fetch, self.get_device_uuid(), session["id"]
+            )
             if not queue_items:
                 finished = True
             ack_keys = []
@@ -61,6 +66,7 @@ class SyncStream(ZendeskSellStream):
                 ack_keys.append(item["meta"]["sync"]["ack_key"])
                 yield {"data": item["data"], "meta": item["meta"]}
             if ack_keys:
-                self.conn.sync.ack(self.get_device_uuid(), ack_keys)
+                # Use list_data for API calls with retry functionality
+                self.list_data(self.conn.sync.ack, self.get_device_uuid(), ack_keys)
 
     schema_filepath = SCHEMAS_DIR / "events.json"

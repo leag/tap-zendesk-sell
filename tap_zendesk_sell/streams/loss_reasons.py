@@ -22,7 +22,9 @@ class LossReasonsStream(ZendeskSellStream):
         finished = False
         page = 1
         while not finished:
-            data = self.conn.loss_reasons.list(per_page=100, page=page, sort_by="id")
+            data = self.list_data(
+                self.conn.loss_reasons.list, per_page=100, page=page, sort_by="id"
+            )
             if not data:
                 finished = True
             yield from data

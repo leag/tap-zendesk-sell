@@ -2,15 +2,15 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Callable
 
 import basecrm
 from singer_sdk.streams import Stream
+from tenacity import retry, stop_after_attempt, wait_random_exponential
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
 
-    from singer_sdk.tap_base import Tap
 
 custom_field_type_map = {
     "address": {
@@ -92,6 +92,29 @@ class ZendeskSellStream(Stream):
         if not hasattr(self, "_conn"):
             self._conn = basecrm.Client(access_token=self.config.get("access_token"))
         return self._conn
+
+    @retry(
+        stop=stop_after_attempt(3),
+        wait=wait_random_exponential(multiplier=1, min=4, max=10),
+        reraise=True,
+    )
+    def list_data(
+        self,
+        endpoint: Callable[..., list[Any]],
+        *args: Any,
+        **kwargs: Any,
+    ) -> list[Any]:
+        """List data from the API with retry logic.
+
+        Args:
+            endpoint: The API endpoint method to call
+            *args: Positional arguments to pass to the endpoint
+            **kwargs: Keyword arguments to pass to the endpoint
+
+        Returns:
+            list: Data returned from the API
+        """
+        return endpoint(*args, **kwargs)
 
     def get_records(self, context: dict | None) -> Iterable[dict | tuple[dict, dict]]:
         """Return a generator of row-type dictionary objects."""

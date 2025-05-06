@@ -5,8 +5,6 @@ from __future__ import annotations
 from functools import cached_property
 from typing import TYPE_CHECKING
 
-from tenacity import retry, stop_after_attempt, wait_exponential
-
 from tap_zendesk_sell import SCHEMAS_DIR
 from tap_zendesk_sell.client import ZendeskSellStream
 
@@ -37,21 +35,14 @@ class LeadsStream(ZendeskSellStream):
             }
         return base_schema
 
-    @retry(
-        stop=stop_after_attempt(3),
-        wait=wait_exponential(multiplier=1, min=4, max=10),
-        reraise=True,
-    )
-    def list_data(self, per_page: int, page: int) -> list:
-        """List data from the API."""
-        return self.conn.leads.list(per_page=per_page, page=page, sort_by="id")
-
     def get_records(self, _context: dict | None) -> Iterable[dict]:
         """Return a generator of row-type dictionary objects."""
         finished = False
         page = 1
         while not finished:
-            data = self.list_data(per_page=100, page=page)
+            data = self.list_data(
+                self.conn.leads.list, per_page=100, page=page, sort_by="id"
+            )
             if not data:
                 finished = True
             yield from data

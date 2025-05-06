@@ -22,7 +22,9 @@ class VisitOutcomesStream(ZendeskSellStream):
         finished = False
         page = 1
         while not finished:
-            data = self.conn.visit_outcomes.list(per_page=200, page=page)
+            data = self.list_data(
+                self.conn.visit_outcomes.list, per_page=200, page=page
+            )
             if not data:
                 finished = True
             yield from data

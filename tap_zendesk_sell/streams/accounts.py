@@ -19,7 +19,7 @@ class AccountsStream(ZendeskSellStream):
 
     def get_records(self, _context: dict | None) -> Iterable[dict]:
         """Return a generator of row-type dictionary objects."""
-        row = self.conn.accounts.self()
+        row = self.list_data(self.conn.accounts.self)
         if row:
             yield row
 

@@ -22,8 +22,11 @@ class DealUnqualifiedReasonsStream(ZendeskSellStream):
         finished = False
         page = 1
         while not finished:
-            data = self.conn.deal_unqualified_reasons.list(
-                per_page=100, page=page, sort_by="id"
+            data = self.list_data(
+                self.conn.deal_unqualified_reasons.list,
+                per_page=100,
+                page=page,
+                sort_by="id",
             )
             if not data:
                 finished = True

@@ -22,7 +22,7 @@ class LeadSourcesStream(ZendeskSellStream):
         finished = False
         page = 1
         while not finished:
-            data = self.conn.lead_sources.list(per_page=100, page=page)
+            data = self.list_data(self.conn.lead_sources.list, per_page=100, page=page)
             if not data:
                 finished = True
             yield from data
