@@ -1,6 +1,3 @@
-### A CI workflow template that runs linting and python testing
-### TODO: Modify as needed or as desired.
-
 name: Test tap-zendesk-sell
 
 on:

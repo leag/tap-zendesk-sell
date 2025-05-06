@@ -39,7 +39,9 @@ class DealsStream(ZendeskSellStream):
         return base_schema
 
     def get_child_context(
-        self, record: dict, context: dict | None  # noqa: ARG002
+        self,
+        record: dict,
+        context: dict | None,  # noqa: ARG002
     ) -> dict:
         """Return a child context for the stream."""
         return {"deal_id": record["id"]}
