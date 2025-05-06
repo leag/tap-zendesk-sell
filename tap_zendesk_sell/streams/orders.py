@@ -17,7 +17,7 @@ class OrdersStream(ZendeskSellStream):
     name = "orders"
     primary_keys = ("id",)
 
-    def get_child_context(self, record: dict, _context: dict | None) -> dict:
+    def get_child_context(self, record: dict, context: dict | None) -> dict:  # noqa: ARG002
         """Return a child context for the record."""
         return {"order_id": record["id"]}
 
