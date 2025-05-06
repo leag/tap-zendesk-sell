@@ -1,8 +1,10 @@
-[tool.poetry]
+[project]
 name = "tap-zendesk-sell"
 version = "0.0.7"
-description = "`tap-zendesk-sell` is a Singer tap for Zendesk Sell, built with the Meltano SDK for Singer Taps."
-authors = ["Luis Atala"]
+description = "Singer tap for Zendesk Sell, built with the Meltano Singer SDK."
+authors = [{ name = "Luis Atala", email = "luis.atala@gmail.com" }]
+requires-python = ">=3.9"
+license = "Apache-2.0"
 keywords = [
     "ELT",
     "Zendesk",
@@ -10,36 +12,64 @@ keywords = [
     "CRM",
     "Singer",
     "Singer Tap",
-    "Meltano"
+    "Meltano",
+    "Zendesk Sell",
 ]
-license = "Apache 2.0"
+classifiers = [
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+]
+license-files = [ "LICENSE" ]
+readme = "README.md"
+dependencies = [
+    "singer-sdk~=0.45.10",
+    "basecrm>=1.2.9,<2",
+]
 
-[tool.poetry.dependencies]
-python = "*"
-requests = "^2.25.1"
-singer-sdk = "^0.45.10"
-basecrm = "^1.2.9"
-tenacity = "*"
+[project.scripts]
+tap-zendesk-sell = "tap_zendesk_sell.tap:TapZendeskSell.cli"
 
-[tool.poetry.dev-dependencies]
-pytest = "^6.2.5"
-tox = "^3.24.4"
-flake8 = "^3.9.2"
-black = "^21.9b0"
-pydocstyle = "^6.1.1"
-mypy = "^0.910"
-types-requests = "^2.26.1"
-isort = "^5.10.1"
+[dependency-groups]
+dev = [
+    { include-group = "test" },
+]
+test = [
+    "pytest>=8",
+    "pytest-github-actions-annotate-failures>=0.3",
+    "singer-sdk[testing]",
+]
 
-[tool.isort]
-profile = "black"
-multi_line_output = 3 # Vertical Hanging Indent
-src_paths = "tap_zendesk_sell"
+[tool.pytest.ini_options]
+addopts = [
+    "--durations=10",
+]
+
+[tool.mypy]
+warn_unused_configs = true
+
+[tool.ruff]
+target-version = "py39"
+
+[tool.ruff.lint]
+ignore = [
+    "COM812",  # missing-trailing-comma
+]
+select = ["ALL"]
+
+[tool.ruff.lint.flake8-annotations]
+allow-star-arg-any = true
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
 
 [build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
-
-[tool.poetry.scripts]
-# CLI declaration
-tap-zendesk-sell = 'tap_zendesk_sell.tap:TapZendeskSell.cli'
+requires = [
+    "hatchling>=1,<2",
+]
+build-backend = "hatchling.build"
