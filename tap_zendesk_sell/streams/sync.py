@@ -1,12 +1,17 @@
 """Stream type classes for tap-zendesk-sell."""
 
+from __future__ import annotations
+
 import uuid
-from typing import Iterable, Optional
+from typing import TYPE_CHECKING
 
-from singer_sdk.tap_base import Tap
-
+from tap_zendesk_sell import SCHEMAS_DIR
 from tap_zendesk_sell.client import ZendeskSellStream
-from tap_zendesk_sell.streams import SCHEMAS_DIR
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable
+
+    from singer_sdk.tap_base import Tap
 
 
 class SyncStream(ZendeskSellStream):
@@ -14,13 +19,15 @@ class SyncStream(ZendeskSellStream):
 
     name = "events"
 
-    def __init__(self, tap: Tap):
+    def __init__(self, tap: Tap) -> None:
         """Initialize the stream."""
         super().__init__(tap)
         custom_fields_properties = self._update_schema()
         if custom_fields_properties:
             self._schema["properties"]["data"]["properties"]["custom_fields"] = {
-                "properties": custom_fields_properties
+                "properties": custom_fields_properties,
+                "description": "Custom fields attached to an event.",
+                "type": ["object", "null"],
             }
 
     def get_device_uuid(self) -> str:
@@ -39,7 +46,7 @@ class SyncStream(ZendeskSellStream):
         self.get_context_state(None)["device_uuid"] = device_uuid
         return device_uuid
 
-    def get_records(self, context: Optional[dict]) -> Iterable[dict]:
+    def get_records(self, _context: dict | None) -> Iterable[dict]:
         """Return a generator of row-type dictionary objects."""
         session = self.conn.sync.start(self.get_device_uuid())
         finished = False
