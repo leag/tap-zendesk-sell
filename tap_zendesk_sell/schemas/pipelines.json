@@ -22,10 +22,6 @@
         "disabled": {
             "type": ["null", "boolean"],
             "description": "Indicator whether or not the pipeline is disabled. You cannot add deals to the disabled pipeline."
-        },
-        "locale_key": {
-            "type": ["null", "string"],
-            "description": "Locale key of the pipeline."
         }
     }
 }

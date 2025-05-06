@@ -1,27 +1,41 @@
 """Stream type classes for tap-zendesk-sell."""
 
+from __future__ import annotations
+
 import uuid
-from typing import Iterable, Optional
+from functools import cached_property
+from typing import TYPE_CHECKING
 
-from singer_sdk.tap_base import Tap
-
+from tap_zendesk_sell import SCHEMAS_DIR
 from tap_zendesk_sell.client import ZendeskSellStream
-from tap_zendesk_sell.streams import SCHEMAS_DIR
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable
 
 
 class SyncStream(ZendeskSellStream):
-    """Zendesk Sell sync stream class."""
+    """Zendesk Sell sync stream class.
+
+    https://developer.zendesk.com/api-reference/sales-crm/sync/introduction/
+    https://developer.zendesk.com/api-reference/sales-crm/sync/protocol/
+    https://developer.zendesk.com/api-reference/sales-crm/sync/requests/
+    https://developer.zendesk.com/api-reference/sales-crm/sync/reference/
+    """
 
     name = "events"
 
-    def __init__(self, tap: Tap):
-        """Initialize the stream."""
-        super().__init__(tap)
-        custom_fields_properties = self._update_schema()
+    @cached_property
+    def schema(self) -> dict:
+        """Return the schema for the stream."""
+        base_schema = super().schema
+        custom_fields_properties = self._build_custom_field_schema()
         if custom_fields_properties:
-            self._schema["properties"]["data"]["properties"]["custom_fields"] = {
-                "properties": custom_fields_properties
+            base_schema["properties"]["data"]["properties"]["custom_fields"] = {
+                "properties": custom_fields_properties,
+                "description": "Custom fields attached to an event.",
+                "type": ["object", "null"],
             }
+        return base_schema
 
     def get_device_uuid(self) -> str:
         """Return the device UUID.
@@ -39,14 +53,18 @@ class SyncStream(ZendeskSellStream):
         self.get_context_state(None)["device_uuid"] = device_uuid
         return device_uuid
 
-    def get_records(self, context: Optional[dict]) -> Iterable[dict]:
+    def get_records(self, _context: dict | None) -> Iterable[dict]:
         """Return a generator of row-type dictionary objects."""
-        session = self.conn.sync.start(self.get_device_uuid())
+        # Use list_data to start the session with retry functionality
+        session = self.list_data(self.conn.sync.start, self.get_device_uuid())
         finished = False
         if session is None or "id" not in session:
             finished = True
         while not finished:
-            queue_items = self.conn.sync.fetch(self.get_device_uuid(), session["id"])
+            # Use list_data for API calls with retry functionality
+            queue_items = self.list_data(
+                self.conn.sync.fetch, self.get_device_uuid(), session["id"]
+            )
             if not queue_items:
                 finished = True
             ack_keys = []
@@ -54,6 +72,7 @@ class SyncStream(ZendeskSellStream):
                 ack_keys.append(item["meta"]["sync"]["ack_key"])
                 yield {"data": item["data"], "meta": item["meta"]}
             if ack_keys:
-                self.conn.sync.ack(self.get_device_uuid(), ack_keys)
+                # Use list_data for API calls with retry functionality
+                self.list_data(self.conn.sync.ack, self.get_device_uuid(), ack_keys)
 
     schema_filepath = SCHEMAS_DIR / "events.json"

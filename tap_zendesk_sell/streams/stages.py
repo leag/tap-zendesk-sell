@@ -1,26 +1,36 @@
 """Zendesk Sell stages stream class."""
-from typing import Iterable, Optional
 
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+from tap_zendesk_sell import SCHEMAS_DIR
 from tap_zendesk_sell.client import ZendeskSellStream
-from tap_zendesk_sell.streams import SCHEMAS_DIR
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable
 
 
 class StagesStream(ZendeskSellStream):
-    """Zendesk Sell stages stream class."""
+    """Zendesk Sell stages stream class.
+
+    https://developer.zendesk.com/api-reference/sales-crm/resources/stages/
+    """
 
     name = "stages"
-    primary_keys = ["id"]
+    primary_keys = ("id",)
 
-    def get_records(self, context: Optional[dict]) -> Iterable[dict]:
+    def get_records(self, _context: dict | None) -> Iterable[dict]:
         """Return a generator of row-type dictionary objects."""
         finished = False
         page = 1
         while not finished:
-            data = self.conn.stages.list(per_page=100, page=page, sort_by="id")
+            data = self.list_data(
+                self.conn.stages.list, per_page=100, page=page, sort_by="id"
+            )
             if not data:
                 finished = True
-            for row in data:
-                yield row
+            yield from data
             page += 1
 
     schema_filepath = SCHEMAS_DIR / "stages.json"

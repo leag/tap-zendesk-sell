@@ -30,7 +30,7 @@
             "description": "Maximum markup that can be applied to the product in percents."
         },
         "cost": {
-            "type": ["null", "number"],
+            "type": ["null", "string"],
             "description": "Cost of the product. Visible only to account administrators."
         },
         "cost_currency": {

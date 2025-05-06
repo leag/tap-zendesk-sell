@@ -1,79 +1,77 @@
 """Zendesk Sell Base Stream class."""
 
-from typing import Dict, Iterable, Optional, Tuple, Union
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Any, Callable
 
 import basecrm
 from singer_sdk.streams import Stream
-from singer_sdk.tap_base import Tap
+from tenacity import retry, stop_after_attempt, wait_random_exponential
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable
+
+
+custom_field_type_map = {
+    "address": {
+        "type": ["object", "null"],
+        "properties": {
+            "line1": {
+                "type": ["string", "null"],
+                "description": "Line 1 of the address.",
+            },
+            "city": {"type": ["string", "null"], "description": "City name."},
+            "postal_code": {
+                "type": ["string", "null"],
+                "description": "Zip code or equivalent.",
+            },
+            "state": {"type": ["string", "null"], "description": "State name."},
+            "country": {
+                "type": ["string", "null"],
+                "description": "Country name.",
+            },
+        },
+    },
+    "bool": {"type": ["boolean", "null"]},
+    "boolean": {"type": ["boolean", "null"]},
+    "date": {"type": ["string", "null"]},
+    "datetime": {"type": ["string", "null"], "format": "date-time"},
+    "email": {"type": ["string", "null"]},
+    "list": {"type": ["string", "null"]},
+    "multi_select_list": {
+        "type": ["array", "null"],
+        "items": {"type": ["string"]},
+    },
+    "number": {"type": ["string", "null"]},
+    "phone": {"type": ["string", "null"]},
+    "string": {"type": ["string", "null"]},
+    "text": {"type": ["string", "null"]},
+    "url": {"type": ["string", "null"]},
+}
+custom_field_resource_types = {
+    "deal",
+    "contact",
+    "lead",
+    "prospect_and_customer",
+}
 
 
 class ZendeskSellStream(Stream):
     """Zendesk Sell sync stream class."""
 
-    address_properties = {
-        "line1": {
-            "type": ["string", "null"],
-            "description": "Line 1 of the address.",
-        },
-        "city": {"type": ["string", "null"], "description": "City name."},
-        "postal_code": {
-            "type": ["string", "null"],
-            "description": "Zip code or equivalent.",
-        },
-        "state": {"type": ["string", "null"], "description": "State name."},
-        "country": {
-            "type": ["string", "null"],
-            "description": "Country name.",
-        },
-    }
-
-    custom_field_type: Dict[str, Dict] = {
-        "address": {
-            "type": ["object", "null"],
-            "properties": address_properties,
-        },
-        "bool": {"type": ["boolean", "null"]},
-        "boolean": {"type": ["boolean", "null"]},
-        "date": {"type": ["string", "null"]},
-        "datetime": {"type": ["string", "null"], "format": "date-time"},
-        "email": {"type": ["string", "null"]},
-        "list": {"type": ["string", "null"]},
-        "multi_select_list": {
-            "type": ["array", "null"],
-            "items": {"type": ["string"]},
-        },
-        "number": {"type": ["string", "null"]},
-        "phone": {"type": ["string", "null"]},
-        "string": {"type": ["string", "null"]},
-        "text": {"type": ["string", "null"]},
-        "url": {"type": ["string", "null"]},
-    }
-    resource_types = {
-        "deal",
-        "contact",
-        "lead",
-        "prospect_and_customer",
-    }
-
-    def _update_schema(self, resource_type_set: set = None) -> dict:
+    def _build_custom_field_schema(self, resource_types: set | None = None) -> dict:
         """Update the schema for this stream with custom fields."""
-        if resource_type_set is None:
-            resource_type_set = {
-                "deal",
-                "contact",
-                "lead",
-                "prospect_and_customer",
-            }
-        if not resource_type_set.issubset(self.resource_types):
-            raise ValueError(f"{resource_type_set} is not a valid resource type set")
+        if resource_types is None:
+            resource_types = custom_field_resource_types
+        if not resource_types.issubset(custom_field_resource_types):
+            msg = f"{resource_types} is not a valid resource type set"
+            raise ValueError(msg)
 
         custom_fields_properties = {}
-        for resource_type in resource_type_set:
-            _, _, data = self.conn.http_client.get(
-                "/{resource_type}/custom_fields".format(resource_type=resource_type)
-            )
+        for resource_type in resource_types:
+            _, _, data = self.conn.http_client.get(f"/{resource_type}/custom_fields")
             for custom_field in data:
-                type_dict = self.custom_field_type[custom_field["type"]]
+                type_dict = custom_field_type_map[custom_field["type"]]
                 if custom_field["name"] not in custom_fields_properties:
                     custom_fields_properties[custom_field["name"]] = type_dict
                 elif custom_fields_properties[custom_field["name"]] != type_dict:
@@ -88,13 +86,36 @@ class ZendeskSellStream(Stream):
                     )
         return custom_fields_properties
 
-    def __init__(self, tap: Tap):
-        """Initialize the stream."""
-        super().__init__(tap)
-        self.conn = basecrm.Client(access_token=self.config.get("access_token"))
+    @property
+    def conn(self) -> basecrm.Client:
+        """Return the connection to the Zendesk Sell API."""
+        if not hasattr(self, "_conn"):
+            self._conn = basecrm.Client(access_token=self.config.get("access_token"))
+        return self._conn
 
-    def get_records(
-        self, context: Optional[dict]
-    ) -> Iterable[Union[dict, Tuple[dict, dict]]]:
+    @retry(
+        stop=stop_after_attempt(5),
+        wait=wait_random_exponential(multiplier=1, min=4, max=30),
+        reraise=True,
+    )
+    def list_data(
+        self,
+        endpoint: Callable[..., list[Any]],
+        *args: Any,
+        **kwargs: Any,
+    ) -> list[Any]:
+        """List data from the API with retry logic.
+
+        Args:
+            endpoint: The API endpoint method to call
+            *args: Positional arguments to pass to the endpoint
+            **kwargs: Keyword arguments to pass to the endpoint
+
+        Returns:
+            list: Data returned from the API
+        """
+        return endpoint(*args, **kwargs)
+
+    def get_records(self, context: dict | None) -> Iterable[dict | tuple[dict, dict]]:
         """Return a generator of row-type dictionary objects."""
-        pass
+        raise NotImplementedError

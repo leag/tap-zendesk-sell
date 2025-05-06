@@ -26,6 +26,7 @@ on:
 
 env:
   FORCE_COLOR: 1
+  TAP_ZENDESK_SELL_ACCESS_TOKEN: ${{ secrets.TAP_ZENDESK_SELL_ACCESS_TOKEN }}
 
 jobs:
   pytest:
