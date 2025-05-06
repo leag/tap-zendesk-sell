@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import uuid
+from functools import cached_property
 from typing import TYPE_CHECKING
 
 from tap_zendesk_sell import SCHEMAS_DIR
@@ -11,24 +12,23 @@ from tap_zendesk_sell.client import ZendeskSellStream
 if TYPE_CHECKING:
     from collections.abc import Iterable
 
-    from singer_sdk.tap_base import Tap
-
-
 class SyncStream(ZendeskSellStream):
     """Zendesk Sell sync stream class."""
 
     name = "events"
 
-    def __init__(self, tap: Tap) -> None:
-        """Initialize the stream."""
-        super().__init__(tap)
-        custom_fields_properties = self._update_schema()
+    @cached_property
+    def schema(self) -> dict:
+        """Return the schema for the stream."""
+        base_schema = super().schema
+        custom_fields_properties = self._build_custom_field_schema()
         if custom_fields_properties:
-            self._schema["properties"]["data"]["properties"]["custom_fields"] = {
+            base_schema["properties"]["data"]["properties"]["custom_fields"] = {
                 "properties": custom_fields_properties,
                 "description": "Custom fields attached to an event.",
                 "type": ["object", "null"],
             }
+        return base_schema
 
     def get_device_uuid(self) -> str:
         """Return the device UUID.

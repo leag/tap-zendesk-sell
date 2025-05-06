@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from functools import cached_property
 from typing import TYPE_CHECKING
 
 from tenacity import retry, stop_after_attempt, wait_exponential
@@ -12,8 +13,6 @@ from tap_zendesk_sell.client import ZendeskSellStream
 if TYPE_CHECKING:
     from collections.abc import Iterable
 
-    from singer_sdk.tap_base import Tap
-
 
 class LeadsStream(ZendeskSellStream):
     """Zendesk Sell leads stream class."""
@@ -21,20 +20,22 @@ class LeadsStream(ZendeskSellStream):
     name = "leads"
     primary_keys = ("id",)
 
-    def __init__(self, tap: Tap) -> None:
-        """Initialize the stream."""
-        super().__init__(tap)
-        custom_fields_properties = self._update_schema(
+    @cached_property
+    def schema(self) -> dict:
+        """Return the schema for the stream."""
+        base_schema = super().schema
+        custom_fields_properties = self._build_custom_field_schema(
             {
                 "lead",
             }
         )
         if custom_fields_properties:
-            self._schema["properties"]["custom_fields"] = {
+            base_schema["properties"]["custom_fields"] = {
                 "properties": custom_fields_properties,
                 "description": "Custom fields attached to a lead.",
                 "type": ["object", "null"],
             }
+        return base_schema
 
     @retry(
         stop=stop_after_attempt(3),

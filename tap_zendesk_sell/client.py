@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 
     from singer_sdk.tap_base import Tap
 
-custom_field_map = {
+custom_field_type_map = {
     "address": {
         "type": ["object", "null"],
         "properties": {
@@ -59,19 +59,19 @@ custom_field_resource_types = {
 class ZendeskSellStream(Stream):
     """Zendesk Sell sync stream class."""
 
-    def _update_schema(self, resource_type_set: set | None = None) -> dict:
+    def _build_custom_field_schema(self, resource_types: set | None = None) -> dict:
         """Update the schema for this stream with custom fields."""
-        if resource_type_set is None:
-            resource_type_set = custom_field_resource_types
-        if not resource_type_set.issubset(custom_field_resource_types):
-            msg = f"{resource_type_set} is not a valid resource type set"
+        if resource_types is None:
+            resource_types = custom_field_resource_types
+        if not resource_types.issubset(custom_field_resource_types):
+            msg = f"{resource_types} is not a valid resource type set"
             raise ValueError(msg)
 
         custom_fields_properties = {}
-        for resource_type in resource_type_set:
+        for resource_type in resource_types:
             _, _, data = self.conn.http_client.get(f"/{resource_type}/custom_fields")
             for custom_field in data:
-                type_dict = custom_field_map[custom_field["type"]]
+                type_dict = custom_field_type_map[custom_field["type"]]
                 if custom_field["name"] not in custom_fields_properties:
                     custom_fields_properties[custom_field["name"]] = type_dict
                 elif custom_fields_properties[custom_field["name"]] != type_dict:
@@ -86,10 +86,13 @@ class ZendeskSellStream(Stream):
                     )
         return custom_fields_properties
 
-    def __init__(self, tap: Tap) -> None:
-        """Initialize the stream."""
-        super().__init__(tap)
-        self.conn = basecrm.Client(access_token=self.config.get("access_token"))
+    @property
+    def conn(self) -> basecrm.Client:
+        """Return the connection to the Zendesk Sell API."""
+        if not hasattr(self, "_conn"):
+            self._conn = basecrm.Client(access_token=self.config.get("access_token"))
+        return self._conn
 
     def get_records(self, context: dict | None) -> Iterable[dict | tuple[dict, dict]]:
         """Return a generator of row-type dictionary objects."""
+        raise NotImplementedError
