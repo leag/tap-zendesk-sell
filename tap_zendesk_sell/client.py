@@ -94,8 +94,8 @@ class ZendeskSellStream(Stream):
         return self._conn
 
     @retry(
-        stop=stop_after_attempt(3),
-        wait=wait_random_exponential(multiplier=1, min=4, max=10),
+        stop=stop_after_attempt(5),
+        wait=wait_random_exponential(multiplier=1, min=4, max=30),
         reraise=True,
     )
     def list_data(
