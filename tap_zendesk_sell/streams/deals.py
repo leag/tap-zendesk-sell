@@ -64,7 +64,7 @@ class DealsStream(ZendeskSellStream):
 
 
 class AssociatedContacts(ZendeskSellStream):
-    """Zendesk Sell asociated contacts stream class.
+    """Zendesk Sell associated contacts stream class.
 
     https://developer.zendesk.com/api-reference/sales-crm/resources/associated-contacts/
     """
