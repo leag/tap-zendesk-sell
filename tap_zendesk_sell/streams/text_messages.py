@@ -12,7 +12,10 @@ if TYPE_CHECKING:
 
 
 class TextMessagesStream(ZendeskSellStream):
-    """Zendesk Sell text messages stream class."""
+    """Zendesk Sell text messages stream class.
+
+    https://developer.zendesk.com/api-reference/sales-crm/resources/text-messages/
+    """
 
     name = "text_messages"
     primary_keys = ("id",)

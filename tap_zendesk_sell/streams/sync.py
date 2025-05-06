@@ -14,7 +14,13 @@ if TYPE_CHECKING:
 
 
 class SyncStream(ZendeskSellStream):
-    """Zendesk Sell sync stream class."""
+    """Zendesk Sell sync stream class.
+
+    https://developer.zendesk.com/api-reference/sales-crm/sync/introduction/
+    https://developer.zendesk.com/api-reference/sales-crm/sync/protocol/
+    https://developer.zendesk.com/api-reference/sales-crm/sync/requests/
+    https://developer.zendesk.com/api-reference/sales-crm/sync/reference/
+    """
 
     name = "events"
 

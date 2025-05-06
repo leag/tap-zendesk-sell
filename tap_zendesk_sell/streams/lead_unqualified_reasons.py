@@ -12,7 +12,10 @@ if TYPE_CHECKING:
 
 
 class LeadUnqualifiedReasonsStream(ZendeskSellStream):
-    """Zendesk Sell lead unqualified reasons stream class."""
+    """Zendesk Sell lead unqualified reasons stream class.
+
+    https://developer.zendesk.com/api-reference/sales-crm/resources/lead-unqualified-reasons/
+    """
 
     name = "lead_unqualified_reasons"
     primary_keys = ("id",)

@@ -12,7 +12,10 @@ if TYPE_CHECKING:
 
 
 class LossReasonsStream(ZendeskSellStream):
-    """Zendesk Sell loss reasons stream class."""
+    """Zendesk Sell loss reasons stream class.
+
+    https://developer.zendesk.com/api-reference/sales-crm/resources/loss-reasons/
+    """
 
     name = "loss_reasons"
     primary_keys = ("id",)

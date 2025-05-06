@@ -12,7 +12,10 @@ if TYPE_CHECKING:
 
 
 class VisitsStream(ZendeskSellStream):
-    """Zendesk Sell visits stream class."""
+    """Zendesk Sell visits stream class.
+
+    https://developer.zendesk.com/api-reference/sales-crm/resources/visits/
+    """
 
     name = "visits"
     primary_keys = ("id",)
