@@ -87,6 +87,23 @@
                                         "properties": {
                                             "type": {
                                                 "type": ["null", "string"]
+                                            },
+                                            "count": {
+                                                "type": ["null", "integer"]
+                                            },
+                                            "links": {
+                                                "type": ["null", "object"],
+                                                "properties": {
+                                                    "next": {
+                                                        "type": ["null", "string"]
+                                                    },
+                                                    "position": {
+                                                        "type": ["null", "string"]
+                                                    },
+                                                    "top": {
+                                                        "type": ["null", "boolean"]
+                                                    }
+                                                }
                                             }
                                         }
                                     },
@@ -405,6 +422,12 @@
                                 "type": ["null", "string"]
                             }
                         }
+                    }
+                },
+                "system_tags": {
+                    "type": ["null", "array"],
+                    "items": {
+                        "type": ["null", "string"]
                     }
                 }
             }

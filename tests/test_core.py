@@ -6,9 +6,9 @@ from tap_zendesk_sell.tap import TapZendeskSell
 
 TestTapZendeskSell = get_tap_test_class(
     tap_class=TapZendeskSell,
-    config={"device_uuid": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"},
+    config={},
     suite_config=SuiteConfig(
-        max_records_limit=100,
-        ignore_no_records=True,
+        max_records_limit=1000,
+        ignore_no_records=False,
     ),
 )
