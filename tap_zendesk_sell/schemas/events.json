@@ -133,6 +133,14 @@
                                     }
                                 }
                             }
+                        },
+                        "meta": {
+                            "type": ["null", "object"],
+                            "properties": {
+                                "type": {
+                                    "type": ["null", "string"]
+                                }
+                            }
                         }
                     }
                 },
@@ -381,6 +389,23 @@
                 },
                 "added_at": {
                     "type": ["null", "string"]
+                },
+                "organization_name": {
+                    "type": ["null", "string"]
+                },
+                "roles": {
+                    "type": ["null", "array"],
+                    "items": {
+                        "type": ["null", "object"],
+                        "properties": {
+                            "id": {
+                                "type": ["null", "integer"]
+                            },
+                            "name": {
+                                "type": ["null", "string"]
+                            }
+                        }
+                    }
                 }
             }
         }
