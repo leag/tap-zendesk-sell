@@ -2,7 +2,7 @@ name: Test tap-zendesk-sell
 
 on:
   push:
-    branches: [main]
+    branches: [main, claude/update-sdk-uv-drop-py39]
     paths:
     - .github/workflows/test.yml
     - tap_zendesk_sell/**
